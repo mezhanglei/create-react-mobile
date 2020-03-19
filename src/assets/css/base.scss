@@ -1,0 +1,211 @@
+/*
+ * @名称：base.css
+ * @功能： 1、重设浏览器默认样式
+ *        2、设置通用原子类
+ * 如何使用：入口文件js内import "~assets/css/base.css"
+ */
+
+/*
+ * 1.重设默认样式
+ */
+
+html,
+body {
+  /* 禁用iPhone中Safari的字号自动调整 */
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  /* 取消IOS系统默认的可点击标签的背景高亮  */
+  /* -webkit-tap-highlight-color: rgba(0, 0, 0, 0); */
+  -webkit-tap-highlight-color: transparent;
+  /* 解决IOS默认滑动卡住的情况 */
+  -webkit-overflow-scrolling: touch;
+  /* 背景颜色 */
+  background: #fff;
+  height: 100vh;
+  width: 100%;
+}
+
+body,
+div,
+ul,
+li,
+ol,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+input,
+textarea,
+select,
+p,
+dl,
+dt,
+dd,
+a,
+img,
+button,
+form,
+table,
+th,
+tr,
+td,
+tbody,
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+i,
+section {
+  margin: 0;
+  padding: 0;
+  font-size: 12px;
+  font-style: normal;
+  font-family: Helvetica, "Hiragino Sans GB", "Microsoft YaHei", Simsun, "Droid Sans Fallback", sans-serif;
+  /* 设置颜色会影响vant组件的字体图标颜色 */
+  /* color: rgb(34, 34, 34); */
+  /* 盒子模型设置为内聚模型 */
+  box-sizing: border-box;
+  /* 取消IOS系统默认的可点击标签的背景高亮  */
+  /* -webkit-tap-highlight-color: rgba(0, 0, 0, 0); */
+  -webkit-tap-highlight-color: transparent;
+  /* 解决IOS默认滑动卡住的情况 */
+  -webkit-overflow-scrolling: touch;
+}
+
+button,
+input,
+select,
+textarea,
+input:focus,
+textarea:focus {
+  /* 去掉轮廓 */
+  outline: none;
+  /* 禁止拖拽 */
+  resize: none;
+  /* 取消IOS系统默认的可点击标签的背景高亮  */
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 去掉 table cell 的边距并让其边重合 */
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/* 去除默认边框 */
+fieldset,
+img {
+  border: none;
+}
+
+/* 一致的 del 样式 */
+del {
+  text-decoration: line-through;
+}
+
+/* 格式化ul,ol,li,去掉默认的样式 */
+ol,
+ul {
+  list-style: none;
+}
+
+/* 统一上标和下标 */
+sub,
+sup {
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+
+sup {
+  top: -0.5em;
+}
+
+sub {
+  bottom: -0.25em;
+}
+
+/* 让链接在 hover 状态下显示下划线 */
+a:hover {
+  text-decoration: underline;
+}
+
+/* 默认不显示下划线，保持页面简洁 */
+ins,
+a {
+  text-decoration: none;
+}
+
+/*
+  * 2.设置通用原子类
+  */
+
+/* 清除浮动 */
+.clearfix::after {
+  content: ".";
+  height: 0;
+  clear: both;
+  visibility: hidden;
+  display: block;
+}
+
+.clearfix {
+  *zoom: 1;
+}
+
+/* 设置浮动，减少浮动带来的 bug */
+.fl,
+.fr {
+  display: inline;
+}
+
+.fl {
+  float: left;
+}
+
+.fr {
+  float: right;
+}
+
+/* 单行省略 */
+.one-txt-cut {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/*双行溢出 只适用于webkit内核的浏览器*/
+.two-txt-cut {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  /*设定最多显示行数*/
+  -webkit-box-orient: vertical;
+}
+
+/*三行溢出 只适用于webkit内核的浏览器*/
+.three-txt-cut {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  /*设定最多显示行数*/
+  -webkit-box-orient: vertical;
+}
+
+/* 使用pre标签解析html字符串时解析换行符 */
+pre {
+  white-space: pre-line;
+  margin: 0;
+  padding: 0;
+}

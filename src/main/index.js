@@ -1,34 +1,17 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.scss'
-class Search extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      Text: 'react-h5空脚手架'
-    }
-  }
-  // 想支持动态懒加载需要安装@babel/plugin-syntax-dynamic-import这个babel插件来实现
-  loadComponenment() {
-    // import ('./common.js').then((res) => {
-    //   console.log(res);
-    //   this.setState({
-    //     Text: res.default
-    //   })
-    // })
-  }
-  render() {
-    let { Text } = this.state;
-    return (
-      <div className="v-main">
-        <div>{this.state.Text}</div>
-        <div className="v-son"></div>
-      </div>
-    );
-  }
-}
+import { Provider } from 'react-redux'
+import App from './App';
+import store from 'src/store/index.js'
 
+// 引入全局样式
+import "src/assets/css/base.scss"
+// 处理点击移动端事件
+// import FastClick from 'fastclick';
+// FastClick.attach(document.body);
 ReactDOM.render(
-  <Search />,
-  document.getElementById('root')
-);
+  <Provider store={store}>
+    <App />
+  </Provider>
+  , document.getElementById('root'));
+

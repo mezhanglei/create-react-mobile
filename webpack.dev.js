@@ -25,7 +25,7 @@ const configs = {
   // 入口文件路径
   entryPath: path.join(root, 'src/main/index.js'),
   // 引入资源路径的公共部分, 这里将所有打包后的相对路径都替换为绝对路径/, 这样无论之后发布的ip和端口怎么变, 只要根目录不变则引入静态资源(img等)都不会出错
-  // publicPath: '/',
+  publicPath: '/',
   // 输出目录
   outputPath: path.join(root, 'dist')
 };
@@ -196,13 +196,17 @@ module.exports = {
         removeComments: false
       }
     }),
+    // 设置项目的全局变量, 如果值是个字符串会被当成一个代码片段来使用, 如果不是,它会被转化为字符串(包括函数)
+    new webpack.DefinePlugin({
+      "process.env.PUBLIC_PATH": JSON.stringify(configs.publicPath)
+    }),
     // stylelint
     ...(configs.useStylelint ? [useStylelintPlugin] : [])
   ],
   // require 引用入口配置
   resolve: {
     alias: {
-
+      src: `${root}/src/`
     }
   },
   // 配置webpack的开发服务器

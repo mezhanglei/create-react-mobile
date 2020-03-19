@@ -52,6 +52,8 @@ const configs = {
   dllFromPath: path.join(root, 'js'),
   // 预编译js文件被拷贝过去后的目录(目录名和静态资源所在的目录名相同)
   dllToPath: path.join(root, 'dist/js'),
+  // 引入资源路径的公共部分, 这里将所有打包后的相对路径都替换为绝对路径/.
+  publicPath: '/'
 }
 // webpack配置内容
 const webpackConfig = {
@@ -75,7 +77,7 @@ const webpackConfig = {
     // chunkFilename用来打包require.ensure方法中引入的模块,如果该方法中没有引入任何模块则不会生成任何chunk块文件
     // chunkFilename: 'js/[name]_[chunkhash:8].js',
     // 引入资源路径的公共部分, 这里将所有打包后的相对路径都替换为绝对路径/.
-    publicPath: '/'
+    publicPath: configs.publicPath
   },
   // 让项目中通过es6等模块规范引入的文件不打包到最终的包里, 而是通过script标签引入(与这个有相同功能的就是dll)
   // 其中键为在使用时引入的变量名, 值为npm包名或者绝对路径
@@ -296,12 +298,16 @@ const webpackConfig = {
         // 移除html中的注释 默认false
         removeComments: true
       }
+    }),
+    // 设置项目的全局变量, 如果值是个字符串会被当成一个代码片段来使用, 如果不是,它会被转化为字符串(包括函数)
+    new webpack.DefinePlugin({
+      "process.env.PUBLIC_PATH": JSON.stringify(configs.publicPath)
     })
   ],
   // require 引用入口配置
   resolve: {
     alias: {
-
+      src: `${root}/src/`
     }
   },
   // 当只有发生错误时打印webpack统计信息

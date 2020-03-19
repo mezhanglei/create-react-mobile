@@ -2,7 +2,7 @@
 
 ## 项目安装和依赖说明
 ```
-基于webpack4 + react + ant-design-mobile等的h5开发脚手架(目前正在往里面集成redux, react-router,布局等基础功能中)
+基于webpack4.x + react16.12 + redux + react-redux + redux-thunk + ant-design-mobile等的h5开发脚手架(目前正在往里面集成基础功能中)
 ```
 ### 项目运行说明
 ```
@@ -15,12 +15,7 @@ npm run csslint 检查css规范
 
 ### 脚手架功能说明
 ```
-根目录下文件:
-dll文件夹: 只支持模块化js的预编译
-static文件夹: 静态资源文件夹, 支持script直接引入静态资源
-src文件夹: 业务功能所在文件夹
-src/main: 入口文件及模板html.
-后续功能集成中....
+目前只有基础功能, 集成完成之后再出目录结构说明和脚手架用法
 ```
 ### css约定规则（若是没有使用CSS module）
 ```
