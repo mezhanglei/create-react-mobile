@@ -49,6 +49,7 @@
     "node-sass": "^4.12.0",
     "optimize-css-assets-webpack-plugin": "^5.0.3",
     "postcss-loader": "^3.0.0",
+    "prop-types": "^15.7.2",
     "purgecss-webpack-plugin": "^1.6.0",
     "px2rem-loader": "^0.1.9",
     "sass-loader": "^8.0.0",
@@ -67,14 +68,22 @@
   },
   "dependencies": {
     "antd-mobile": "^2.3.1",
+    "axios": "^0.19.2",
+    "clipboard": "^2.0.6",
+    "crypto-js": "^4.0.0",
+    "fastclick": "^1.0.6",
+    "moment": "^2.24.0",
+    "qs": "^6.9.1",
     "react": "^16.9.0",
+    "react-awesome-swiper": "^1.4.10",
     "react-dom": "^16.9.0",
     "react-redux": "^7.2.0",
     "react-router": "^5.1.2",
     "react-router-dom": "^5.1.2",
     "redux": "^4.0.5",
     "redux-logger": "^3.0.6",
-    "redux-thunk": "^2.3.0"
+    "redux-thunk": "^2.3.0",
+    "weixin-js-sdk": "^1.4.0-test"
   },
   "browserslist": [
     "defaults",

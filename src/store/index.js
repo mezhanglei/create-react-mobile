@@ -2,12 +2,16 @@
 // createStore 创建一个store实例
 // bindActionCreator调用函数bindActionCreators(actionCreators, store.dispatch)就可以实现store在组件及其子组件执行dispatch方法,一般通过全局导入store来代替
 // combineReducers合并多个reducer 返回新的state
-import { createStore, applyMiddleware } from 'redux'
-import RootReducer from './reducer.js'
+import { createStore, applyMiddleware, combineReducers } from 'redux'
 // 日志中间件,仅在开发环境下使用,必须放在最后
 import logger from 'redux-logger'
 // 异步分发action中间件
 import thunk from 'redux-thunk'
+import { userReducer } from './reducers/user.js'
+// 多个reducer合并, 每个reducer都代表一个模块, 访问state中的值需要去要访问对应模块下面的state
+const RootReducer = combineReducers({
+    userModule: userReducer
+})
 // applyMiddleware可以作为第二个参数也可以作为第三个参数
 let store = createStore(RootReducer, applyMiddleware(thunk, logger))
 export default store
@@ -17,7 +21,7 @@ export default store
  * 1. 创建reducer
  * 2. 合并多个reducer
  * 3. redux的createStore方法实例化一个store
- * 4. 全局引入store
+ * 4. 引入store
  * 5. 在组件中创建个订阅函数可以监听到state值: const fn = () => { store.getState()获取所有的state }, 通过store.subscribe(fn) 监听state变化
  * 6. 通过store.dispatch(action对象)来更新store最新数据
  * 7. 组件卸载时调用卸载方法: store.unsubscribe(fn)
