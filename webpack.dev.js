@@ -81,6 +81,7 @@ module.exports = {
     rules: [
       {
         test: /\.js$/,
+        // babel-loader的核心依赖为@babel/core
         use: 'babel-loader',
         // include: path.resolve("src"),
         // 忽略第三方(看第三方包是否需要转译,不需要的话去掉)

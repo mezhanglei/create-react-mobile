@@ -61,8 +61,8 @@ const webpackConfig = {
   entry: {
     // 1. 如果入口文件为一个对象且有多条数据,则会打包进入多个html文件
     // 2. 如果入口文件为一个对象且只有一条数据(数组或字符串)或者直接为数组/字符串时, 则打包后插入一个html
-    // 入口文件路径(babel-ployfill用来解决js的语法兼容问题)
-    index: ["babel-polyfill", configs.entryPath]
+    // 入口文件路径
+    index: [configs.entryPath]
   },
   // 查找解析入口文件entry所在的根目录文件夹, 默认为项目的根目录
   context: root,
@@ -97,7 +97,7 @@ const webpackConfig = {
         test: /\.js$/,
         // 指定必须处理的文件
         // include: ,
-        // 忽略第三方(看第三方包是否需要转译,不需要的话去掉)
+        // 忽略第三方
         exclude: /node_modules/,
         use: [
           {
