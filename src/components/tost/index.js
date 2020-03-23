@@ -41,7 +41,7 @@ export default class extends React.Component {
     })
   };
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     this.setState({
       //当前点的状态数字字符串
       status: nextProps.status || '',

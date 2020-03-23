@@ -8,13 +8,13 @@ import { myStorage, mySession } from 'src/utils/cache.js';
 // 清空用户信息和token等信息
 export function clearLoginInfo() {
   myStorage.remove('token');
-  myStorage.remove('userData');
+  myStorage.remove('userInfo');
 }
 
 // 判断是否登录
 export function isLogin() {
-  let userData = myStorage.get("userData");
-  if (userData) {
+  const userInfo = myStorage.get("userInfo");
+  if (userInfo.token) {
     return true;
   } else {
     return false;
@@ -54,6 +54,11 @@ export function allowBodyScroll() {
   document
     .getElementsByTagName("body")[0]
     .removeEventListener("touchmove", bodyScroll);
+}
+
+// react将字符串转化为html
+export function showhtml(htmlString) {
+  return <div dangerouslySetInnerHTML={{ __html: htmlString }}></div>;
 }
 
 /**

@@ -1,6 +1,7 @@
 module.exports = {
   // 指定eslint的babel解析器(解析jsx语法)
   "parser": "babel-eslint",
+  "plugins": ["react-hooks"],
   // javascript语言类型和风格
   "parserOptions": {
     // 模块导入方式
@@ -32,6 +33,8 @@ module.exports = {
     "indent": ["error", 2, {
       "SwitchCase": 1
     }],
+    "react-hooks/rules-of-hooks": "error", // 检查 Hook 的规则
+    "react-hooks/exhaustive-deps": "warn", // 检查 effect 的依赖
     // 0表示允许有声明但未被使用的变量存在
     "no-unused-vars": 0,
     // 0表示可以使用 ==

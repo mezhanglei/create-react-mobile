@@ -1,10 +1,14 @@
 import React from 'react'
+import "./app.scss";
 import http from "src/http/request.js";
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 // 引入组件
 // import { NotFound } from "src/router/components.js";
+import { Home, Category, Cart, Personal } from "src/router/components.js";
 // 引入需要登录的高阶组件
 import LoginComponent from "src/components/loginWrap/index.js";
+// 导航组件
+import TabNav from "src/components/tabnav/index.js";
 
 /**
  * 渲染路由组件(根据需要修改)
@@ -23,7 +27,11 @@ function MyRoutes() {
     <React.Suspense fallback={null}>
       <Router basename={process.env.PUBLIC_PATH}>
         <Switch>
-        {/* <Route exact path="/" render={props => <home {...props} />} /> */}
+          <Route exact path="/" render={props => <TabNav><Home {...props} /></TabNav>} />
+          <Route path="/home" render={props => <TabNav><Home {...props} /></TabNav>} />
+          <Route path="/cateGory" render={props => <TabNav><Category {...props} /></TabNav>} />
+          <Route path="/cart" render={props => <TabNav><Cart {...props} /></TabNav>} />
+          <Route path="/personal" render={props => <TabNav><Personal {...props} /></TabNav>} />
           {/* <Route component={NotFound} /> */}
         </Switch>
       </Router>
@@ -54,9 +62,9 @@ class App extends React.Component {
     // }
     return (
       <div className="app">
-        <header>头部</header>
+        {/* <header>头部</header> */}
         <MyRoutes />
-        <footer>尾部</footer>
+        {/* <footer>尾部</footer> */}
       </div>
     );
   };

@@ -5,10 +5,10 @@
  *   payload: 新的数据
  * }
  */
-import { myStorage } from 'src/utils/cache.js';
+
 import { clearLoginInfo } from 'src/configs/common.js';
 // 用来持久化数据的方法
-import {getUserInfo, setUserInfo} from "../storage/index.js";
+import { getUserInfo, setUserInfo } from "../storage/index.js";
 // 初始数据
 let initState = {
     // 登录信息
@@ -23,6 +23,9 @@ export const userReducer = (state = initState, action) => {
         case 'LOGIN_OUT':
             clearLoginInfo();
             return { ...state, userInfo: null }
+        // 修改账号资料
+        case 'CHANGE_ACCOUNT':
+            return { ...state, userInfo: setUserInfo(action.payload.userInfo) }
         default:
             return { ...state }
     }

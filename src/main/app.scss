@@ -1,0 +1,9 @@
+.app {
+  height: calc(100vh - 50px);
+
+  .am-tab-bar-bar {
+    position: fixed;
+    z-index: 1;
+    bottom: 0;
+  }
+}

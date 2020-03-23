@@ -16,3 +16,34 @@ export function getTarget(value) {
     });
   return result;
 }
+
+// 底部导航栏
+export const navList = [{
+  title: "首页",
+  path: "/",
+  icon: "iconfont iconhome",
+  selectIcon: "iconfont iconhome",
+  badge: 1,
+  dot: false
+}, {
+  title: "分类",
+  path: "/category",
+  icon: "iconfont icon-fenlei",
+  selectIcon: "iconfont icon-fenlei",
+  badge: "new",
+  dot: false
+}, {
+  title: "购物车",
+  path: "/cart",
+  icon: "iconfont icongouwuche1",
+  selectIcon: "iconfont icongouwuche1",
+  badge: 1,
+  dot: false
+}, {
+  title: "我的",
+  path: "/personal",
+  icon: "iconfont iconweibiaoti2fuzhi12",
+  selectIcon: "iconfont iconweibiaoti2fuzhi12",
+  badge: "",
+  dot: true
+}]
