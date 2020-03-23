@@ -13,9 +13,9 @@ let NoErrorArr = []
 // 开始loading
 export function startLoading() {
   loading = Toast.loading({
-    message: '加载中...',
-    forbidClick: true,
-    loadingType: 'spinner'
+    content: '加载中...',
+    mask: true,
+    duration: 3
   });
 }
 
@@ -104,7 +104,7 @@ function errorHandle(status, msg) {
     default: msg = msg
   }
   if (status && msg) {
-    Toast(msg);
+    Toast.info(msg);
   }
 }
 
@@ -135,7 +135,7 @@ function responseHandle(code, msg) {
     default: msg = msg;
   }
   if (code) {
-    Toast(msg);
+    Toast.info(msg);
   }
 }
 

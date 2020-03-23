@@ -50,10 +50,8 @@
       "import",
       {
         "libraryName": "antd-mobile",
-        // css文件所在的目录,默认lib
-        "libraryDirectory": "lib",
-        // 解析less/sass
-        "style": true
+        // 解析css
+        "style": "css"
       }
     ]
   ]

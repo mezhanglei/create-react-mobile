@@ -135,7 +135,7 @@ const webpackConfig = {
             loader: 'px2rem-loader',
             options: {
               // 1rem等于多少px
-              remUnit: 75,
+              remUnit: 37.5,
               // 小数点位数
               remPrecision: 8
             }
