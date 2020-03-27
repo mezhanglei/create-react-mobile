@@ -206,8 +206,10 @@ module.exports = {
   ],
   // require 引用入口配置
   resolve: {
+    extensions: ['.vue', '.js', '.json'],
     alias: {
-      src: `${root}/src/`
+      "@": `${root}/src/`,
+      "src": `${root}/src/`
     }
   },
   // 配置webpack的开发服务器

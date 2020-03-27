@@ -1,6 +1,7 @@
 module.exports = {
   // 指定eslint的babel解析器(解析jsx语法)
   "parser": "babel-eslint",
+  // 挂载hooks插件用来校验hooks
   "plugins": ["react-hooks"],
   // javascript语言类型和风格
   "parserOptions": {

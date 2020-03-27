@@ -6,7 +6,7 @@
  * }
  */
 
-import { clearLoginInfo } from 'src/configs/common.js';
+import { clearLoginInfo } from '@/configs/common.js';
 // 用来持久化数据的方法
 import { getUserInfo, setUserInfo } from "../storage/index.js";
 // 初始数据

@@ -2,8 +2,8 @@
  * 公共的一些业务方法或请求放到这里
  */
 
-import { myStorage, mySession } from 'src/utils/cache.js';
-// import http from "src/http/request.js";
+import { myStorage, mySession } from '@/utils/cache.js';
+// import http from "@/http/request.js";
 
 // 清空用户信息和token等信息
 export function clearLoginInfo() {

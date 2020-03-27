@@ -1,9 +1,9 @@
 
 import axios from 'axios';
-import configs from 'src/configs/env';
+import configs from '@/configs/env';
 import { Toast } from 'antd-mobile';
-import { myStorage } from 'src/utils/cache.js';
-import { clearLoginInfo, wxPayPlatform } from 'src/configs/common.js';
+import { myStorage } from '@/utils/cache.js';
+import { clearLoginInfo, wxPayPlatform } from '@/configs/common.js';
 // 定义loading变量(这里的loading为单例模式，如果不是单例则需要封装变成单例模式)
 let loading;
 

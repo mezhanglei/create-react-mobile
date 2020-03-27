@@ -1,7 +1,7 @@
 import React from 'react'
 import { Route, Redirect, withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
-import { isLogin } from "src/configs/common.js"
+import { isLogin } from "@/configs/common.js"
 
 /**
  * 需要登录的路由高阶组件(需配合Route使用)

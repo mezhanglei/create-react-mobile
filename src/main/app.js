@@ -1,14 +1,14 @@
 import React from 'react'
 import "./app.scss";
-import http from "src/http/request.js";
+import http from "@/http/request.js";
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 // 引入组件
-// import { NotFound } from "src/router/components.js";
-import { Home, Category, Cart, Personal } from "src/router/components.js";
+// import { NotFound } from "@/router/components.js";
+import { Home, Category, Cart, Personal } from "@/router/components.js";
 // 引入需要登录的高阶组件
-import LoginComponent from "src/components/loginWrap/index.js";
+import LoginComponent from "@/components/loginWrap/index.js";
 // 导航组件
-import TabNav from "src/components/tabnav/index.js";
+import TabNav from "@/components/tabnav/index.js";
 
 /**
  * 渲染路由组件(根据需要修改)

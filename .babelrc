@@ -13,8 +13,8 @@
         "modules": false
         // 1. false默认值, 默认不引入@babel/polyfill
         // 2. "entry" 表示全部引入, 会多加几百kb包大小, 需要额外引入操作.
-        // 3. "useage" 会参考browserslist浏览器版本和core-js(特性)的版本按需引入polyfill,但是不会对第三方模块进行转译
-        // "useBuiltIns": "useage"
+        // 3. "usage" 会参考browserslist浏览器版本和core-js(特性)的版本按需引入polyfill,但是不会对第三方模块进行转译
+        // "useBuiltIns": "usage"
         // 使用特性,使用需要安装core-js和regenerator-runtime两个包
         // "corejs": {
         //   "version": 3,

@@ -2,7 +2,7 @@
  * @名称：base.css
  * @功能： 1、重设浏览器默认样式
  *        2、设置通用原子类
- * 如何使用：入口文件js内import "~assets/css/base.css"
+ * 如何使用：入口文件js内import "@/assets/css/base.css"
  */
 
 /*
@@ -17,7 +17,7 @@ body {
   /* 取消IOS系统默认的可点击标签的背景高亮  */
   /* -webkit-tap-highlight-color: rgba(0, 0, 0, 0); */
   -webkit-tap-highlight-color: transparent;
-  /* 解决IOS默认滑动卡住的情况 */
+  /* 解决IOS默认滑动卡住的情况,同时不能设置body为overflow:hidden会使界面偏移抖动 */
   -webkit-overflow-scrolling: touch;
   /* 背景颜色 */
   background: #fff;

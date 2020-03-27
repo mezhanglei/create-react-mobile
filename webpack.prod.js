@@ -42,16 +42,12 @@ const configs = {
   entryPath: path.join(root, 'src/main/index.js'),
   // 打包文件的输出目录
   outputPath: path.join(root, 'dist'),
-  // 用来treeshaking的css文件的路径(/**/* 表示src文件夹下的所有文件)
-  cssPath: glob.sync(path.join(root, 'src/**/*'), { nodir: true }),
-  // 仅能标签引入的静态资源所在的目录(目录名和在dist引入的目录名相同)
-  staticFromPath: path.join(root, 'static'),
-  // 仅能标签引入的静态资源被拷贝过去后的目录(目录名和静态资源所在的目录名相同)
-  staticToPath: path.join(root, 'dist/static'),
-  // 预编译js文件所在的目录(目录名和在dist引入的目录名相同)
-  dllFromPath: path.join(root, 'js'),
-  // 预编译js文件被拷贝过去后的目录(目录名和静态资源所在的目录名相同)
-  dllToPath: path.join(root, 'dist/js'),
+  // 用来treeshaking的css文件的路径.(css是对打包后的文件进行tree shaking,并且不适用css modules模式)
+  cssPath: glob.sync(path.join(root, 'dist/*.html')),
+  // 静态资源引用目录名
+  staticFileName: "static",
+  // 预编译js文件引用的目录名.
+  dllFileName: 'dll',
   // 引入资源路径的公共部分, 这里将所有打包后的相对路径都替换为绝对路径/.
   publicPath: '/'
 }
@@ -231,14 +227,14 @@ const webpackConfig = {
     new MiniCssExtractPlugin({
       filename: 'css/[name]_[contenthash:8].css'
     }),
-    // css实现treeshaking(删除无用的css) 需要和MiniCssExtractPlugin配合使用
+    // css实现treeshaking(删除无用的css, 对打包后的文件使用, 不适用css modules模式) 需要和MiniCssExtractPlugin配合使用
     new PurgecssWebpackPlugin({
       paths: configs.cssPath
     }),
     // css文件压缩(只会对解析后的css文件进行压缩)
     new OptimizeCSSAssetsPlugin({
       assetNameRegExp: /\.css$/g,
-      // 依赖于cssnano预处理器 但cssnano和css-loader都会将scale3d(1,1,1)转换为scalex(1) 可以通过js来设置style规避问题
+      // 依赖于cssnano压缩 但cssnano和css-loader都会将scale3d(1,1,1)转换为scalex(1) 可以通过js来设置style规避问题
       cssProcessor: require('cssnano'),
       // 避免cssnano重新计算css
       cssProcessorOptions: {
@@ -259,16 +255,16 @@ const webpackConfig = {
         manifest: require(path)
       });
     }),
-    // 静态资源拷贝到dist目录, 现在我们定义静态资源目录为lib/static,然后在html里需要再引入才能使用
+    // 静态资源拷贝到dist目录,然后在html里需要再引入才能使用
     new CopyWebpackPlugin([
       {
-        from: configs.staticFromPath,
-        to: configs.staticToPath
+        from: path.join(root, configs.staticFileName),
+        to: path.join(root, `dist/${configs.staticFileName}`)
         // 忽略文件名
         // ignore: ['.*']
       }, {
-        from: configs.dllFromPath,
-        to: configs.dllToPath
+        from: path.join(root, configs.dllFileName),
+        to: path.join(root, `dist/${configs.dllFileName}`)
         // 忽略文件名
         // ignore: ['.*']
       }
@@ -306,13 +302,16 @@ const webpackConfig = {
   ],
   // require 引用入口配置
   resolve: {
+    extensions: ['.vue', '.js', '.json'],
     alias: {
-      src: `${root}/src/`
+      "@": `${root}/src/`,
+      "src": `${root}/src/`
     }
   },
   // 当只有发生错误时打印webpack统计信息
   // stats: 'errors-only',
   // 一些优化
+  // 在mode为production时会自动开启js的tree shaking,但需要满足几个条件:1. babel语法禁止转译为commonjs等 2. 对有副作用的模块或函数在packjson里的sideEffects选项添加数组
   optimization: {
     // 分割js代码块,目的是进行颗粒度更细的打包,将相同的模块提取出来打包这样可以减小包的体积(以前用CommonsChunkPlugin)
     // 1.基础类库：react，react-redux，react-router等等

@@ -2,7 +2,7 @@ import React, { Component, useState } from 'react';
 import { TabBar } from 'antd-mobile';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { navList } from "src/configs/commondata.js";
+import { navList } from "@/configs/commondata.js";
 function FooterNav(props) {
   let [tabList] = useState(navList);
   return (
