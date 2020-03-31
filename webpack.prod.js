@@ -4,6 +4,7 @@
 // 例如glob.sync(path.join(__dirname, './src/*/index.js'))扫描该路径返回符合要求的文件路径数组
 // 匹配规则: 1. * 在单个路径中间匹配一个目录/文件, /* 则表示一个或多个子目录/文件 2. ** 在单个路径中间匹配部分0个或多个目录/文件
 const glob = require('glob');
+const globAll = require('glob-all');
 // 引入webpack
 const webpack = require('webpack');
 // 1. path.join('字段1','字段2'....) 使用平台特定的分隔符把所有的片段链接生成相对路径,遇到..和../时会进行相对路径计算
@@ -42,8 +43,13 @@ const configs = {
   entryPath: path.join(root, 'src/main/index.js'),
   // 打包文件的输出目录
   outputPath: path.join(root, 'dist'),
-  // 用来treeshaking的css文件的路径.(css是对打包后的文件进行tree shaking,并且不适用css modules模式)
-  cssPath: glob.sync(path.join(root, 'dist/*.html')),
+  // 用来treeshaking的css文件的路径.(并且不适用css modules模式)
+  cssPath: globAll.sync([
+    // 入口文件
+    path.join(root, 'src/**/*.js'),
+    // scss文件
+    path.join(root, 'src/**/*.scss')
+  ]),
   // 静态资源引用目录名
   staticFileName: "static",
   // 预编译js文件引用的目录名.
@@ -227,9 +233,11 @@ const webpackConfig = {
     new MiniCssExtractPlugin({
       filename: 'css/[name]_[contenthash:8].css'
     }),
-    // css实现treeshaking(删除无用的css, 对打包后的文件使用, 不适用css modules模式) 需要和MiniCssExtractPlugin配合使用
+    // css实现treeshaking(删除无用的css, 不适用css modules模式) 需要和MiniCssExtractPlugin配合使用
     new PurgecssWebpackPlugin({
-      paths: configs.cssPath
+      paths: configs.cssPath,
+      // whitelist白名单不清除哪些类名, whitelistPatternsChildren白名单选项设置不清除某某开头的类或标签类及子类包裹的样式
+      whitelist: ['html']
     }),
     // css文件压缩(只会对解析后的css文件进行压缩)
     new OptimizeCSSAssetsPlugin({
@@ -302,7 +310,7 @@ const webpackConfig = {
   ],
   // require 引用入口配置
   resolve: {
-    extensions: ['.vue', '.js', '.json'],
+    extensions: ['*', '.vue', '.js', '.json'],
     alias: {
       "@": `${root}/src/`,
       "src": `${root}/src/`

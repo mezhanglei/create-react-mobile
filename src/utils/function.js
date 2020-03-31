@@ -58,3 +58,91 @@ export function EventDefined() {
     })
   }
 }
+
+// 防抖函数(一段时间内没有其他操作才会执行)
+export function debounce(fn) {
+  let timeout = null;
+  return function () {
+    if (timeout !== null) clearTimeout(timeout);
+    timeout = setTimeout(() => {
+      fn.apply(this, arguments);
+    }, 500);
+  };
+}
+
+// 节流函数(一段时间内只能执行一次)
+export function throttle(fn) {
+  let timer = null;
+  return function () {
+    if (!timer) {
+      timer = setTimeout(function () {
+        fn.apply(this, arguments);
+        timer = null;
+      }, 500);
+    }
+  }
+}
+
+// 判断两个对象(数组)是否相等
+export function isObjectEqual(a, b) {
+  let aProps = Object.getOwnPropertyNames(a);
+  let bProps = Object.getOwnPropertyNames(b);
+  if (aProps.length != bProps.length) {
+    return false;
+  }
+  for (let i = 0; i < aProps.length; i++) {
+    let propName = aProps[i]
+    let propA = a[propName]
+    let propB = b[propName]
+    if ((typeof (propA) === 'object')) {
+      if (!this.isObjectEqual(propA, propB)) {
+        return false
+      }
+    } else if (propA !== propB) {
+      return false
+    }
+  }
+  return true
+}
+
+// 获取js数组中字符串的最长公共前缀
+export function longCommonPrefix(strs) {
+  if (strs.length == 0) {
+    return "";
+  }
+  if (strs.length == 1) {
+    return strs[0];
+  }
+
+  // 获取最短长度
+  let minLen = -1, prefix = '', char = '';
+  strs.forEach(ele => {
+    if (minLen == -1) {
+      minLen = ele.length;
+    }
+    else {
+      minLen = ele.length < minLen ? ele.length : minLen;
+    }
+  });
+  if (minLen == 0) {
+    return "";
+  }
+  // 判断是否为前缀
+  for (let i = 0; i < minLen; i++) {
+    char = strs[0][i];
+    // 用于标记该字符是否为前缀
+    let flag = true;
+    for (let j = 1; j < strs.length; j++) {
+      if (strs[j][i] != char) {
+        flag = false;
+      }
+    }
+    if (flag) {
+      prefix += char;
+    }
+    else {
+      return prefix;
+    }
+  }
+  return prefix;
+};
