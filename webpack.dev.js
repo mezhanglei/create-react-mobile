@@ -34,10 +34,8 @@ const configs = {
 
 // eslint的loader配置, 默认配置文件为项目根目录下的.eslintrc.js
 const useEslintLoader = {
-  test: /\.(js|jsx)$/,
-  use: ["babel-loader", "eslint-loader"],
-  // 不会检查node_modules里面的包
-  exclude: /node_modules/
+  loader: 'eslint-loader',
+  // options: {}
 };
 
 // stylelint的plugin配置
@@ -46,7 +44,7 @@ const useStylelintPlugin = new StyleLintPlugin({
   context: path.join(root, 'src'),
   // 1.扫描要检查的文件, 字符串或者数组, 将被glob接收所以支持style/**/*.scss这类语法
   // 2.我们也可以通过在package.json中配置命令的方式(--ext表示扩展名)
-  // files: path.join(root, 'style/**/*.scss'),
+  files: ['src/**/*.{css,sass,scss,less}'],
   // 配置文件的路径
   configFile: path.join(root, './.stylelintrc.js'),
   // 如果为true，则在全局构建过程中发生任何stylelint错误时结束构建过程 所以一般为false
@@ -104,12 +102,16 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.js$/,
+        test: /\.js|jsx$/,
         // babel-loader的核心依赖为@babel/core
-        use: 'babel-loader',
+        use: [
+          'babel-loader',
+          // eslint
+          ...(configs.useEslint ? [useEslintLoader] : [])
+        ],
         // include: path.resolve("src"),
         // 忽略第三方(看第三方包是否需要转译,不需要的话去掉)
-        exclude: /node_modules/,
+        exclude: /node_modules/
       },
       {
         test: /\.css$/,
@@ -182,9 +184,7 @@ module.exports = {
       {
         test: /\.(woff|woff2|eot|ttf|otf)$/,
         use: 'url-loader'
-      },
-      // eslint
-      ...(configs.useEslint ? [useEslintLoader] : [])
+      }
     ]
   },
   plugins: [
@@ -243,7 +243,7 @@ module.exports = {
     // 字符串或数组,表示你提供静态资源的根目录.当你从html通过script引入静态资源时的根目录就是这个
     contentBase: root,
     // 有时无法访问可能是端口被占用
-    port: 8082,
+    port: 8083,
     // 启动webpack-dev-server时的host(设置为0.0.0.0无论是本机ip或127.0.0.1或localhost都会响应请求)
     host: getNetworkIp(),
     // 开启热更新

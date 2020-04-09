@@ -10,8 +10,8 @@
     "dev": "cross-env NODE_ENV=development webpack-dev-server --config webpack.dev.js --open",
     "eslint": "eslint --ext .js --ext .jsx src/",
     "eslint-fix": "eslint --fix --ext .js --ext src/",
-    "csslint": "stylelint src/**/*.scss",
-    "css-fix": "stylelint src/**/*.scss --fix"
+    "csslint": "stylelint src/**/*.{css,scss,less}",
+    "css-fix": "stylelint src/**/*.{css,scss,less} --fix"
   },
   "keywords": [],
   "author": "zhanglei",
