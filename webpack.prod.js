@@ -55,7 +55,9 @@ const configs = {
   // 预编译js文件引用的目录名.
   dllFileName: 'dll',
   // 引入资源路径的公共部分, 这里将所有打包后的相对路径都替换为绝对路径/.
-  publicPath: '/'
+  publicPath: '/',
+  // favicon图标所在的路径
+  faviconPath: path.join(root, 'src/main/favicon.ico')
 }
 // webpack配置内容
 const webpackConfig = {
@@ -286,6 +288,8 @@ const webpackConfig = {
       chunks: ['vendors', 'commons', 'index'],
       // body：script标签位于html文件的 body 底部（同 true）
       inject: true,
+      // 图标的所在路径，最终会被打包到到输出目录
+      favicon: configs.faviconPath,
       minify: {
         // 根据html5规范输入 默认true
         html5: true,

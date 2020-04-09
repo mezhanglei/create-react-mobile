@@ -49,7 +49,7 @@ function saveAs(blob, fileName) {
 }
 
 /**
- * 下载文件并重命名
+ * 通过url链接下载文件并重命名
  * @param {*} url 下载链接
  * @param {*} fileName 文件名
  */

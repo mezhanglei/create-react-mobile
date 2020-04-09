@@ -2,7 +2,7 @@
 // 数组的一些方法
 
 /**
- * 针对[{},{}..]数组对象根据对象中的某个字段进行排序
+ * 针对[{},{}..]数组对象根据对象中的某个字段值进行排序
  * @param {String} attr 属性名
  * @param {bool} asc // 表示升序或降序，默认true升序
  * 使用方式 数组.sort(sortBy('属性名'))
@@ -164,21 +164,6 @@ export function unique(array) {
   }
   return temp;
 }
-
-//利用map和set去重
-// export function unique(arr) {
-//   let map = new Map();
-//   let array = new Array();  // 数组用于返回结果
-//   for (let i = 0; i < arr.length; i++) {
-//     if (map.has(arr[i])) {  // 如果有该key值
-//       map.set(arr[i], true);
-//     } else {
-//       map.set(arr[i], false);   // 如果没有该key值
-//       array.push(arr[i]);
-//     }
-//   }
-//   return array;
-// }
 
 //利用set和三点运算符
 // [...new Set(arr)]

@@ -1,6 +1,6 @@
 
 /**
- * 将时间转换成几分钟，几小时前，几天前，几个月前。
+ * 将时间戳转换成几分钟，几小时前，几天前，几个月前。
  * @param {*} dateTimeStamp 时间戳毫秒数
  */
 export function getDateDiff(dateTimeStamp) {
