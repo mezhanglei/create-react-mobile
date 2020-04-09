@@ -27,15 +27,15 @@ const configs = {
   // 引入资源路径的公共部分, 这里将所有打包后的相对路径都替换为绝对路径/, 这样无论之后发布的ip和端口怎么变, 只要根目录不变则引入静态资源(img等)都不会出错
   publicPath: '/',
   // 输出目录
-  outputPath: path.join(root, 'dist')
+  outputPath: path.join(root, 'dist'),
+  // favicon图标所在的路径
+  faviconPath: path.join(root, 'src/main/favicon.ico')
 };
 
 // eslint的loader配置, 默认配置文件为项目根目录下的.eslintrc.js
 const useEslintLoader = {
-  test: /\.(js|jsx)$/,
-  use: ["babel-loader", "eslint-loader"],
-  // 不会检查node_modules里面的包
-  exclude: /node_modules/
+  loader: 'eslint-loader',
+  // options: {}
 };
 
 // stylelint的plugin配置
@@ -44,12 +44,35 @@ const useStylelintPlugin = new StyleLintPlugin({
   context: path.join(root, 'src'),
   // 1.扫描要检查的文件, 字符串或者数组, 将被glob接收所以支持style/**/*.scss这类语法
   // 2.我们也可以通过在package.json中配置命令的方式(--ext表示扩展名)
-  // files: path.join(root, 'style/**/*.scss'),
+  files: ['src/**/*.{css,sass,scss,less}'],
   // 配置文件的路径
   configFile: path.join(root, './.stylelintrc.js'),
   // 如果为true，则在全局构建过程中发生任何stylelint错误时结束构建过程 所以一般为false
   failOnError: false
 });
+
+// 自动获取可远程访问的ip
+const os = require('os');
+function getNetworkIp() {
+  // 打开的host
+  let needHost = '';
+  try {
+    // 获得网络接口对象
+    let network = os.networkInterfaces();
+    // 遍历网络接口对象得到ipv4且不为127.0.0.1且internal为fasle(可远程访问)的host
+    Object.keys(network).map((item) => {
+      // 遍历每个类型的网络地址列表
+      network[item].map((sub) => {
+        if (sub.family === 'IPv4' && sub.address !== '127.0.0.1' && !sub.internal) {
+          needHost = sub.address;
+        }
+      })
+    })
+  } catch (e) {
+    needHost = 'localhost';
+  }
+  return needHost;
+}
 
 module.exports = {
   // 入口
@@ -66,8 +89,7 @@ module.exports = {
     path: configs.outputPath,
     // 用[name]动态表示打包的名称 名称默认为入口文件指定的键
     filename: '[name].js',
-    // 1. 引入资源路径的公共部分, 这里将所有打包后的相对路径都替换为绝对路径/.
-    // 2. 这里设置了publicPath则devServer里也需要设置publicPath
+    // 引入资源路径的公共部分, 这里将所有打包后的相对路径都替换为绝对路径
     publicPath: configs.publicPath
   },
   // process.env会返回用户的环境变量 process.env.NODE_ENV用来设置当前构建脚本是开发阶段还是生产阶段
@@ -80,12 +102,16 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.js$/,
+        test: /\.js|jsx$/,
         // babel-loader的核心依赖为@babel/core
-        use: 'babel-loader',
+        use: [
+          'babel-loader',
+          // eslint
+          ...(configs.useEslint ? [useEslintLoader] : [])
+        ],
         // include: path.resolve("src"),
         // 忽略第三方(看第三方包是否需要转译,不需要的话去掉)
-        exclude: /node_modules/,
+        exclude: /node_modules/
       },
       {
         test: /\.css$/,
@@ -158,9 +184,7 @@ module.exports = {
       {
         test: /\.(woff|woff2|eot|ttf|otf)$/,
         use: 'url-loader'
-      },
-      // eslint
-      ...(configs.useEslint ? [useEslintLoader] : [])
+      }
     ]
   },
   plugins: [
@@ -180,6 +204,8 @@ module.exports = {
       chunks: ['index'],
       // body：script标签位于html文件的 body 底部（同 true）
       inject: true,
+      // 图标的所在路径，最终会被打包到到输出目录
+      favicon: configs.faviconPath,
       minify: {
         // 根据html5规范输入 默认true
         html5: true,
@@ -214,16 +240,12 @@ module.exports = {
   },
   // 配置webpack的开发服务器
   devServer: {
-    // output中设置了publicPath则devServer里也需要设置publicPath
-    publicPath: configs.publicPath,
     // 字符串或数组,表示你提供静态资源的根目录.当你从html通过script引入静态资源时的根目录就是这个
     contentBase: root,
     // 有时无法访问可能是端口被占用
-    port: 8082,
-    // 设置自定义的host(但当设置useLocalIp打开时必须设置为0.0.0.0或本机ip,否则无法打开)
-    host: '0.0.0.0',
-    // 使用本机ip打开,必须设置host为0.0.0.0或本机ip, 否则无法打开
-    useLocalIp: true,
+    port: 8083,
+    // 启动webpack-dev-server时的host(设置为0.0.0.0无论是本机ip或127.0.0.1或localhost都会响应请求)
+    host: getNetworkIp(),
     // 开启热更新
     hot: true,
     // true启动时和每次保存之后，那些显示的 webpack 包(bundle)信息将被隐藏。错误和警告仍然会显示, 和stats不能一起使用。
@@ -234,7 +256,15 @@ module.exports = {
     // 一切服务都启用gzip 压缩(也可以通过webpack-dev-server --compress启动)
     compress: true,
     // 当使用 HTML5 History API 时，任意的 404 响应都需要替代为该单页面的index.html,如果为多入口文件则需要设置指定的html文件
-    historyApiFallback: true,
+    historyApiFallback: {
+      // 重写路由定位
+      rewrites: [{
+        // 正则匹配路由字段（多入口时一般匹配打包的入口键名: /^\/键名/）
+        from: /.*/g,
+        // 重定向至该入口首页
+        to: `${configs.publicPath}index.html`
+      }]
+    },
     // webpack 使用文件系统(file system)获取文件改动的通知, 但是当在远程进行操作时有可能会出问题,所以需要轮询
     watchOptions: {
       // 重建之前的延迟在此时间段内的改动将被一起聚合在一块重建
@@ -248,8 +278,6 @@ module.exports = {
     https: false,
     // webpack启动或保存时命令行的信息,当配置了quiet或noInfo时，该配置不起作用
     stats: "errors-only",
-    // 本地静态资源访问的公共路径,如果output里设置了这个,则devServer也要设置,否则本地访问不到
-    // publicPath: '/mobile/',
     // 开发环境接口域名代理
     // proxy: {
     //   // 匹配 url 路径的开头

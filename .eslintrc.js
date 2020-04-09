@@ -1,7 +1,7 @@
 module.exports = {
   // 指定eslint的babel解析器(解析jsx语法)
   "parser": "babel-eslint",
-  // 挂载hooks插件用来校验hooks
+  // 使用eslint-lugin-xxxx插件，如果想使用react的一些推荐可以使用eslint-plugin-react
   "plugins": ["react-hooks"],
   // javascript语言类型和风格
   "parserOptions": {
@@ -17,6 +17,7 @@ module.exports = {
   // 运行eslint的环境
   "env": {
     "browser": true,
+    "node": true,
     "es6": true
   },
   // 允许使用的全局变量 不让eslint报错 true表示允许修改 readonly表示只允许读 不允许写 false是不允许读写
@@ -26,43 +27,45 @@ module.exports = {
     "$": true,
     "process": true
   },
-  // "plugins": [
-  //   "react"
-  // ],
+  // 0 - 关闭规则 1 - 开启规则，触发则警告  2 - 开启规则，触发则报错
   "rules": {
-    "eqeqeq": "error",
+    // 强制使用一样的缩进，2空格，还有强制switch 语句中的 case 子句的缩进级别
     "indent": ["error", 2, {
       "SwitchCase": 1
     }],
-    "react-hooks/rules-of-hooks": "error", // 检查 Hook 的规则
-    "react-hooks/exhaustive-deps": "warn", // 检查 effect 的依赖
-    // 0表示允许有声明但未被使用的变量存在
+    // 检查 Hook 的规则
+    "react-hooks/rules-of-hooks": "error",
+    // 检查 effect 的依赖
+    "react-hooks/exhaustive-deps": "warn",
+    // 禁止有声明但是没有使用的变量存在规则
     "no-unused-vars": 0,
-    // 0表示可以使用 ==
+    // 除了null其余比较必须为===或！==而不是==的规则
     "eqeqeq": [0, "allow-null"],
-    // 0表示关闭强制对jsx属性值使用双引号或单引号
+    // 强制对jsx属性值使用双引号或单引号规则
     "jsx-quotes": 0,
-    // 禁止使用多个空格, 否则报错
+    // 禁止使用多个空格规则
     "no-multi-spaces": 2,
     // 禁止在代码行后使用内联注释, 否则报错
     // "no-inline-comments": 2,
-    // 强制分号结尾,否则报错
+    // 强制分号结尾的规则
     "semi": [2, "always"],
-    // 要求操作符周围有空格, 否则报错
+    // 要求操作符周围有空格的规则
     "space-infix-ops": 2,
-    // 禁止模板字符串中的嵌入表达式周围空格的使用, 否则报错
+    // 禁止花括号内空格的规则
     "template-curly-spacing": 2,
-    // 在单行代码块中需要使用空格,否则警告
+    // 禁止或强制在代码块{}中开括号前和闭括号后有空格规则
     "block-spacing": [1, "always"],
     // if while function 后面的{必须与if在同一行，java风格。
     "brace-style": [2, "1tbs", { "allowSingleLine": true }],
-    // 文件末尾强制换行,否则报错
+    // 文件末尾强制换行的规则
     "eol-last": 2,
-    // 在对象字面量中键和冒号之间不允许存在空格, 在冒号和值之间需要空格,否则报错
+    // 在对象字面量中键和冒号之间不允许存在空格, 在冒号和值之间需要空格的规则
     "key-spacing": [2, { "beforeColon": false, "afterColon": true }],
     // 默认使用unix的换行结尾\n,否则警告 vscode编辑器会使用\r\n换行所以要么不使用vscode要么关闭这条规则
     "linebreak-style": [1, "unix"],
-    // 行前/行后备注
-    "lines-around-comment": 0
+    // 禁止使用console规则
+    "no-console": 1,
+    // 禁止使用debugger规则
+    "no-debugger": 1
   }
 }

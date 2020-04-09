@@ -83,7 +83,7 @@ export function throttle(fn) {
   }
 }
 
-// 判断两个对象(数组)是否相等
+// 判断两个对象(包括数组)是否相等
 export function isObjectEqual(a, b) {
   let aProps = Object.getOwnPropertyNames(a);
   let bProps = Object.getOwnPropertyNames(b);

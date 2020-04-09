@@ -15,9 +15,9 @@ module.exports = {
     // 不允许出现多余的 ;
     "no-extra-semicolons": true,
     // 属性必须小写
-    // "property-case": "lower",
+    "property-case": "lower",
     // 文件必须结尾空行
-    "no-missing-end-of-source-newline": "always",
+    // "no-missing-end-of-source-newline": "always",
     // 最大的空行
     "max-empty-lines": 1,
     // 不明属性
