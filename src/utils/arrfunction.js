@@ -33,16 +33,17 @@ export function sortBy(attr, asc) {
  */
 export function popSort(arr) {
   if (arr == null) return arr;
-  for (let i = 0; i < arr.length - 1; i++) {
-    //决定每一轮比较多少次
-    for (let j = 0; j < arr.length - i - 1; j++) {
+  for (var i = 0; i < arr.length - 1; i++) {
+    for (var j = 0; j < arr.length - 1 - i; j++) {
+      // 相邻元素两两对比，元素交换，大的元素交换到后面
       if (arr[j] > arr[j + 1]) {
-        let tmp = arr[j];
+        var temp = arr[j];
         arr[j] = arr[j + 1];
-        arr[j + 1] = tmp;
+        arr[j + 1] = temp;
       }
     }
   }
+  return arr;
 }
 
 /**
@@ -157,6 +158,7 @@ export function unique(array) {
       if (array[i] === array[j]) {
         i++;
         j = i;
+        continue;
       }
     }
     temp.push(array[i]);
