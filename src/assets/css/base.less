@@ -20,7 +20,7 @@ body {
   /* 解决IOS默认滑动卡住的情况,同时不能设置body为overflow:hidden会使界面偏移抖动 */
   -webkit-overflow-scrolling: touch;
   /* 背景颜色 */
-  background: #fff;
+  background: #F5F5F5;
   height: 100vh;
   width: 100%;
 }
@@ -208,4 +208,20 @@ pre {
   white-space: pre-line;
   margin: 0;
   padding: 0;
+}
+
+// 滑动条的样式
+.scroll-bar {
+  &::-webkit-scrollbar-track-piece {
+    background: #d3dce6;
+  }
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #99a9bf;
+    border-radius: 20px;
+  }
 }

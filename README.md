@@ -2,7 +2,16 @@
 
 ## 项目安装和依赖说明
 ```
-基于webpack4.x + react16.12 + redux + react-redux + redux-thunk + ant-design-mobile等的h5开发脚手架(目前正在往里面集成基础功能中)
+说明：基于webpack4.x + react16.12 + redux + react-redux + redux-thunk + ant-design-mobile等的h5开发脚手架(目前正在往里面集成基础功能中)
+依赖：下载项目后在项目根目录运行命令：
+      1. 设置依赖镜像源：
+         如果镜像源为国内淘宝镜像https://registry.npm.taobao.org,则:
+           npm config set registry https://registry.npm.taobao.org
+           或cnpm config set registry https://registry.npm.taobao.org
+           或yarn config set registry https://registry.npm.taobao.org
+         如果镜像源为yarn官方镜像https://registry.yarnpkg.com,则:
+           yarn config set registry https://registry.yarnpkg.com
+      2. 下载所有的依赖： npm install 或 cnpm install 或yarn install
 ```
 ### 项目运行说明
 ```
@@ -13,9 +22,9 @@ npm run eslint 检查js规范
 npm run csslint 检查css规范
 ```
 
-### 脚手架功能说明
+### 脚手架功能说明(通过mddir插件获取树)
 ```
-等待脚手架目录功能说明
+现在已支持单/多页面,具体使用说明下次更新
 ```
 ### css约定规则（若是没有使用CSS module）
 ```
@@ -35,5 +44,5 @@ npm run csslint 检查css规范
 ### image和background背景等静态资源在vue中引入规则(配置src文件夹的别名为@)
 ```
 1. 在js文件中require('@/文件相对于src的路径')或import * from('@/文件相对于src的路径')形式
-2. css文件中,例如background: url('@/文件相对于src的路径');
+2. css文件中, 例如background: url('图片的相对路径');
 ```

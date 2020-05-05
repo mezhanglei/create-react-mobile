@@ -29,8 +29,8 @@ module.exports = {
   },
   // 0 - 关闭规则 1 - 开启规则，触发则警告  2 - 开启规则，触发则报错
   "rules": {
-    // 强制使用一样的缩进，2空格，还有强制switch 语句中的 case 子句的缩进级别
-    "indent": ["error", 2, {
+    // 强制使用一样的缩进, 还有强制switch 语句中的 case 子句的缩进级别
+    "indent": ["error", 4, {
       "SwitchCase": 1
     }],
     // 检查 Hook 的规则
@@ -45,16 +45,16 @@ module.exports = {
     "jsx-quotes": 0,
     // 禁止使用多个空格规则
     "no-multi-spaces": 2,
-    // 禁止在代码行后使用内联注释, 否则报错
-    // "no-inline-comments": 2,
+    // 禁止在代码行后使用内联注释规则
+    "no-inline-comments": 0,
     // 强制分号结尾的规则
     "semi": [2, "always"],
     // 要求操作符周围有空格的规则
     "space-infix-ops": 2,
     // 禁止花括号内空格的规则
-    "template-curly-spacing": 2,
+    "template-curly-spacing": 0,
     // 禁止或强制在代码块{}中开括号前和闭括号后有空格规则
-    "block-spacing": [1, "always"],
+    "block-spacing": [0, "always"],
     // if while function 后面的{必须与if在同一行，java风格。
     "brace-style": [2, "1tbs", { "allowSingleLine": true }],
     // 文件末尾强制换行的规则
@@ -62,7 +62,7 @@ module.exports = {
     // 在对象字面量中键和冒号之间不允许存在空格, 在冒号和值之间需要空格的规则
     "key-spacing": [2, { "beforeColon": false, "afterColon": true }],
     // 默认使用unix的换行结尾\n,否则警告 vscode编辑器会使用\r\n换行所以要么不使用vscode要么关闭这条规则
-    "linebreak-style": [1, "unix"],
+    "linebreak-style": [0, "unix"],
     // 禁止使用console规则
     "no-console": 1,
     // 禁止使用debugger规则

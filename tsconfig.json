@@ -1,0 +1,24 @@
+{
+    "compilerOptions": {
+        "outDir": "./dist/",
+        "moduleResolution": "node",
+        "allowSyntheticDefaultImports": true,
+        "sourceMap": true,
+        "noImplicitAny": true,
+        "target": "es6",
+        "jsx": "react",
+        "allowJs": true,
+        "declaration": true,
+        "baseUrl": "./",
+        "paths": {
+            "@/*": [
+                "src/*",
+                "src/*/index.js"
+            ]
+        }
+    },
+    "exclude": [
+        "node_modules",
+        "dist"
+    ]
+}

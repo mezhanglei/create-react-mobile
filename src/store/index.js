@@ -1,7 +1,11 @@
-// applyMiddlewares将多个中间件合并起来返回一个dsipatch被重写的新的store
-// createStore 创建一个store实例
-// bindActionCreator调用函数bindActionCreators(actionCreators, store.dispatch)就可以实现store在组件及其子组件执行dispatch方法,一般通过全局导入store来代替
-// combineReducers合并多个reducer 返回新的state
+/**
+ * react状态管理入口文件
+ * applyMiddlewares: 将多个中间件合并起来返回一个dsipatch被重写的新的store
+ * createStore: 创建一个store实例
+ * bindActionCreator: 调用函数bindActionCreators(actionCreators, store.dispatch)就可以实现store在组件及其子组件执行dispatch方法,一般通过全局导入store来代替
+ * combineReducers: 合并多个reducer 返回新的state
+ */
+
 import { createStore, applyMiddleware, combineReducers } from 'redux'
 // 日志中间件,仅在开发环境下使用,必须放在最后
 import logger from 'redux-logger'
@@ -34,12 +38,11 @@ export default store
  * 2. 合并多个reducer
  * 3. redux的createStore方法实例化一个store
  * 4.使用Provider组件包裹根组件, 从外部封装了整个应用，并向connect高阶组件传递store中的信息,
- * 5.在目标组件中的使用connect方法和参数说明:
- *   (1)使用connect方法包裹目标组件, 通过传相应的参数, 来获取store传过来的props: connect(mapStateToProps, ...)(PrivateRoute)
- *   (2) 参数说明如下
+ * 5.在目标组件中的使用connect方法(获取store传过来的props): connect(mapStateToProps, 其他参数)(目标组件)
  */
 
-/**connect的第一个参数:
+// connect方法参数说明如下：
+/**connect的第一个参数(必填):
  * 将store中的state数据作为props绑定到目标组件上供目标组件及子组件访问
  * state: store中的state数据
  * ownProps: connect的组件中自己的props, 即父组件传给它的所有props
@@ -52,7 +55,7 @@ export default store
 //   }
 // }
 
-/**connect的第二个参数
+/**connect的第二个参数(非必填)
 * 将dispatch(action)的方法通过props传给组件或子组件调用
 * @param {*} dispatch store的dispatch方法
 * @param {*} ownProps connect的组件中自己的props, 即父组件传给它的所有props
@@ -69,7 +72,7 @@ export default store
 // }
 
 /**
-* connect第三个参数(可省略)
+* connect第三个参数(非必填)
 * 合并传入的state, dispatch, 和自身的props为一个对象传给目标组件
 * 默认方式:Object.assign()
 * const = mergeProps = (stateProps, dispatchProps, ownProps) => {
@@ -78,7 +81,7 @@ export default store
 */
 
 /**
-* connect方法第四个参数(可省略), 默认值{pure: true, withRef: false}
+* connect方法第四个参数(非必填), 默认值{pure: true, withRef: false}
 * 当pure为true时shouldComponentUpdate 并且浅对比 mergeProps 的结果, 如果没变化就不更新(所以通常将withRouter放在最外面, props会变化)
 * 当withRef为true时, 会保存一个对被包装组件实例的引用，该引用通过 getWrappedInstance() 方法获得
 */
