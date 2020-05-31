@@ -1,7 +1,7 @@
 "use strict";
 
 // 根据目标字符串自动匹配来动态扫描目标文件返回符合要求的文件路径数组,glob只能扫描一个,如果要同时扫描多个路径请使用glob-all
-// 匹配规则: 1. * 在单个路径中间匹配一个目录/文件, /* 则表示一个或多个子目录/文件 2. ** 在单个路径中间匹配部分0个或多个目录/文件
+// 匹配规则: 1. * 在单个路径中间匹配一个目录/文件(不会匹配路径分隔符/), /* 则表示一个或多个子目录/文件 2. ** 在单个路径中间匹配部分0个或多个目录/文件
 const glob = require("glob");
 const globAll = require("glob-all");
 // 引入webpack
@@ -28,10 +28,10 @@ const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const TerserWebpackPlugin = require("terser-webpack-plugin");
 // 实现css的treeshaking 将没有用到的css做擦除 需要和MiniCssExtractPlugin配合使用
 // const PurgecssWebpackPlugin = require("purgecss-webpack-plugin");
-// 通过CopyWebpackPlugin将目标文件夹里的静态资源拷贝到目标文件夹(不经过webpack的处理, 但需要手动引入)
+// 通过CopyWebpackPlugin将目标文件夹里的静态资源拷贝到目标文件夹
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 // 引入配置
-const configs = require('./config.js');
+const configs = require('./configs.js');
 // webpack的plugins选项配置(其中元素不能为空)
 let plugins = [];
 
@@ -47,100 +47,13 @@ const pxToRemLoader = {
     },
 };
 
-// 获取所有入口js文件, 返回一个对象
-const getEntry = () => {
-    let entries = {};
-    // 首先匹配单/多页面所在的入口js文件路径, 返回一个数组
-    const entryFiles = glob.sync(path.join(configs.pagesRoot, `./*/index.js`));
-    // 遍历数组
-    Object.keys(entryFiles)
-        .map((item) => {
-            // 文件路径
-            const entryFile = entryFiles[item];
-            // 注意: 如果修改了页面入口文件路径,正则表达式字符串也要做相应更改
-            // 正则匹配该页面所在的文件夹名字
-            const match = entryFile.match(/src\/pages\/(.*)\/index\.js/);
-            // 取出文件夹名作为页面入口的键名
-            const pageName = match && match[1];
-            entries[pageName] = entryFile;
-        });
-    return entries;
-};
-const entryObj = getEntry();
-
-// 获取所有入口html文件, 返回一个对象
-const getHtml = () => {
-    let entries = {};
-    // 首先匹配单/多页面所在的入口html文件路径, 返回一个数组
-    const entryFiles = glob.sync(path.join(configs.pagesRoot, `./*/index.html`));
-    // 遍历数组
-    Object.keys(entryFiles)
-        .map((item) => {
-            // 文件路径
-            const entryFile = entryFiles[item];
-            // 注意: 如果修改了页面入口文件路径,正则表达式字符串也要做相应更改
-            // 正则匹配该页面所在的文件夹名字
-            const match = entryFile.match(/src\/pages\/(.*)\/index\.html/);
-            // 取出文件夹名作为页面入口的键名
-            const pageName = match && match[1];
-            entries[pageName] = entryFile;
-        });
-    return entries;
-};
-
 // 生成html的plugin配置,返回HtmlWebpackPlugin数组
 const HtmlPlugins = () => {
-    // 入口文件对象
-    const entries = getHtml();
-    const HtmlWebpackPlugins = Object.keys(entries).map((item, index) => {
-        return new HtmlWebpackPlugin({
-            // title: '生成的html文档的标题',
-            // 指定输出的模板html名称(这里是用html模板所在的文件夹名)
-            filename: `${item}.html`,
-            // html模板所在的位置
-            template: entries[item],
-            // 不能与template共存，也可以指定html字符串
-            // templateContent: string|function,
-            // 默认引用所有的js文件(包括splitchunk分割的包以及该页面所在的入口js文件名)
-            chunks: ["vendors", "common", item],
-            // 跳过一个块
-            // excludeChunks: [],
-            // 注入静态资源的位置:
-            //    1. true或者body：所有JavaScript资源插入到body元素的底部
-            //    2. head： 所有JavaScript资源插入到head元素中
-            //    3. false：所有静态资源css和JavaScript都不会注入到模板文件中
-            inject: true,
-            // 图标的所在路径，最终会被打包到到输出目录
-            favicon: configs.faviconPath,
-            // 注入meta标签，例如{viewport: 'width=device-width, initial-scale=1, shrink-to-fit=no'}
-            // meta: {},
-            // 注入base标签。例如base: "https://example.com/path/page.html
-            // base: false,
-            minify: {
-                // 根据html5规范输入 默认true
-                html5: true,
-                // 是否对大小写敏感 默认false
-                caseSensitive: false,
-                // 删除空格换行 默认false
-                collapseWhitespace: true,
-                // 当标记之间的空格包含换行符时，始终折叠为1换行符（从不完全删除它）。collapseWhitespace=true, 默认false
-                preserveLineBreaks: false,
-                // 压缩link进来的本地css文件 默认false,需要和clean-css一起使用
-                minifyCSS: false,
-                // 压缩script内联的本地js文件 默认false,为true需要和teserwebpackplugin一起使用
-                minifyJS: true,
-                // 移除html中的注释 默认false
-                removeComments: true
-            },
-            // 如果为true则为所有的script引入和css引入添加唯一的hash值
-            // hash: false,
-            // 错误详细信息将写入html
-            // showErrors: true,
-        });
-    });
-    return HtmlWebpackPlugins;
+    return configs.htmlConfigs.map(item => {
+        return new HtmlWebpackPlugin(item);
+    })
 };
-if(HtmlPlugins() && HtmlPlugins().length > 0) {
+if (HtmlPlugins() && HtmlPlugins().length > 0) {
     plugins.push(...HtmlPlugins());
 }
 
@@ -152,21 +65,21 @@ const dllArr = configs.manifestPathArr.map((path) => {
         manifest: require(path),
     });
 });
-if(dllArr && dllArr.length > 0) {
+if (dllArr && dllArr.length > 0) {
     plugins.push(...dllArr);
 }
 
 // webpack体积分析插件使用
-if(configs.isAnalyz) {
-    plugins.push(new BundleAnalyzerPlugin())
+if (configs.isAnalyz) {
+    plugins.push(new BundleAnalyzerPlugin());
 }
 
 // webpack配置内容
 const webpackConfig = {
-    // 1. 如果入口文件为一个对象且有多条数据,则会打包进入多个html文件
-    // 2. 如果入口文件为一个对象且只有一条数据(数组或字符串), 则打包后插入一个html
-    entry: entryObj,
-    // 查找解析入口文件entry所在的根目录文件夹, 默认为项目的根目录
+    // 对象语法： 1. 当有多条数据，则会打包生成多个依赖分离的入口js文件
+    // 2. 对象中的值为路径字符串数组或路径字符串，会被打包到该条数据对应生成的入口js文件
+    entry: configs.entries,
+    // 解析的起点, 默认为项目的根目录
     context: configs.root,
     // 输出(默认只能打包js文件,如果需要打包其他文件,需要借助相对应的loader)
     output: {
@@ -178,7 +91,7 @@ const webpackConfig = {
         filename: "js/[name]_[chunkhash:8].js",
         // chunkFilename用来打包require.ensure方法中引入的模块,如果该方法中没有引入任何模块则不会生成任何chunk块文件
         // chunkFilename: 'js/[name]_[chunkhash:8].js'
-        // 所有静态资源引用的路径(绝对路径或者相对路径，这里采用相对路径所以默认为空)
+        // 所有静态资源引用的公共绝对路径
         publicPath: configs.publicPath,
     },
     // 让项目中通过es6等模块规范引入的文件不打包到最终的包里, 而是通过script标签引入(与这个有相同功能的就是dll)
@@ -215,7 +128,7 @@ const webpackConfig = {
                             // 不使用默认的配置路径
                             babelrc: false,
                             // 配置新的babelrc路径
-                            extends: path.join(configs.root, './.babelrc'),
+                            extends: configs.babelPath,
                             // 开启babel-loader缓存的参数
                             cacheDirectory: true
                         }
@@ -254,8 +167,8 @@ const webpackConfig = {
                     "css-loader",
                     pxToRemLoader,
                     // 提供一种用js来处理css方法,抽象成语法树结构,一般不单独使用
-            		// 1. 在postcss.config.js导出autoprefixer用来自动添加前缀,在cssloader之后执行
-            		// 2. 然后在package.json里设置borowserslist选项来设置浏览器兼容版本
+                    // 1. 在postcss.config.js导出autoprefixer用来自动添加前缀,在cssloader之后执行
+                    // 2. 然后在package.json里设置borowserslist选项来设置浏览器兼容版本
                     "postcss-loader",
                     {
                         loader: "less-loader",
@@ -304,31 +217,34 @@ const webpackConfig = {
                             // 图片和字体都使用hash值
                             name: "img/[name]_[hash:8].[ext]",
                             // 小于20k全部打包成base64进入页面
-                            limit: 20 * 1024,
+                            limit: 0.001 * 1024,
+                            // 默认超出后file-loader
+                            fallback: "file-loader"
                         },
                     },
-                    {
-                        loader: "image-webpack-loader",
-                        options: {
-                            mozjpeg: {
-                                progressive: true,
-                                quality: 65,
-                            },
-                            optipng: {
-                                enabled: false,
-                            },
-                            pngquant: {
-                                quality: [0.65, 0.9],
-                                speed: 4,
-                            },
-                            gifsicle: {
-                                interlaced: false,
-                            },
-                            webp: {
-                                quality: 75,
-                            },
-                        },
-                    },
+                    // {
+                    //     // yarn官方镜像依赖丢失不可用，淘宝镜像正常
+                    //     loader: "image-webpack-loader",
+                    //     options: {
+                    //         mozjpeg: {
+                    //             progressive: true,
+                    //             quality: 65,
+                    //         },
+                    //         optipng: {
+                    //             enabled: false,
+                    //         },
+                    //         pngquant: {
+                    //             quality: [0.65, 0.9],
+                    //             speed: 4,
+                    //         },
+                    //         gifsicle: {
+                    //             interlaced: false,
+                    //         },
+                    //         webp: {
+                    //             quality: 75,
+                    //         },
+                    //     },
+                    // }
                 ],
             },
             {
@@ -347,19 +263,15 @@ const webpackConfig = {
     },
     // 插件
     plugins: [
-        // 自动加载模块，而不必用import或require
+        // 暴露模块为全局模块，在全局都可以使用，而不必使用时import或require
         // 如果加载的模块没有使用，则不会被打包
-        // 加载的模块为全局模块，在全局都可以使用
         // new webpack.ProvidePlugin({
         // 	React: "react",
         // 	ReactDOM: "react-dom",
         // 	ReactRouter: "react-router",
         // }),
         // 设置项目的全局变量,String类型, 如果值是个字符串会被当成一个代码片段来使用, 如果不是,它会被转化为字符串(包括函数)
-        new webpack.DefinePlugin({
-            // 资源引用的公共路径字符串
-        	"process.env.PUBLIC_PATH": JSON.stringify(configs.publicPath)
-        }),
+        new webpack.DefinePlugin(configs.globalDefine),
         // 清理dsit目录
         new CleanWebpackPlugin(),
         // 统计信息提示插件(比如错误或者警告会用带颜色的字体来显示,更加友好)
@@ -377,7 +289,7 @@ const webpackConfig = {
         // css文件压缩(只会对解析后的css文件进行压缩)
         new OptimizeCSSAssetsPlugin({
             assetNameRegExp: /\.css$/g,
-            // 依赖于cssnano压缩 但cssnano和css-loader都会将scale3d(1,1,1)转换为scalex(1) 可以通过js来设置style规避问题
+            // 依赖于cssnano, 但cssnano和css-loader都会将scale3d(1,1,1)转换为scalex(1) 可以通过js来设置style规避问题
             cssProcessor: require("cssnano"),
             cssProcessorOptions: {
                 // 避免cssnano重新计算css
@@ -395,20 +307,16 @@ const webpackConfig = {
         ])
     ].concat(plugins),
     // require 引用入口配置
-    resolve: {
-        extensions: [".vue", ".js", ".json"],
-        alias: configs.alias
-    },
+    resolve: configs.resolve,
     // 当只有发生错误时打印webpack统计信息
     // stats: 'errors-only',
-    // 一些优化
-    // 在mode为production时会自动开启js的tree shaking,但需要满足几个条件:1. babel语法禁止转译为commonjs等 2. 对有副作用的模块或函数在packjson里的sideEffects选项添加数组
+    // 优化项
     optimization: {
         // 分割js代码块,目的是进行颗粒度更细的打包,将相同的模块提取出来打包这样可以减小包的体积(以前用CommonsChunkPlugin)
         // 1.基础类库：react，react-redux，react-router等等
         // 2.UI库：antd，antd-icons
         // 3.公共组件库：自定义的公共组件
-        // 4.其他业务代码(react和vue提供了分包策略,不需要这个)
+        // 4.页面(react和vue提供了分包策略,不需要这个)
         splitChunks: {
             // 打包的库或者文件必须大于这个字节才会进行拆分
             minSize: 0,
@@ -429,13 +337,13 @@ const webpackConfig = {
                     // 默认true时，该组复用引用的其他chunk，false时则不会复用而是重新创建一个新chunk
                     reuseExistingChunk: false,
                 },
-                // 不同的入口文件公用的包
+                // 不同的html公用的包
                 common: {
                     // 打包的chunks名，最终打包名称为${cacheGroup的key} ${automaticNameDelimiter} ${chunk的name},可以自定义
                     name: "common",
                     // 同时分割同步和异步代码，这里选择打包同步代码
                     chunks: "initial",
-                    // 至少在两个入口文件中引用过，默认为1
+                    // 至少在两个html中引用过，默认为1
                     minChunks: 2,
                     // 提取的优先级顺序 一般基础包先提取 基础包提取完后再进行commons的提取 防止提取的区域重合
                     priority: -10,
@@ -444,9 +352,16 @@ const webpackConfig = {
         },
         // 默认true，表示启用压缩代码
         minimize: true,
-        // runtimeChunk: {
-
-        // },
+        // 默认启用 确定提供哪些导出
+        providedExports: true,
+        // 默认启用，确定每个模块的导出
+        usedExports: true,
+        // 默认false，为true时在tree shaking的时候，跳过package.json里的sideEffects选项中的模块
+        sideEffects: true,
+        // 从原js分割出来的包的模块信息和运行时打包出来，并需要htmlwebpackplugin里的chunks引入，目的是为了使分割出来的包和原js之间改动不会相互影响hash值
+        runtimeChunk: {
+            name: entrypoint => `runtime~${entrypoint.name}`
+        },
         // (构建过程)多进程多实例并行压缩,(以前使用uglifyjs-webpack-plugin)
         minimizer: [
             new TerserWebpackPlugin({

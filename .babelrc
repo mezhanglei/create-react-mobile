@@ -9,7 +9,7 @@
     [
       "@babel/preset-env",
       {
-        // 不将将ES6模块语法转换为其他模块类型(例如commonjs)的功能，以便使用tree shaking、sideEffects等
+        // 不将ES6模块语法转换为其他模块类型(例如commonjs)的功能，tree shaking禁止转译其他类型
         "modules": false,
         // 1. false默认值, 默认不引入@babel/polyfill
         // 2. "entry" 表示全部引入, 会多加几百kb包大小, 需要额外引入操作.
@@ -44,7 +44,12 @@
     // 异步加载语法解析插件,解析import().then()这种语法
     "@babel/plugin-syntax-dynamic-import",
     // 用来编译类,loose为true表示编译成赋值表达式
-    ["@babel/plugin-proposal-class-properties", { "loose": false }],
+    [
+      "@babel/plugin-proposal-class-properties",
+      {
+        "loose": false
+      }
+    ],
     // babel-plugin-import配置类库按需加载
     [
       "import",

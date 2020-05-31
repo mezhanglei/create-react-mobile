@@ -10,8 +10,8 @@ import "@/assets/css/index.less";
 import FastClick from "fastclick";
 FastClick.attach(document.body);
 ReactDOM.render(
-	<Provider store={store}>
-		<App />
-	</Provider>,
-	document.getElementById("root")
+    <Provider store={store}>
+        <App />
+    </Provider>,
+    document.getElementById("root")
 );

@@ -10,15 +10,15 @@ const path = require("path");
 const webpack = require("webpack");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 // 引入配置
-const configs = require('./config.js');
+const configs = require('./configs.js');
 
 module.exports = {
     // 入口文件
     entry: {
-        // 键为抽取后的js文件名称, 数组中如果为node_modules文件夹里的包,则直接写名, 如果是其他位置的包则写入路径(绝对路径)
-        base: ['react']
+        // 数组中如果为node_modules文件夹里的包,则直接写名, 如果是其他位置的包则写入路径(绝对路径)
+        base: []
     },
-    // 查找解析入口文件entry所在的根目录文件夹, 默认为项目的根目录
+    // 解析的起点, 默认为项目的根目录
     context: configs.root,
     // 输出文件
     output: {
@@ -39,7 +39,7 @@ module.exports = {
             // 生成的json文件路径
             path: path.join(configs.dllOutputPath, "[name]_manifest.json"),
             name: "[name]_[hash:8]",
-            // 上下文环境路径, 必填，为了与DllReferencePlugin存在与同一上下文中）
+            // 解析的起点, 必填，为了与DllReferencePlugin存在与同一上下文中）
             context: configs.root
         })
     ]

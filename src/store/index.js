@@ -6,19 +6,19 @@
  * combineReducers: 合并多个reducer 返回新的state
  */
 
-import { createStore, applyMiddleware, combineReducers } from 'redux'
+import { createStore, applyMiddleware, combineReducers } from 'redux';
 // 日志中间件,仅在开发环境下使用,必须放在最后
-import logger from 'redux-logger'
+import logger from 'redux-logger';
 // 异步分发action中间件
-import thunk from 'redux-thunk'
-import { userReducer } from './reducers/user.js'
+import thunk from 'redux-thunk';
+import { userReducer } from './reducers/user.js';
 // 多个reducer合并, 每个reducer都代表一个模块, 访问state中的值需要去要访问对应模块下面的state
 const RootReducer = combineReducers({
     userModule: userReducer
-})
+});
 // applyMiddleware可以作为第二个参数也可以作为第三个参数
-let store = createStore(RootReducer, applyMiddleware(thunk, logger))
-export default store
+let store = createStore(RootReducer, applyMiddleware(thunk, logger));
+export default store;
 
 /**
  * 不结合react-redux使用
@@ -26,7 +26,7 @@ export default store
  * 2. 合并多个reducer
  * 3. redux的createStore方法实例化一个store
  * 4. 引入store
- * 5. 在组件中创建个订阅函数可以监听到state值: const fn = () => { store.getState()获取所有的state }, 通过store.subscribe(fn) 监听state变化
+ * 5. 在组件中创建个订阅函数可以监听到state值: const fn = () => { store.getState() }, 通过store.subscribe(fn) 监听state变化
  * 6. 通过store.dispatch(action对象)来更新store最新数据
  * 7. 组件卸载时调用卸载方法: store.unsubscribe(fn)
  */
@@ -64,7 +64,7 @@ export default store
 */
 // const mapDispatchToProps = (dispatch, ownProps) => {
 //   return {
-      //  newState表示要更新的值
+//  newState表示要更新的值
 //     方法名: newState => {
 //       dispatch(action对象或返回action的函数)
 //     }
