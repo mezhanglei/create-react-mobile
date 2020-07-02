@@ -22,7 +22,7 @@ npm run eslint 检查js规范
 npm run csslint 检查css规范
 ```
 
-### 脚手架功能说明(通过mddir插件获取树)
+### 脚手架功能说明(mddir)
 ```
 现在已支持单/多页面,具体使用说明下次更新
 ```

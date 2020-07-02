@@ -1,4 +1,4 @@
-import { formatFloat } from './base-utils.js'
+import { formatFloat } from './base-utils.js';
 
 //===时间格式化操作===//
 
@@ -47,7 +47,7 @@ export function getYMD(time) {
     m = m < 10 ? '0' + m : '' + m;
     let d = newDate.getDate() < 10 ? '0' + newDate.getDate() : '' + newDate.getDate();
     let ymd = y + m + d;
-    return ymd
+    return ymd;
 }
 
 /**
@@ -129,7 +129,7 @@ export function getDateDiff(time, name) {
         name: "year",
         label: '年前',
         value: 1000 * 60 * 60 * 24 * 30 * 12
-    }]
+    }];
     let result = [];
     opt.forEach(item => {
         let count = diffValue / item.value || 0;
@@ -140,7 +140,7 @@ export function getDateDiff(time, name) {
                     name: item.name,
                     value: item.value,
                     text: formatFloat(count) + item.label
-                })
+                });
             }
             // 如果name有值则只返回指定name的时间单位
         } else if (name instanceof Array && name.length > 0) {
@@ -149,15 +149,15 @@ export function getDateDiff(time, name) {
                     name: item.name,
                     value: item.value,
                     text: formatFloat(count) + item.label
-                })
+                });
             }
         }
-    })
+    });
     if (result && result.length > 0) {
         const recent = result[result.length - 1];
         return recent.text;
     } else {
-        return "刚刚"
+        return "刚刚";
     }
 }
 
@@ -183,26 +183,27 @@ export function getDateList(startTime, endTime, fmt = 'YYYY-MM-DD') {
     // 注意set方法: 设置当前时间跨度下的0-n(年/月/日/时/分/秒)加上当前的具体时间,返回时间戳
     const rules = [{
         type: 'YYYY',
-        setName: "setFullYear",
-        getName: "getFullYear",
+        setName: 'setFullYear',
+        getName: 'getFullYear',
         length: end.getFullYear() - start.getFullYear() + 1
     }, {
         type: 'YYYY-MM',
-        setName: "setMonth",
-        getName: "getMonth",
+        setName: 'setMonth',
+        getName: 'getMonth',
         length: (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth()) + 1
     }, {
         type: 'YYYY-MM-DD',
-        setName: "setDate",
-        getName: "getDate",
+        setName: 'setDate',
+        getName: 'getDate',
+        // 此为start的零点到end的24点跨度，如果是日期都为零点则需要加1
         length: Math.ceil((end.getTime() - start.getTime()) / (1000 * 24 * 60 * 60))
-    }]
+    }];
 
     // 获取的时间数组
     let timeArr = [];
 
     // 当前操作的对象
-    rules.map(item => {
+    rules.map((item) => {
         if (item.type === fmt) {
             // 时间跨度
             const length = item.length;
@@ -210,11 +211,15 @@ export function getDateList(startTime, endTime, fmt = 'YYYY-MM-DD') {
             timeArr = new Array(length);
             timeArr[0] = dateFormat(start, fmt);
             for (let i = 1; i < length; i++) {
+                // 在31号使用setMonth会跳过一个月，必须先使用setDate初始化第一天
+                if (item.type === 'YYYY-MM') {
+                    start.setDate(1);
+                }
                 start[item.setName](start[item.getName]() + 1);
                 timeArr[i] = dateFormat(start, fmt);
             }
         }
-    })
+    });
     return timeArr;
 }
 
@@ -232,15 +237,15 @@ export function isWorkDate(time, { workDays = [], holidays = [] } = {}) {
     if (!getNewDate(time)) {
         return null;
     }
-    let newDate = getNewDate(time)
+    let newDate = getNewDate(time);
     // 将节假日数组和目标日期全部转为同等格式便于比较
     let ymd = getYMD(time);
     holidays = holidays.map(item => {
         return getYMD(item);
-    })
+    });
     workDays = workDays.map(item => {
         return getYMD(item);
-    })
+    });
     // 判断是不是调休工作日
     if (workDays.indexOf(ymd) > -1) {
         return true;
@@ -289,8 +294,8 @@ export function countWorkDay(startTime, endTime, { workDays = [], holidays = [] 
     let last = end.getTime();
     let count = 0;
     const T = 24 * 60 * 60 * 1000;
-    for (i = first; i <= last; i += T) {
-        let date = new Date(first);
+    for (let i = first; i <= last; i += T) {
+        let date = new Date(i);
         //判断是否为工作日
         if (isWorkDate(date, { workDays, holidays })) {
             count++;

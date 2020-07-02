@@ -78,13 +78,13 @@ export function singleToMultiple(array, num) {
 }
 
 /**
- * 根据数组中对象的某一个字段,字段值相同的多个对象选择出来组成数组, 成为新对象的一个元素
+ * 根据数组中的某个字段值，相同的嵌套在一起，不同的分开
  * @param {Array} array
- * @param {String} dependendStr 新对象中用来区分不同类型的字段
- * @param {String} childrenStr 新对象中用来存放相同类型数据组成的数组的字段
- * @param {Array} other 新的对象所需要的其他字段, 格式例如['str1', 'str2', 'str3']
+ * @param {String} dependName 用来区分的字段名
+ * @param {String} childName 嵌套的子元素字段名
+ * @param {Array} otherName 数组一维需要添加的字段
  */
-export function arrGroupByAtrr(array, dependendStr, childrenStr, other) {
+export function arrGroupByAtrr(array, { dependName = 'id', childName = 'children', otherName = [] } = {}) {
     // 缓存内容，用来判断是否存在这个相同的类型
     let newObj = {};
     // 最终需要的数组格式
@@ -92,26 +92,26 @@ export function arrGroupByAtrr(array, dependendStr, childrenStr, other) {
     array &&
         array.map((item) => {
             // 如果是一条新数据则创建一条
-            if (!newObj[item[dependendStr]]) {
+            if (!newObj[item[dependName]]) {
                 // 组合嵌套完成的对象
                 let getObj = {};
                 // 添加区分字段
-                getObj[dependendStr] = item[dependendStr];
+                getObj[dependName] = item[dependName];
                 // 添加嵌套的子数组字段
-                getObj[childrenStr] = [item];
+                getObj[childName] = [item];
                 // 添加需要的其他字段
-                other.map(str => {
+                otherName.map((str) => {
                     getObj[str] = item[str];
                 });
                 // 将嵌套好的对象添加进新数组
                 newArr.push(getObj);
-                newObj[item[dependendStr]] = item;
+                newObj[item[dependName]] = item;
                 // 如果已经存在同类型的则添加到同类型的对象下
             } else {
                 newArr &&
                     newArr.map((sub) => {
-                        if (sub[dependendStr] === item[dependendStr]) {
-                            sub[childrenStr].push(item);
+                        if (sub[dependName] === item[dependName]) {
+                            sub[childName].push(item);
                         }
                     });
             }
@@ -159,7 +159,7 @@ export function formaterData(data, attrObj = { label: 'key' }, children = 'child
         // 遍历旧属性数组更改属性名
         const keys = Object.keys(attrObj);
         keys.map((key) => {
-            newObj[attrObj[key]] = item[key] || '';
+            newObj[attrObj[key]] = item[key];
         });
         // 判断是否有嵌套数组, 有的话也同样执行
         if (Object.prototype.toString.call(item[children]) === '[object Array]' && item[children].length > 0) {
@@ -175,10 +175,10 @@ export function formaterData(data, attrObj = { label: 'key' }, children = 'child
  * @param {*} len 数组长度
  */
 export function createArrayByLen(len) {
-    return [...new Array(len).keys()]
+    return [...new Array(len).keys()];
 }
 
-// 获取js数组中字符串的最长公共前缀
+//; 获取js数组中字符串的最长公共前缀
 export function longCommonPrefix(strs) {
     if (strs.length == 0) {
         return "";

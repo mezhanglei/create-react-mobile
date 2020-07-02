@@ -14,6 +14,7 @@ class DragResize extends Component {
     }
 
     componentDidMount() {
+        // false事件冒泡(从里到外依次触发)，true事件捕获（从外到里依次触发）
         document.addEventListener('mousedown', this.doDown, false);
         document.addEventListener('mousemove', this.doMove, false);
         document.addEventListener('mouseup', this.doUp, false);

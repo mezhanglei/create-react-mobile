@@ -69,7 +69,7 @@ const routes = [
         exact: true,
         meta: {
             title: "个人中心",
-        },
+        }
     }
 ];
 

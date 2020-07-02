@@ -32,8 +32,9 @@ const TerserWebpackPlugin = require("terser-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 // 引入配置
 const configs = require('./configs.js');
-// webpack的plugins选项配置(其中元素不能为空)
-let plugins = [];
+
+
+// === webpack的loader扩展 === //
 
 // px2rem-loader的配置
 const pxToRemLoader = {
@@ -47,15 +48,15 @@ const pxToRemLoader = {
     },
 };
 
+
+// === webpack的plugins扩展(plugins中不允许空值存在) === //
+
 // 生成html的plugin配置,返回HtmlWebpackPlugin数组
 const HtmlPlugins = () => {
     return configs.htmlConfigs.map(item => {
         return new HtmlWebpackPlugin(item);
-    })
+    });
 };
-if (HtmlPlugins() && HtmlPlugins().length > 0) {
-    plugins.push(...HtmlPlugins());
-}
 
 // webpack从manifest文件中读取到已预编译的文件, 然后忽略对其的编辑打包(这里循环是为了当有多个dll文件时进行循环操作)
 const dllArr = configs.manifestPathArr.map((path) => {
@@ -65,16 +66,12 @@ const dllArr = configs.manifestPathArr.map((path) => {
         manifest: require(path),
     });
 });
-if (dllArr && dllArr.length > 0) {
-    plugins.push(...dllArr);
-}
 
-// webpack体积分析插件使用
-if (configs.isAnalyz) {
-    plugins.push(new BundleAnalyzerPlugin());
-}
+// 体积分析插件
+const bundleAnalyze = configs.isAnalyz ? [new BundleAnalyzerPlugin()] : [];
 
-// webpack配置内容
+
+//  === webpack配置内容 === //
 const webpackConfig = {
     // 对象语法： 1. 当有多条数据，则会打包生成多个依赖分离的入口js文件
     // 2. 对象中的值为路径字符串数组或路径字符串，会被打包到该条数据对应生成的入口js文件
@@ -109,7 +106,7 @@ const webpackConfig = {
     module: {
         rules: [
             {
-                test: /\.js$/,
+                test: /\.(ts|tsx|js|jsx)$/,
                 // 指定必须处理的文件
                 // include: ,
                 // 忽略第三方
@@ -156,19 +153,17 @@ const webpackConfig = {
             },
             {
                 test: /\.less$/,
+                exclude: [configs.srcPath],
                 use: [
+                    // "style-loader",
                     {
                         loader: MiniCssExtractPlugin.loader,
                         options: {
                             publicPath: configs.assetsPath,
                         },
                     },
-                    // 'style-loader',
                     "css-loader",
                     pxToRemLoader,
-                    // 提供一种用js来处理css方法,抽象成语法树结构,一般不单独使用
-                    // 1. 在postcss.config.js导出autoprefixer用来自动添加前缀,在cssloader之后执行
-                    // 2. 然后在package.json里设置borowserslist选项来设置浏览器兼容版本
                     "postcss-loader",
                     {
                         loader: "less-loader",
@@ -180,12 +175,43 @@ const webpackConfig = {
                                 // 引入antd 主题颜色覆盖文件
                                 hack: `true; @import "${path.join(
                                     configs.root,
-                                    "src/assets/css/theme.less"
+                                    "less/base/theme.less"
                                 )}";`,
                             },
                             javascriptEnabled: true,
                         },
                     },
+                ]
+            },
+            {
+                test: /\.less$/,
+                include: [configs.srcPath],
+                use: [
+                    {
+                        loader: MiniCssExtractPlugin.loader,
+                        options: {
+                            publicPath: configs.assetsPath,
+                        },
+                    },
+                    // 'style-loader',
+                    {
+                        loader: 'css-loader',
+                        options: {
+                            modules: {
+                                mode: 'local',
+                                localIdentName: '[path][name]__[local]--[hash:base64:5]',
+                                context: configs.srcPath
+                            },
+                            importLoaders: 3,
+                            localsConvention: 'camelCase'
+                        } //css modules
+                    },
+                    pxToRemLoader,
+                    // 提供一种用js来处理css方法,抽象成语法树结构,一般不单独使用
+                    // 1. 在postcss.config.js导出autoprefixer用来自动添加前缀,在cssloader之后执行
+                    // 2. 然后在package.json里设置borowserslist选项来设置浏览器兼容版本
+                    "postcss-loader",
+                    "less-loader"
                 ],
             },
             // {
@@ -209,7 +235,7 @@ const webpackConfig = {
             // },
             // 使用url-loader也可以进行图片和字体的打包 并且可以设置一定大小以下的图片转换成base64编码
             {
-                test: /\.(gif|png|jpe?g|svg)$/i,
+                test: /\.(png|svg|jpg|gif|jpeg|ico)$/i,
                 use: [
                     {
                         loader: "url-loader",
@@ -217,7 +243,7 @@ const webpackConfig = {
                             // 图片和字体都使用hash值
                             name: "img/[name]_[hash:8].[ext]",
                             // 小于20k全部打包成base64进入页面
-                            limit: 0.001 * 1024,
+                            limit: 20 * 1024,
                             // 默认超出后file-loader
                             fallback: "file-loader"
                         },
@@ -304,8 +330,11 @@ const webpackConfig = {
                 // 忽略文件名
                 // ignore: ['.*']
             },
-        ])
-    ].concat(plugins),
+        ]),
+        ...HtmlPlugins(),
+        ...dllArr,
+        ...bundleAnalyze
+    ],
     // require 引用入口配置
     resolve: configs.resolve,
     // 当只有发生错误时打印webpack统计信息

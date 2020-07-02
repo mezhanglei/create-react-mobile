@@ -39,18 +39,30 @@
   <meta name="HandheldFriendly" content="true" />
   <!-- no-cache缓存策略,会比对缓存与服务端资源,如果服务器的资源未更新则读取缓存, 如果有更新,则返回新的资源 -->
   <meta http-equiv="Cache-Control" content="no-cache" />
-  <title>网站标题</title>
+  <!-- <title><%=htmlWebpackPlugin.options.title%></title> -->
   <meta name="keywords" content="seo的关键字">
   <meta name="description" content="seo的描述">
   <!-- <link rel="shortcut icon" href="标题旁边的icon"> -->
-  <!-- 引入static静态资源文件夹中的文件 -->
-  <!-- <script type="text/JavaScript" src="./static/flexible/index.js"></script> -->
-  <!-- 先执行npm run dll进行预编译, 然后script引入预编译js文件 -->
-  <!-- <script type="text/JavaScript" src="./static/dll/base_dll.js"></script> -->
+  <%
+    var commonCSS = htmlWebpackPlugin.options.commonCSS;
+    for(var i = 0; i < commonCSS.length; i++){
+  %>
+  <link rel="stylesheet" href="<%=commonCSS[i]%>" />
+  <%
+    }
+  %>
 </head>
 
 <body>
   <div id="root"></div>
+  <%
+    var commonJs = htmlWebpackPlugin.options.commonJs;
+    for(var i = 0; i < commonJs.length; i++){
+  %>
+  <script type="text/javascript" src="<%=commonJs[i]%>"></script>
+  <%
+    }
+  %>
 </body>
 
 </html>

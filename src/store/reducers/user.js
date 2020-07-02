@@ -8,7 +8,7 @@
 
 import { clearLoginInfo } from '@/configs/common.js';
 // 用来持久化数据的方法
-import { getSessionValue, setSessionValue, getLocalValue, setLocalValue } from "../storage/index.js";
+import { getSessionValue, setSessionValue, getLocalValue, setLocalValue } from "../cache.js";
 // 初始数据
 let initState = {
     // 登录信息

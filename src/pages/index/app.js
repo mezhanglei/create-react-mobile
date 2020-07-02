@@ -1,15 +1,16 @@
 import React from "react";
-import "./app.less";
-import { HashRouter as Router, Route, Switch } from "react-router-dom";
+import styles from "./app.less";
+// import { HashRouter as Router, Route, Switch } from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 // 引入组件
 // import { NotFound } from "@/router/components.js";
 // 引入路由组件
-import RouteComponent from "@/pages/single/routes";
+import RouteComponent from "@/pages/index/routes";
 
 /**
  * 渲染路由组件(根据需要修改)
  * history路由模式Router的参数
- * 1.basename  类型string, 路由访问的根目录
+ * 1.basename  类型string, 路由访问基准
  * 2.forceRefresh:bool 如果为true在页面导航的时候后采用整个页面刷新的形式.
  * 3.keyLength location.key(表示当前位置的唯一字符串)的长度。默认为6。
  * 4.children:node 要渲染的子元素。
@@ -19,9 +20,11 @@ import RouteComponent from "@/pages/single/routes";
  * 3.children: 当children的值是一个函数时，无论当前地址和path路径匹不匹配，都将会执行children对应的函数
  */
 function MyRoutes() {
+    // 默认为设置的publicPath
+    const basename = process.env.PUBLIC_PATH;
     return (
         <React.Suspense fallback={null}>
-            <Router basename={process.env.PUBLIC_PATH}>
+            <Router basename={basename}>
                 <Switch>
                     {RouteComponent()}
                     {/* <Route component={NotFound} /> */}
@@ -52,7 +55,7 @@ class App extends React.Component {
         //   return (<NotFound />)
         // }
         return (
-            <div className="app">
+            <div className={styles["app"]}>
                 {/* <header>头部</header> */}
                 <MyRoutes />
                 {/* <footer>尾部</footer> */}

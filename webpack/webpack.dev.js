@@ -16,12 +16,14 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const FriendlyErrorsWebpackPlugin = require("friendly-errors-webpack-plugin");
 // stylelint的样式检查
 const StyleLintPlugin = require("stylelint-webpack-plugin");
+// 通过CopyWebpackPlugin将目标文件夹里的静态资源拷贝到目标文件夹
+const CopyWebpackPlugin = require("copy-webpack-plugin");
 // 引入主题文件
 // const them = require(path.join(configs.root, "src/assets/css/them.less"));
 // 引入配置
 const configs = require('./configs.js');
-// webpack的plugins选项配置(其中元素不能为空)
-let plugins = [];
+
+// === webpack的loader扩展 === //
 
 // eslint的loader配置, 默认配置文件为项目根目录下的.eslintrc.js
 const useEslintLoader = {
@@ -43,6 +45,9 @@ const pxToRemLoader = {
     },
 };
 
+
+// === webpack的plugins扩展 === //
+
 // stylelint的plugin配置
 const useStylelintPlugin = new StyleLintPlugin({
     // 要检查scss的根目录
@@ -55,9 +60,16 @@ const useStylelintPlugin = new StyleLintPlugin({
     // 如果为true，则在全局构建过程中发生任何stylelint错误时结束构建过程 所以一般为false
     failOnError: false,
 });
-if (configs.useStylelint) {
-    plugins.push(useStylelintPlugin);
-}
+
+// 生成html的plugin配置,返回HtmlWebpackPlugin数组
+const HtmlPlugins = () => {
+    return configs.htmlConfigs.map(item => {
+        return new HtmlWebpackPlugin(item);
+    });
+};
+
+
+// === 自定义方法 === //
 
 // 自动获取可远程访问的ip
 const os = require("os");
@@ -86,28 +98,22 @@ function getNetworkIp() {
     return needHost;
 }
 
-// 生成html的plugin配置,返回HtmlWebpackPlugin数组
-const HtmlPlugins = () => {
-    return configs.htmlConfigs.map(item => {
-        return new HtmlWebpackPlugin(item);
-    })
-};
-if (HtmlPlugins() && HtmlPlugins().length > 0) {
-    plugins.push(...HtmlPlugins());
-}
-
-// 给单/多页面配置重定向html
+// 单页面/多页面对于history跳转重定向html
 const rewrites = configs.htmlConfigs.map(item => {
-    // 正则匹配字符串
-    const reg = '.*';
+    const reg = ".*";
+    // 公共路径
+    const publicPath = (configs.publicPath + '/').replace(/\/+/g, '/');
+    // 目标页面路径
+    const page = publicPath + item.filename;
     return {
         // 正则匹配路由
         from: new RegExp(reg),
-        // 重定向的目标页面
-        to: `${configs.publicPath + '/' + item.filename}`
+        // 重定向的目标页面(必须/开头)
+        to: page
     };
 });
 
+//  === webpack配置内容 === //
 module.exports = {
     // 对象语法： 1. 当有多条数据，则会打包生成多个依赖分离的入口js文件
     // 2. 对象中的值为路径字符串数组或路径字符串，会被打包到该条数据对应生成的入口js文件
@@ -133,7 +139,7 @@ module.exports = {
     module: {
         rules: [
             {
-                test: /\.js|jsx$/,
+                test: /\.(ts|tsx|js|jsx)$/,
                 // babel-loader的核心依赖为@babel/core
                 use: [
                     {
@@ -166,6 +172,7 @@ module.exports = {
             },
             {
                 test: /\.less$/,
+                exclude: [configs.srcPath],
                 use: [
                     "style-loader",
                     "css-loader",
@@ -180,12 +187,33 @@ module.exports = {
                                 // 引入antd 主题颜色覆盖文件
                                 hack: `true; @import "${path.join(
                                     configs.root,
-                                    "src/assets/css/theme.less"
+                                    "less/base/theme.less"
                                 )}";`,
                             },
                             javascriptEnabled: true,
                         },
                     },
+                ]
+            },
+            {
+                test: /\.less$/,
+                include: [configs.srcPath],
+                use: [
+                    "style-loader",
+                    {
+                        loader: 'css-loader',
+                        options: {
+                            modules: {
+                                mode: 'local',
+                                localIdentName: '[path][name]__[local]--[hash:base64:5]',
+                                context: configs.srcPath
+                            },
+                            importLoaders: 2,
+                            localsConvention: 'camelCase'
+                        } //css modules
+                    },
+                    pxToRemLoader,
+                    "less-loader"
                 ],
             },
             // {
@@ -224,20 +252,31 @@ module.exports = {
         // 统计信息提示插件(比如错误或者警告会用带颜色的字体来显示,更加友好)
         new FriendlyErrorsWebpackPlugin(),
         // 设置项目的全局变量, 如果值是个字符串会被当成一个代码片段来使用, 如果不是,它会被转化为字符串(包括函数)
-        new webpack.DefinePlugin(configs.globalDefine)
-    ].concat(plugins),
+        new webpack.DefinePlugin(configs.globalDefine),
+        // 将目标目录里的文件直接拷贝到输出dist目录
+        new CopyWebpackPlugin([
+            {
+                from: configs.staticPath,
+                to: configs.staticOutPath
+                // 忽略文件名
+                // ignore: ['.*']
+            },
+        ]),
+        useStylelintPlugin,
+        ...HtmlPlugins()
+    ],
     // require 引用入口配置
     resolve: configs.resolve,
     // 配置webpack的开发服务器
     devServer: {
-        // 在html引入静态资源时的根目录
+        // 在html引入静态资源时的根目录(默认为项目根目录)
         contentBase: configs.root,
-        // 启动页的html位置(相对于output目录)
+        // 首次启动页面的html位置(相对于output目录)
         index: configs.indexHtml,
-        // 地址栏访问启动页html在哪个路径下访问。
+        // 在哪个url路径下首次访问启动页
         openPage: configs.openPage,
         // 有时无法访问可能是端口被占用
-        port: 8081,
+        port: 8083,
         // 启动webpack-dev-server时的host(设置为0.0.0.0无论是本机ip或127.0.0.1或localhost都会响应请求)
         host: getNetworkIp(),
         // 开启热更新

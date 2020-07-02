@@ -8,14 +8,15 @@ export function dataURLtoBlob(dataURL) {
     let mime = dataURL.split(',')[0].split(':')[1].split(';')[0];
     //对经过base64编码的数据进行解码
     let byteString = window.atob(dataURL.split(',')[1]);
-    //创建缓冲数组
+    // 创建内存
     let arrayBuffer = new ArrayBuffer(byteString.length);
-    //创建类型数组对象用来描述二进制数据缓存区的一个类似数组的视图
+    // 生成内存的视图，通过TypeArray对象操作二进制
     let typeArray = new Uint8Array(arrayBuffer);
-    //遍历base64解码后的字符串的Unicode编码填入类型数组对象
+    // 遍历二进制数据通过typeArray对象将数据存储到arrayBuffer对象中
     for (let i = 0; i < byteString.length; i++) {
         typeArray[i] = byteString.charCodeAt(i);
     }
+    // 生成blob数据
     return new Blob([typeArray], { type: mime });
 }
 
@@ -24,14 +25,16 @@ export function dataURLtoBlob(dataURL) {
  * @param {Object} blob Blob类型的数据
  */
 export function blobToDataURL(blob) {
-    //创建filereader对象
-    let reader = new FileReader();
-    //上传完成时的结果
-    reader.onload = function (e) {
-        //e.target.result便为base64编码的DataURL字符串
-    }
-    //将blob数据转化为base64编码的DataURL数据
-    reader.readAsDataURL(blob);
+    return new Promise(resolve => {
+        // 也可以采用window.URL.createObjectURL(blob)来创建，但注意所有图片加载完释放掉内存
+        if (window.FileReader) {
+            const file = new FileReader();
+            file.onload = function (e) {
+                resolve(e.target.result);
+            };
+            file.readAsDataURL(blob);
+        }
+    });
 }
 
 /**
@@ -51,7 +54,7 @@ export function exportCSV(str, dataList, name) {
         str += '\n';
     }
     //在字符串前面添加\ufeff解决构造Blob中文乱码问题
-    str = '\ufeff' + str
+    str = '\ufeff' + str;
     //构造Blob数据
     let blob = new Blob([str], { type: "text/plain;charset=utf-8" });
     //创建url和下载标签
@@ -67,7 +70,7 @@ export function exportCSV(str, dataList, name) {
 }
 
 /**
-* 表单方式导出excel表格的方法
+* POST请求(表单)方式导出excel表格的方法
 * @param {object} params 请求参数
 * @param {string} url 请求接口 
 */
@@ -102,38 +105,19 @@ export function readTxt(url) {
     xhr.open('GET', url, false);
     xhr.overrideMimeType("text/html;charset=utf-8");
     xhr.send(null);
-    return xhr.status === okStatus ? xhr.responseText : null
+    return xhr.status === okStatus ? xhr.responseText : null;
 }
 
 /**
- * 请求获取blob方法
- * @param {string} url 下载文件链接
- * @return {promise} 返回值promise对象
- */
-function getBlob(url) {
-    return new Promise(resolve => {
-        const xhr = new XMLHttpRequest();
-        xhr.open('GET', url, true);
-        xhr.responseType = 'blob';
-        xhr.onload = () => {
-            if (xhr.status == 200) {
-                resolve(xhr.response);
-            }
-        };
-        xhr.send();
-    })
-}
-
-/**
- * 保存文件方法
+ * 下载blob数据
  * @param {Blob} blob blob数据
  * @param {string} fileName 保存的文件名称
  */
-function saveAs(blob, fileName) {
-    //ie浏览器兼容不能打开blob链接的方法
+export function saveAs(blob, fileName) {
+    // ie浏览器兼容不能打开blob链接的方法
     if (window.navigator.msSaveOrOpenBlob) {
-        navigator.msSaveBlob(blob, fileName)
-    } else {
+        navigator.msSaveBlob(blob, fileName);
+    } else if(window.URL) {
         //创建a标签
         const link = document.createElement('a');
         //获取body元素
@@ -156,15 +140,30 @@ function saveAs(blob, fileName) {
 }
 
 /**
- * 通过url链接下载文件并重命名
- * @param {*} url 下载链接
+ * get请求下载文件
+ * @param {*} url 完整get请求接口
  * @param {*} fileName 文件名
+ * @param {*} headers 头信息
  */
-export function urlDownload(url, fileName) {
+export function downLoadByGet(url, fileName, headers = {}) {
     //替换协议头为缺省协议,默认匹配当前协议
     url = url.replace(/^(http:|https:)/, '');
-    //调用上述的方法下载
-    getBlob(url).then(blob => {
-        saveAs(blob, fileName);
-    })
+    // get请求获取二进制数据
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    // 设置头文件
+    Object.keys(headers).map(key => {
+        const value = headers[key];
+        if(key) {
+            xhr.setRequestHeader(key, value);
+        };
+    });
+
+    xhr.responseType = 'blob';
+    xhr.onload = () => {
+        if (xhr.status == 200) {
+            saveAs(xhr.response, fileName);
+        }
+    };
+    xhr.send();
 }

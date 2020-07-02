@@ -65,74 +65,30 @@ export function unitChange(number, n = 2) {
 }
 
 /**
- * 将一个对象里的参数以query参数拼接到目标url上
- * @param {*} url 目标url
- * @param {*} query 参数对象
+ * 判断目标是否是DOM类型
+ * @param {*} ele 目标
  */
-export function setUrlQuery(url, query) {
-    if (!url) return "";
-    if (query) {
-        let queryArr = [];
-        for (const key in query) {
-            if (query.hasOwnProperty(key)) {
-                queryArr.push(`${key}=${query[key]}`);
-            }
-        }
-        if (url.indexOf("?") !== -1) {
-            url = `${url}&${queryArr.join("&")}`;
-        } else {
-            url = `${url}?${queryArr.join("&")}`;
-        }
-    }
-    return url;
-}
-
-/**
- * 删除url中指定的query参数
- * @param {str} url 指定的url
- * @param {str} name 要删除的指定的query参数名
- */
-export function urlDelQuery(url, name) {
-    let urlArr = url.split("?");
-    if (urlArr.length > 1 && urlArr[1].indexOf(name) > -1) {
-        let query = urlArr[1];
-        let obj = {};
-        let arr = query.split("&");
-        for (let i = 0; i < arr.length; i++) {
-            arr[i] = arr[i].split("=");
-            obj[arr[i][0]] = arr[i][1];
-        }
-        delete obj[name];
-        let resultUrl =
-            urlArr[0] +
-            "?" +
-            JSON.stringify(obj)
-                .replace(/[\"\{\}]/g, "")
-                .replace(/\:/g, "=")
-                .replace(/\,/g, "&");
-        return resultUrl;
+export function IsDOM(ele) {
+    if (typeof HTMLElement === 'object') {
+        return ele instanceof HTMLElement;
     } else {
-        return url;
+        return ele && typeof ele === 'object' && ele.nodeType === 1 && typeof ele.nodeName === 'string';
     }
 }
 
 /**
- * 根据参数名从而获取query参数的参数值
- * @param {*} name 目标参数的名字
+ * 递归去除参数的前后空格
+ * @param {*} data 参数
  */
-export function getUrlQuery(url, name) {
-    let urlArr = url.split("?");
-    if (urlArr.length > 1 && urlArr[1].indexOf(name) > -1) {
-        let query = urlArr[1];
-        let obj = {};
-        let arr = query.split("&");
-        for (let i = 0; i < arr.length; i++) {
-            arr[i] = arr[i].split("=");
-            obj[arr[i][0]] = arr[i][1];
+export const trimParams = (data) => {
+    if (!data) return data;
+    if (typeof data === 'boolean' || typeof data === 'number' || data instanceof Array) return data;
+    if (typeof data === 'string') return data.trim();
+    if (data instanceof Object && Object.prototype.toString.call(data) === '[object Object]') {
+        for (let key in data) {
+            data[key] = trimParams(data[key]);
         }
-        return obj[name];
-    } else {
-        return null;
     }
-}
+    return data;
+};
 

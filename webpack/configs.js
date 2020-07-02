@@ -15,38 +15,19 @@ const root = path.join(__dirname, '..');
 const srcPath = path.join(root, 'src');
 // 静态资源所在目录
 const staticPath = path.join(root, 'static');
+// 全局less所在目录
+const lessPath = path.join(root, 'less');
 // 项目输出dist目录
 const outputPath = path.join(root, "dist");
 // 预编译文件输出目录
 const dllOutputPath = path.join(staticPath, 'dll');
 // 单/多页面的入口所在目录
 const pagesRoot = path.join(srcPath, 'pages');
-
-// 动态获取所有入口js文件返回对象(规则: 页面所在目录名作为入口js的键)
-const entries = (function () {
-    let obj = {};
-    // 首先匹配单/多页面所在的入口js文件路径
-    const entryFiles = glob.sync(path.join(pagesRoot, `./*/index.js`));
-    // 遍历路径数组用正则匹配页面所在的文件名
-    Object.keys(entryFiles)
-        .map((item) => {
-            // 文件路径
-            const filePath = entryFiles[item];
-            // 正则匹配页面所在目录名(如果pagesRoot变更需要同步更新正则匹配表达式)
-            const match = filePath.match(`src\/pages\/(.*)\/index\.js`);
-            const pageName = match && match[1];
-            // 页面所在目录名作为入口的键
-            obj[pageName] = filePath;
-        });
-    return obj;
-})();
+// 资源访问的公共绝对路径(格式如: /publicPath/)
+const publicPath = '';
 
 // 公共配置(开发/生产均使用)
 const baseConfig = {
-    // 资源访问的公共绝对路径
-    publicPath: '',
-    // favicon图标所在的路径
-    faviconPath: path.join(staticPath, "favicon.ico"),
     // css文件中静态资源的引用路径
     assetsPath: '../',
     // 引用入口配置,在项目中可以直接以键开头代替绝对路径引入
@@ -55,34 +36,67 @@ const baseConfig = {
         alias: {
             "@": `${srcPath}`,
             "src": `${srcPath}`,
-            "static": `${staticPath}`
+            "static": `${staticPath}`,
+            "less": `${lessPath}`
         }
     },
-    // html模板所在位置
-    templatePath: path.join(pagesRoot, 'index.html'),
     // babel的配置文件路径
     babelPath: path.join(root, './.babelrc')
 };
 
+// 引入外部文件的基础路径
+const commonBase = publicPath;
+// script引入的公共js文件
+const commonJs = [
+    // 屏幕适配手机
+    commonBase + 'static/flexible/index.js',
+    // 预编译文件
+    // commonBase + 'static/dll/base_dll.js'
+];
+// link引入的公共css文件
+const commonCSS = [
+    // commonBase + `static/fonts/iconfont.css?time=${new Date().getTime()}`
+];
+
 // 项目全局自定义变量
 const globalDefine = {
     // 资源引用的公共路径字符串
-    "process.env.PUBLIC_PATH": JSON.stringify(baseConfig.publicPath)
-}
+    "process.env.PUBLIC_PATH": JSON.stringify(publicPath)
+};
+
+// 页面配置信息
+const pages = [
+    // name: src/pages下的页面目录名, 当目录名为index则表示启动页
+    { name: "index", title: "第一个页面", favicon: path.join(staticPath, "favicon.ico") },
+    { name: "ok", title: "第二个页面", favicon: path.join(staticPath, "favicon.ico") }
+];
+
+
+// 动态获取所有入口js文件返回对象(规则: 页面所在目录名作为入口js的键)
+const entries = (function () {
+    let obj = {};
+    // 遍历路径数组用正则匹配页面所在的文件名
+    pages.map((item) => {
+        // 页面所在目录名作为入口的键
+        obj[item.name] = [path.join(pagesRoot, 'index.js'), path.join(pagesRoot, item.name, 'index.js')];
+    });
+    return obj;
+})();
+
 
 // 动态生成单/多页面的html的配置数组(针对htmlwebpackplugin的配置)
 const htmlConfigs = (function () {
-    const pluginConfigs = Object.keys(entries).map((item, index) => {
+    const pluginConfigs = pages.map((item, index) => {
         return {
             // title: '生成的html文档的标题',
             // 指定输出的html文档
-            filename: `${item}.html`,
+            filename: `${item.name}.html`,
             // html模板所在的位置，默认支持html和ejs模板语法，处理文件后缀为html的模板会与html-loader冲突
-            template: baseConfig.templatePath,
+            template: path.join(pagesRoot, 'index.html'),
             // 不能与template共存，也可以指定html字符串
             // templateContent: string|function,
             // 默认script一次性引用所有的chunk(chunk的name)
-            chunks: ["vendors", "common", `runtime~${item}`, item],
+            chunks: ["vendors", "common", `runtime~${item.name}`, item.name],
             // 跳过一个块
             // excludeChunks: [],
             // 注入静态资源的位置:
@@ -91,7 +105,7 @@ const htmlConfigs = (function () {
             //    3. false：所有静态资源css和JavaScript都不会注入到模板文件中
             inject: true,
             // 图标的所在路径，最终会被打包到到输出目录
-            favicon: baseConfig.faviconPath,
+            favicon: item.favicon,
             // 注入meta标签，例如{viewport: 'width=device-width, initial-scale=1, shrink-to-fit=no'}
             // meta: {},
             // 注入base标签。例如base: "https://example.com/path/page.html
@@ -101,8 +115,10 @@ const htmlConfigs = (function () {
                 html5: true,
                 // 是否对大小写敏感 默认false
                 caseSensitive: false,
+                // 去除属性引用
+                removeAttributeQuotes: process.env.NODE_ENV === "development" ? false : true,
                 // 删除空格换行 默认false
-                collapseWhitespace: true,
+                collapseWhitespace: process.env.NODE_ENV === "development" ? false : true,
                 // 当标记之间的空格包含换行符时，始终折叠为1换行符（从不完全删除它）。collapseWhitespace=true, 默认false
                 preserveLineBreaks: false,
                 // 压缩link进来的本地css文件 默认false,需要和clean-css一起使用
@@ -116,6 +132,8 @@ const htmlConfigs = (function () {
             // hash: false,
             // 错误详细信息将写入html
             // showErrors: true,
+            commonJs: commonJs,
+            commonCSS: commonCSS
         };
     });
     return pluginConfigs;
@@ -135,10 +153,10 @@ const devConfig = {
     checkStyleRoot: srcPath,
     // stylelint的检查匹配路径
     checkStylePath: ["src/**/*.{css,sass,scss,less}"],
-    // 启动页的html位置(可以自定义设置,相对于ouput目录)
-    indexHtml: htmlConfigs[0] && htmlConfigs[0].filename || "",
-    // 地址栏访问启动页html在哪个url路径下访问(目前设置为公共路径 + html的相对于output的文件目录)。
-    openPage: baseConfig.publicPath.replace(/^\/?/, '') + '/' + (htmlConfigs[0] && htmlConfigs[0].filename.match('(.*)\/.*html') && htmlConfigs[0].filename.match('(.*)\/.*html')[1] || "")
+    // 启动页的html位置(相对于ouput的路径, 默认为第一个页面)
+    indexHtml: htmlConfigs[0] && htmlConfigs[0].filename,
+    // url访问页面的启动页的公共路径(不能以'/'开头)
+    openPage: /^\//.test(publicPath) ? publicPath.replace(/^\/+/, '') : publicPath
 };
 
 // 生产环境配置
@@ -173,6 +191,7 @@ module.exports = {
     outputPath,
     dllOutputPath,
     pagesRoot,
+    publicPath,
     ...baseConfig,
     ...devConfig,
     ...prodConfig,

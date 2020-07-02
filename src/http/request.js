@@ -26,7 +26,6 @@ export function endLoading() {
 
 // 实例化一个axios实例(本实例不支持传输表单数据)
 const http = axios.create({
-    baseURL: configs.baseURL,
     timeout: 1000 * 10,
     withCredentials: true,
     headers: {
@@ -168,11 +167,11 @@ http.interceptors.response.use(
         let code = response.data.code;
         let msg = response.data.message;
         // 有些接口不需要对错误进行处理则过滤
-        const current =
-            response.config.url && response.config.url.replace(configs.baseURL, "");
-        if (code !== 200 && NoErrorArr.indexOf(current) == -1) {
-            responseHandle(code, msg);
-        }
+        // const current =
+        //     response.config.url && response.config.url.replace(configs.baseURL, "");
+        // if (code !== 200 && NoErrorArr.indexOf(current) == -1) {
+        //     responseHandle(code, msg);
+        // }
         return response.data;
     },
     (error) => {
@@ -181,14 +180,14 @@ http.interceptors.response.use(
             error.response && error.response.data && error.response.data.message;
         const status = error.response && error.response.status;
         // 有些接口不需要对错误进行处理则过滤
-        const current =
-            error.response &&
-            error.response.config &&
-            error.response.config.url &&
-            error.response.config.url.replace(configs.baseURL, "");
-        if (NoErrorArr.indexOf(current) == -1) {
-            errorHandle(status, msg);
-        }
+        // const current =
+        //     error.response &&
+        //     error.response.config &&
+        //     error.response.config.url &&
+        //     error.response.config.url.replace(configs.baseURL, "");
+        // if (NoErrorArr.indexOf(current) == -1) {
+        //     errorHandle(status, msg);
+        // }
         return Promise.reject(error);
     }
 );
