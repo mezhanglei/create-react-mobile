@@ -51,7 +51,7 @@ export default store;
  */
 // const mapStateToProps = (state, ownProps) => {
 //   return {
-//       属性名: state.reducer模块名.loginState
+//       属性名: state.reducer模块名.state中的属性名
 //   }
 // }
 

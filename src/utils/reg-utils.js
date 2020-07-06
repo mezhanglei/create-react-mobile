@@ -1,6 +1,8 @@
 /**
  * 正则表达式的校验放在这里
  */
+import wx from 'weixin-js-sdk';
+
 // 邮箱
 export function isEmail(s) {
     if (!s) {
@@ -48,6 +50,23 @@ export function isInWeChat() {
         return false;
     } else if (ua.match(/MicroMessenger/i) == 'micromessenger') {
         return true;
+    } else {
+        return false;
+    }
+}
+
+// 判断是否在微信小程序环境中, true表示是在微信小程序环境中
+export function isInMini() {
+    var ua = navigator.userAgent.toLowerCase();
+    if (ua.match(/MicroMessenger/i) == "micromessenger") {
+        //ios的ua中无miniProgram，但都有MicroMessenger（表示是微信浏览器）
+        wx.miniProgram.getEnv((res) => {
+            if (res.miniprogram) {
+                return true;
+            } else {
+                return false;
+            }
+        });
     } else {
         return false;
     }

@@ -291,11 +291,11 @@ const webpackConfig = {
     plugins: [
         // 暴露模块为全局模块，在全局都可以使用，而不必使用时import或require
         // 如果加载的模块没有使用，则不会被打包
-        // new webpack.ProvidePlugin({
-        // 	React: "react",
-        // 	ReactDOM: "react-dom",
-        // 	ReactRouter: "react-router",
-        // }),
+        new webpack.ProvidePlugin({
+            React: "react",
+            ReactDOM: "react-dom",
+            ReactRouter: "react-router",
+        }),
         // 设置项目的全局变量,String类型, 如果值是个字符串会被当成一个代码片段来使用, 如果不是,它会被转化为字符串(包括函数)
         new webpack.DefinePlugin(configs.globalDefine),
         // 清理dsit目录

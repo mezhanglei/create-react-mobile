@@ -3,7 +3,7 @@
  * @param {*} url 目标url
  * @param {*} query 参数对象
  */
-export function setUrlQuery(url, query) {
+export function setUrlQuery(query, url = location.href) {
     if (!url) return "";
     if (query) {
         let queryArr = [];
@@ -26,7 +26,7 @@ export function setUrlQuery(url, query) {
  * @param {str} url 指定的url
  * @param {str} name 要删除的指定的query参数名
  */
-export function urlDelQuery(url, name) {
+export function urlDelQuery(name, url = location.href) {
     let urlArr = url.split("?");
     if (urlArr.length > 1 && urlArr[1].indexOf(name) > -1) {
         let query = urlArr[1];
@@ -54,7 +54,7 @@ export function urlDelQuery(url, name) {
  * 根据参数名从而获取query参数的参数值
  * @param {*} name 目标参数的名字
  */
-export function getUrlQuery(url, name) {
+export function getUrlQuery(name, url = location.href) {
     let urlArr = url.split("?");
     if (urlArr.length > 1 && urlArr[1].indexOf(name) > -1) {
         let query = urlArr[1];

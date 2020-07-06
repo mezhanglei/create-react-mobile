@@ -68,7 +68,7 @@ const globalDefine = {
 const pages = [
     // name: src/pages下的页面目录名, 当目录名为index则表示启动页
     { name: "index", title: "第一个页面", favicon: path.join(staticPath, "favicon.ico") },
-    { name: "ok", title: "第二个页面", favicon: path.join(staticPath, "favicon.ico") }
+    { name: "second", title: "第二个页面", favicon: path.join(staticPath, "favicon.ico") }
 ];
 
 

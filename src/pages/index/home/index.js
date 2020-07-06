@@ -1,6 +1,8 @@
 import React, { Component, useState, useEffect } from 'react';
-import "./index.scss";
-
+import "./index.less";
+import { Button } from "antd-mobile";
+import http from "@/http/request.js";
+import { urlDelQuery, getUrlQuery } from "@/utils/url-utils";
 export default class Home extends React.Component {
     constructor(props) {
         super(props);
@@ -8,7 +10,8 @@ export default class Home extends React.Component {
     static defaultProps = {
         type: '首页'
     }
-    componentDidMount() { }
+    componentDidMount() {
+    }
     render() {
         return (
             <div>

@@ -1,5 +1,15 @@
 //===字符串或数字的处理===//
 
+
+// 判断值是否为空, true为空，false为非空
+export function isEmpty(value) {
+    const type = ["", undefined, null];
+    if (type.indexOf(value) > -1) {
+        return true;
+    } else {
+        return false;
+    }
+}
 //保留n位小数并格式化输出字符串类型的数据
 export function formatFloat(value, n = 2) {
     if (value === undefined || value === '') {

@@ -1,11 +1,10 @@
 import React from "react";
 import styles from "./app.less";
-// import { HashRouter as Router, Route, Switch } from "react-router-dom";
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-// 引入组件
-// import { NotFound } from "@/router/components.js";
+import { HashRouter as Router, Route, Switch } from "react-router-dom";
+// import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import { Prompt } from 'react-router';
 // 引入路由组件
-import RouteComponent from "@/pages/index/routes";
+import RouteComponent from "./routes/index.js";
 
 /**
  * 渲染路由组件(根据需要修改)
@@ -24,15 +23,26 @@ function MyRoutes() {
     const basename = process.env.PUBLIC_PATH;
     return (
         <React.Suspense fallback={null}>
-            <Router basename={basename}>
+            <Router getUserConfirmation={getConfirmation} basename={basename}>
+                <Prompt message="是否确定离开当前路由？" />
                 <Switch>
                     {RouteComponent()}
-                    {/* <Route component={NotFound} /> */}
                 </Switch>
             </Router>
         </React.Suspense>
     );
 }
+
+/**
+ * 路由切换拦截，若是需要提示信息则需配合Prompt组件使用
+ * @param {*} message Prompt组件的提示信息
+ * @param {*} callback 控制当前路由跳转或者不跳转
+ */
+function getConfirmation(message, callback) {
+    callback(true);
+    // callback(true) 表示离开当前路由
+    // callback(false) 表示留在当前路由
+};
 
 // 根组件
 class App extends React.Component {

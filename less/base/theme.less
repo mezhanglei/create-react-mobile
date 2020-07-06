@@ -1,21 +1,33 @@
+@import "./color.less";
+
+// ant-mobile的ui库的主题颜色定制
+
+// 全局/品牌色
+@brand-primary: @primary-color;
+// 成功颜色
+@brand-success: @success-color;
+// 警告颜色
+@brand-warning: @warning-color;
+// 错误颜色
+@brand-error: @error-color;
+
 // 文字基本颜色
-@color-text-base: #000;
+@color-text-base: @text-color;
 // 基本颜色的反色
 @color-text-base-inverse: #fff;
-// 辅助颜色
-@color-text-secondary: #a4a9b0;
-// 辅助描述颜色
-@color-text-caption: #888;
-// 文本框的占位符颜色
-@color-text-placeholder: #bbb;
+// 次要颜色
+@color-text-secondary: @text-color-secondary;
+// 短文字的描述颜色
+@color-text-caption: @text-color-short;
 // 失效的颜色
-@color-text-disabled: #bbb;
+@color-text-disabled: @disbaled-color;
 // 长文字的基本颜色
-@color-text-paragraph: #333;
+@color-text-paragraph: @text-color-long;
 // 链接的颜色
-@color-link: @brand-primary;
+@color-link: @link-color;
 
-// 背景色
+
+// === 背景色 === //
 // 组件默认背景
 @fill-base: #fff;
 // 页面背景
@@ -26,74 +38,53 @@
 @fill-disabled: #ddd;
 // 遮罩背景
 @fill-mask: rgba(0, 0, 0, 0.4);
-// 许多小图标的背景，比如一些小圆点，加减号
+// 许多小图标的颜色，比如一些小圆点，加减号
 @color-icon-base: #ccc;
 // 灰色填充背景
 @fill-grey: #f7f7f7;
 
+
+// === 边框 === //
 // 透明度
 @opacity-disabled: 0.3; // switch checkbox radio 等组件禁用的透明度
-
-// 主题色
-@brand-primary: red;
-// 点击时主题颜色
-@brand-primary-tap: #0e80d2;
-// 成功类颜色
-@brand-success: #6abf47;
-// 警告类颜色
-@brand-warning: #ffc600;
-// 错误时颜色
-@brand-error: #f4333c;
-// 引入颜色
-@brand-important: #ff5b05;
-// 等待颜色
-@brand-wait: #108ee9;
-// 边框色
-@border-color-base: #ddd;
-
-// 圆角
+// 圆的圆角设置
 @radius-circle: 50%;
+// 边框色
+@border-color-base: @border-color-base-define;
 
-// 边框尺寸
-// ---
-@border-width-sm: 1px;
-@border-width-md: 1px;
-
+// === 按钮的颜色 === //
 // 实心的按钮的颜色
 @primary-button-fill: @brand-primary;
 // 实心的按钮点击时的颜色
-@primary-button-fill-tap: @brand-primary-tap;
-
+@primary-button-fill-tap: fade(@brand-primary, 60%);
 // 空心按钮 同时应用于背景、文字颜色、边框色
 @ghost-button-color: @brand-primary;
 // 空心按钮点击时的颜色渐变
 @ghost-button-fill-tap: fade(@brand-primary, 60%);
-
 // 警告的按钮填充色
-@warning-button-fill: #e94f4f;
+@warning-button-fill: @warning-color;
 // 警告按钮点击时的颜色
-@warning-button-fill-tap: #d24747;
-//
-@link-button-fill-tap: #ddd;
+@warning-button-fill-tap: fade(@warning-color, 60%);
+// 点击警告按钮颜色
+@link-button-fill-tap: @disbaled-color;
 
+// === input控件的颜色 === //
 // input clear icon 的背景色
 @input-color-icon: #ccc;
 // input clear icon 选中时的颜色
 @input-color-icon-tap: @brand-primary;
-
 // segmented-control， 同时应用于背景、文字颜色、边框色
 @segmented-control-color: @brand-primary;
-
-// tab-bar
-@tab-bar-fill: #ebeeef;
-
-// toast: activity-indicator 的背景颜色
-@toast-fill: rgba(58, 58, 58, 0.9);
-
+// 文本框的占位符颜色
+@color-text-placeholder: #bbb;
 // search-bar
 @search-bar-fill: #efeff4;
 // input search icon 的背景色
 @search-color-icon: #bbb;
+
+// === toast提示的颜色 === //
+// toast: activity-indicator 的背景颜色
+@toast-fill: rgba(58, 58, 58, 0.9);
 
 // notice-bar 背景色
 @notice-bar-fill: #fefcec;
@@ -101,9 +92,8 @@
 @notice-bar-color: #f76a24;
 
 // switch 填充色
-@switch-fill: #4dd865;
+@switch-fill: @brand-primary;
 // 安卓下的填充色
 @switch-fill-android: @brand-primary;
-
 // tag 选中时的颜色
 @tag-color: @brand-primary;

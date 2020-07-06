@@ -2,7 +2,7 @@
 
 ## 项目安装和依赖说明
 ```
-说明：基于webpack4.x + react16.12 + redux + react-redux + redux-thunk + ant-design-mobile等的h5开发脚手架(目前正在往里面集成基础功能中)
+说明：基于webpack4.x + react16.12 + redux + react-redux + redux-thunk + ant-design-mobile等的h5开发脚手架
 依赖：下载项目后在项目根目录运行命令：
       1. 设置依赖镜像源：
          如果镜像源为国内淘宝镜像https://registry.npm.taobao.org,则:
@@ -24,22 +24,75 @@ npm run csslint 检查css规范
 
 ### 脚手架功能说明(mddir)
 ```
-现在已支持单/多页面,具体使用说明下次更新
+1. 支持单或多页面开发, 纯净友好无冗余代码脚手架,开箱修改即用, 使用时注意遵循规范,看清楚目录结构!
+2. 可在configs中自定义不同使用场景,比如添加publicPath, 添加多页面,更改目录, 项目的一些开关等等
+3. 
 ```
-### css约定规则（若是没有使用CSS module）
+
+### css使用CSS modules来控制变量污染问题
 ```
-命名规则：每个组件最外层类名以组件所在的文件夹来命名并且最外层类名包裹所有组件内样式，比如views/person/index.js那么组件的最外面类名命名为v-person-index，来尽量避免变量名污染
 书写规则：1. css嵌套最好不要超过四层
          2. 尽量不要写行内样式
+css作用域: 1. 启用css modules后, 类名会被添加上hash字符串, 使用方式: 先import styles from "less文件", 然后styles.类名在代码中使用类
+           2. 对于代码中的普通class类名, 可以通过:global {} 包裹,在里面书写类名来修改样式
+           3. 对于动画来说, 需要在调用动画的类名后面添加:local,来保证动画类名hash化,不然调用不会成功
 ```
 ### 组件开发规则
 ```
 1. 如果是功能组件之间的数据通讯尽量采用组件传值, 如果是多个页面组件之间建议选择redux
 2. 通用功能模块尽量解耦封装成组件（高阶组件，自定义组件，hook组件）使用。
 ```
-### image和background背景等静态资源在vue中引入规则(配置src文件夹的别名为@)
+### image和background背景等静态资源在vue中引入规则
 ```
-1. 在js文件中require('@/文件相对于src的路径')或import * from('@/文件相对于src的路径')形式
+1. 在js文件中require('路径')或import * from('路径')形式
 2. css文件中, 例如background: url('图片的相对路径');
 3. 本地的图片资源必须要手动压缩，大图片在200kb以内，尽量不要超过200kb，可以使用tinypng在线压缩图片资源，可以重复压缩
+```
+### 目录说明
+```
+    |-- .babelrc //babel配置文件
+    |-- .eslintrc.js //eslint规则配置
+    |-- .gitignore  // git提交忽略
+    |-- .prettier.config.js //prettier插件配置信息
+    |-- .stylelintrc.js // stylelint插件配置信息
+    |-- package.json
+    |-- postcss.config.js // postcss配置信息
+    |-- tsconfig.json // ts配置
+    |-- less         // 全局的基础css配置文件夹, 全局样式写在这里
+    |   |-- index.less
+    |   |-- base   // 基础配置(颜色及自定义类名,标签)
+    |   |   |-- base.less
+    |   |   |-- color.less
+    |   |   |-- index.less
+    |   |   |-- theme.less
+    |   |-- components // ui组件库的自定义样式
+    |   |   |-- am-tab.less
+    |   |   |-- index.less
+    |   |-- pages  // 全局页面使用的布局样式
+    |       |-- index.less
+    |-- src
+    |   |-- api // 接口文件夹, 一个子文件代表一个功能模块
+    |   |-- common // 公共的业务代码都放在这里(公共的请求,公共的业务文件,兼容处理等等放在这里)
+    |   |-- components // 全局要使用的组件
+    |   |-- constants // 项目所有的常量全部放在这里, 禁止在别处定义常量,分散不宜管理, 一个子文件代表一个功能模块
+    |   |-- http      // 请求配置文件
+    |   |   |-- config.js
+    |   |   |-- jsonpRequest.js
+    |   |   |-- request.js
+    |   |-- mock // mock数据文件夹(暂未实现)
+    |   |-- pages // 页面代码所在文件夹
+    |   |   |-- index.html // 公用的html模板
+    |   |   |-- index.js // 多页面公用的js文件
+    |   |   |-- index // 多页面中第一个页面
+    |   |   |-- second // 多页面中第二个页面
+    |   |       |-- index.js
+    |   |-- store    // redux仓库
+    |   |-- utils   // 全局要使用的js算法
+    |-- static     // 打包时要拷贝的静态资源, 需要在webpack/configs文件中配置引用路径后才能生效(外部引入)
+    |-- webpack   // webpack配置文件夹
+        |-- configs.js  // 自定义配置
+        |-- webpack.dev.js // 开发环境
+        |-- webpack.dll.js // 预编译文件(需要预编译时使用)
+        |-- webpack.prod.js // 生产环境
+
 ```

@@ -1,9 +1,3 @@
-import {
-    Home,
-    Category,
-    Cart,
-    Personal
-} from "./components";
 // 登录拦截高阶组件
 import LoginComponent from "@/components/loginWrap/index";
 // tab栏高阶组件
@@ -15,6 +9,15 @@ import {
     Switch,
     withRouter,
 } from "react-router-dom";
+import { Toast } from "antd-mobile";
+import { HomeRoutes, Home } from "./home-routes";
+import { CategoryRoutes } from "./category-routes";
+import { CartRoutes } from "./cart-routes";
+import { PersonalRoutes } from "./personal-routes";
+import NotFound from "@/pages/index/default/not-found";
+import { DefaultRoutes } from "./default-routes";
+import { initWX } from "@/common/wx";
+// import { TransitionGroup, CSSTransition } from "react-transition-group";
 
 /**
  * 页面路由配置
@@ -31,53 +34,32 @@ const routes = [
         component: TabNav(Home),
         // 路由为/时必须设置exact为true
         exact: true,
+        // onEnter: (props) => {
+        //     console.log(props);
+        // },
+        // 非官方API，用来存储页面信息
         meta: {
             title: "首页",
         },
     },
+    ...HomeRoutes,
+    ...CategoryRoutes,
+    ...CartRoutes,
+    ...PersonalRoutes,
+    ...DefaultRoutes,
     {
-        path: "/home",
-        component: TabNav(Home),
-        // 路由为/时必须设置exact为true
-        exact: true,
-        meta: {
-            title: "首页",
-        },
-    },
-    {
-        path: "/cateGory",
-        component: TabNav(Category),
-        // 路由为/时必须设置exact为true
-        exact: true,
-        meta: {
-            title: "分类",
-        },
-    },
-    {
-        path: "/cart",
-        component: TabNav(Cart),
-        // 路由为/时必须设置exact为true
-        exact: true,
-        meta: {
-            title: "购物车",
-        },
-    },
-    {
-        path: "/personal",
-        component: TabNav(Personal),
-        // 路由为/时必须设置exact为true
-        exact: true,
-        meta: {
-            title: "个人中心",
+        path: '*',
+        component: TabNav(NotFound),
+        // 非官方API，在渲染页面之前生效
+        onEnter: (props) => {
+            console.log(props, "页面不存在");
         }
     }
 ];
 
 function RouteComponent() {
-    // 默认网站页面的title(在Route组件的render函数中渲染)
-    let defaultTitle = "首页";
     return (
-        <React.Fragment>
+        <Switch>
             {routes.map((item, index) => {
                 return (
                     <Route
@@ -85,8 +67,10 @@ function RouteComponent() {
                         exact={item.exact ? true : false}
                         path={item.path}
                         render={(props) => {
-                            // 动态设置title
-                            document.title = item.meta.title || defaultTitle;
+                            // 微信授权
+                            // initWX();
+                            // 渲染路由组件前的处理
+                            item.onEnter && item.onEnter(props);
                             return (
                                 <item.component {...props} meta={item.meta}></item.component>
                             );
@@ -94,7 +78,7 @@ function RouteComponent() {
                     />
                 );
             })}
-        </React.Fragment>
+        </Switch>
     );
 }
 

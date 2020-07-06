@@ -3,18 +3,19 @@
  */
 
 import { myStorage, mySession } from "@/utils/cache.js";
-// import http from "@/http/request.js";
+import { TOKEN, USER_INFO } from "@/constants/account/index";
+import { isIOS, isAndroid, isInWeChat, isQQ } from "@/utils/reg-utils";
 
 // 清空用户信息和token等信息
 export function clearLoginInfo() {
-    myStorage.remove("token");
-    myStorage.remove("userInfo");
+    myStorage.remove(TOKEN);
+    myStorage.remove(USER_INFO);
 }
 
-// 判断是否登录
+// 本地判断是否登录
 export function isLogin() {
-    const userInfo = myStorage.get("userInfo");
-    if (userInfo && userInfo.token) {
+    const userInfo = myStorage.get(USER_INFO);
+    if (userInfo && userInfo[TOKEN]) {
         return true;
     } else {
         return false;
@@ -75,22 +76,45 @@ export function wxLink() {
     window.location.href = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appid}&redirect_uri=${redirect_uri}&response_type=${response_type}&scope=${scope}&state=STATE#wechat_redirect`;
 }
 
+
 /**
- * 微信发起支付的平台(根据当前的平台返回相应的字段添加到全局请求的头文件)
- * 安卓APP：ANDROID
- * 苹果APP：IOS
- * 移动端网页：H5
- * PC端网页：PC
- * 微信公众号：WEIXIN
- * 微信小程序：MINI
- * 企业微信：WORK_WEIXIN
+ * 1.判断iOS和Android
+ * 2.iOS判断是否在微信中，
+ *   -是，无论是否已有APP都直接跳转到App Store
+ *   -否，直接打开APP或跳转到App Store
+ * 3.Android判断是否在微信中，
+ *   -是，提示用户用浏览器打开页面，再直接打开APP或跳转下载页面
+ *   -否，直接打开APP或跳转下载页面
  */
-export function wxPayPlatform() {
-    // 如果是在个人微信内置浏览器环境中，则使用公众号支付
-    if (isInWeChat() && !isCompanyChat()) {
-        return "WEIXIN";
-        // 如果是在企业微信或其他平台则不传
-    } else {
-        return "";
+export function downLoadApp() {
+    // 判断是安卓还是ios
+    if (isAndroid()) {
+        if (isInWeChat() || isQQ()) {
+            // 引导用户在浏览器中打开
+            return;
+        }
+        // Android, 尝试打开app或下载页面
+        let ifr = document.createElement('iframe');
+        ifr.src = 'msfacepay://';
+        ifr.style.display = 'none';
+        document.body.appendChild(ifr);
+        window.setTimeout(() => {
+            document.body.removeChild(ifr);
+            // 安卓下载地址
+            window.location.href = "安卓下载地址";
+        }, 2000);
+    } else if (isIOS()) {
+        // 苹果app应用商店
+        window.location.href = 'itms-apps://itunes.apple.com/cn/app/id1515056060?mt=8';
+        // if (isInWeChat() || isQQ()) {
+        //     window.location.href = 'itms-apps://itunes.apple.com/cn/app/id1515056060?mt=8';
+        //     return;
+        // }
+        // //iOS不支持iframe打开APP, 使用window.location.href
+        // window.location.href = 'msfacepay://';
+        // window.setTimeout(() => {
+        //     //打开app应用商店，由app开发人员提供
+        //     window.location.href = 'itms-apps://itunes.apple.com/cn/app/id1515056060?mt=8';
+        // }, 2000);
     }
 }

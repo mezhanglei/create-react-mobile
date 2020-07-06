@@ -1,12 +1,12 @@
 import axios from "axios";
-import configs from "./env";
+import configs from "./config";
 import { Toast } from "antd-mobile";
 import { myStorage } from "@/utils/cache.js";
-import { clearLoginInfo, wxPayPlatform } from "@/configs/common.js";
+import { clearLoginInfo } from "@/common/common.js";
+import { TOKEN } from "@/constants/account/index"
+import { trimParams } from "@/utils/base-utils"
 // 定义loading变量(这里的loading为单例模式，如果不是单例则需要封装变成单例模式)
 let loading;
-// 不需要error提示的接口
-let NoErrorArr = [];
 
 // 开始loading
 export function startLoading() {
@@ -24,53 +24,14 @@ export function endLoading() {
     }
 }
 
-// 实例化一个axios实例(本实例不支持传输表单数据)
+// 实例化一个axios实例(axios根据请求体自动设置请求头)
+// 1.默认application/x-www-form-urlencoded, 提交的数据按照key1=val1&key2=val2的方式进行编码，key和val都进行了URL转码(只支持表单键值对,不支持二进制文件)
+// 2.application/json,表示请求体中消息类型为序列化的json字符串
+// 3.multipart/form-data; boundary=${分隔符,尽量定义复杂点, 将请求体中的文本信息和传输文件分割开来}, 专门用于有效的传输文件, 既可以上传二进制数据，也可以上传表单键值对
 const http = axios.create({
     timeout: 1000 * 10,
-    withCredentials: true,
-    headers: {
-        // 请求体消息编码
-        // 1.默认application/x-www-form-urlencoded, 提交的数据按照key1=val1&key2=val2的方式进行编码，key和val都进行了URL转码(只支持键值对,不支持二进制文件)
-        // 2.application/json,表示请求体中消息类型为序列化的json字符串
-        // 3.multipart/form-data; boundary=${分隔符,尽量定义复杂点, 将请求体中的文本信息和传输文件分割开来}, 专门用于有效的传输文件, 既可以上传二进制数据，也可以上传表单键值对
-        "Content-Type": "application/json; charset=utf-8",
-    },
-    // validateStatus: function (status) {
-    //   return status >= 200
-    // }
+    withCredentials: true
 });
-
-/**
- * @param {Object} config 表示axios的参数处理
- * 最终返回一个新的config配置
- */
-function handleConfig(config) {
-    let defaults = {
-        t: new Date().getTime(),
-    };
-    // true则表示添加默认参数，false表示不添加默认参数
-    const openDefault = config.openDefault || false;
-    // 参数类型: json表示传json数据, none表示不做任何处理
-    const dataType = config.dataType || "none";
-    // 是否合并默认参数
-    const data = openDefault ? Object.assign(defaults, config.data) : config.data;
-    if (config.method == "get" || config.method == "delete") {
-        // let keys = Object.keys(data);
-        // keys && keys.map((key) => {
-        //   if (data[key]) {
-        //     data[key] = encodeURI(data[key]);
-        //   }
-        // })
-        config.params = data;
-    } else {
-        if (dataType === "json") {
-            config.data = JSON.stringify(data);
-        } else {
-            config.data = data;
-        }
-    }
-    return config;
-}
 
 /**
  * 响应状态异常的处理
@@ -83,11 +44,11 @@ function errorHandle(status, msg) {
             msg = "请先登录";
             clearLoginInfo();
             break;
-        // case 403:
-        //   msg = '拒绝访问';
-        //   clearLoginInfo();
-        //   break;
+        case 403:
+            msg = '无访问权限';
+            break;
         case 404:
+            msg = "资源不存在";
             break;
         case 405:
             msg = "请求方法未允许";
@@ -96,7 +57,7 @@ function errorHandle(status, msg) {
             msg = "请求超时";
             break;
         case 502:
-            // msg = '网络连接错误，请稍后再试'
+            msg = '网络连接错误，请稍后再试'
             break;
         case 503:
             msg = "服务不可用";
@@ -129,7 +90,6 @@ function responseHandle(code, msg) {
         case 403:
             msg = "拒绝访问";
             break;
-        // default: msg = `${msg}(${code})`;
         default:
             msg = msg;
     }
@@ -138,14 +98,36 @@ function responseHandle(code, msg) {
     }
 }
 
+// 公共的请求参数
+const defaults = {
+    // t: new Date().getTime()
+}
+
 /**
- * 请求拦截
+ * @param {Object} config axios的config
+ * 处理请求,最终返回一个新的config配置
  */
+function handleConfig(config) {
+    let data = Object.assign(defaults, config.params || config.data);
+    // 是否去掉前后空格,默认去掉
+    if (!config.noTrim) {
+        data = trimParams(data);
+    } else {
+        data = data;
+    }
+    if (config.params) {
+        config.params = Object.assign(defaults, data)
+    }
+    if (config.data) {
+        config.data = Object.assign(defaults, data)
+    }
+    return config;
+}
+
+// 请求拦截(axios自动对请求类型进行类型转换)
 http.interceptors.request.use(
     (config) => {
-        config.headers["Authorization"] = myStorage.get("token");
-        // 微信支付的平台字段（放在header里）
-        // config.headers['sceneType'] = wxPayPlatform();
+        config.headers["Authorization"] = myStorage.get(TOKEN);
         // startLoading();
         config = handleConfig(config);
         return config;
@@ -156,22 +138,17 @@ http.interceptors.request.use(
     }
 );
 
-// 响应拦截(返回值如果是json字符串自动进行了json转换)
+// 响应拦截(axios默认自动对响应请求进行类型转换)
 http.interceptors.response.use(
     (response) => {
         if (response == null || response === undefined) {
             return null;
         }
         // endLoading();
-        // 返回值处理
-        let code = response.data.code;
-        let msg = response.data.message;
-        // 有些接口不需要对错误进行处理则过滤
-        // const current =
-        //     response.config.url && response.config.url.replace(configs.baseURL, "");
-        // if (code !== 200 && NoErrorArr.indexOf(current) == -1) {
-        //     responseHandle(code, msg);
-        // }
+        // 响应
+        const code = response.data && response.data.code;
+        const msg = response.data && response.data.message;
+        responseHandle(code, msg);
         return response.data;
     },
     (error) => {
@@ -179,15 +156,8 @@ http.interceptors.response.use(
         let msg =
             error.response && error.response.data && error.response.data.message;
         const status = error.response && error.response.status;
-        // 有些接口不需要对错误进行处理则过滤
-        // const current =
-        //     error.response &&
-        //     error.response.config &&
-        //     error.response.config.url &&
-        //     error.response.config.url.replace(configs.baseURL, "");
-        // if (NoErrorArr.indexOf(current) == -1) {
-        //     errorHandle(status, msg);
-        // }
+        // 错误响应
+        errorHandle(status, msg);
         return Promise.reject(error);
     }
 );

@@ -1,0 +1,42 @@
+@import "~less/base/color.less";
+
+.page-empty {
+    height: 100vh;
+    background-color: #fff;
+    display: flex;
+    align-items: center;
+
+    .page-result {
+        position: relative;
+        text-align: center;
+        width: 100%;
+        padding: 10px 0;
+        background-color: #fff;
+
+        .page-image {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto;
+            line-height: 60px;
+            background-size: 60px 60px;
+        }
+
+        .main-title {
+            font-size: 21px;
+            color: #314659;
+            padding-left: 15px;
+            padding-right: 15px;
+            margin-top: 10px;
+            line-height: 1;
+        }
+
+        .second-text {
+            padding-left: 15px;
+            padding-right: 15px;
+            margin-top: 15px;
+            line-height: 1;
+            color: @text-color-short;
+            font-size: 16px;
+        }
+    }
+}

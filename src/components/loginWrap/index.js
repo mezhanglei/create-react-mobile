@@ -1,13 +1,12 @@
 import React from "react";
 import { Route, Redirect, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import { isLogin } from "@/configs/common.js";
+import { isLogin } from "@/common/common.js";
 
 /**
  * 需要登录的容器组件(需配合Route使用)
  * 功能说明:
  * props: 父组件传来的参数
- * rest: 剩余的其他props参数
  */
 function WrapComponent(props) {
   return (
