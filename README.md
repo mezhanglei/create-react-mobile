@@ -41,7 +41,7 @@ css作用域: 1. 启用css modules后, 类名会被添加上hash字符串, 使�
 1. 如果是功能组件之间的数据通讯尽量采用组件传值, 如果是多个页面组件之间建议选择redux
 2. 通用功能模块尽量解耦封装成组件（高阶组件，自定义组件，hook组件）使用。
 ```
-### image和background背景等静态资源在vue中引入规则
+### image和background背景等静态资源引入规则
 ```
 1. 在js文件中require('路径')或import * from('路径')形式
 2. css文件中, 例如background: url('图片的相对路径');
