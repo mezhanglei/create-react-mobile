@@ -1,4 +1,4 @@
-# react-mobile脚手架(适合做h5端)
+# react-mobile脚手架(适合做h5端，喜欢可以交流点赞)
 
 ## 项目安装和依赖说明
 ```
@@ -25,8 +25,7 @@ npm run csslint 检查css规范
 ### 脚手架功能说明(mddir)
 ```
 1. 支持单或多页面开发, 纯净友好无冗余代码脚手架,开箱修改即用, 使用时注意遵循规范,看清楚目录结构!
-2. 可在configs中自定义不同使用场景,比如添加publicPath, 添加多页面,更改目录, 项目的一些开关等等
-3. 
+2. 可在configs中自定义不同使用场景,比如添加publicPath, 添加多页面,更改目录, 项目的一些配置开关等等
 ```
 
 ### css使用CSS modules来控制变量污染问题
@@ -35,20 +34,20 @@ npm run csslint 检查css规范
          2. 尽量不要写行内样式
 css作用域: 1. 启用css modules后, 类名会被添加上hash字符串, 使用方式: 先import styles from "less文件", 然后styles.类名在代码中使用类
            2. 对于代码中的普通class类名, 可以通过:global {} 包裹,在里面书写类名来修改样式
-           3. 对于动画来说, 需要在调用动画的类名后面添加:local,来保证动画类名hash化,不然调用不会成功
+           3. 调用动画的类名, 需要在样式文件中的类名后面加:local,来保证动画类名hash化,不然调用不会成功，例如 .animation :local {animation: 动画名 all 1s }
 ```
 ### 组件开发规则
 ```
 1. 如果是功能组件之间的数据通讯尽量采用组件传值, 如果是多个页面组件之间建议选择redux
 2. 通用功能模块尽量解耦封装成组件（高阶组件，自定义组件，hook组件）使用。
 ```
-### image和background背景等静态资源在vue中引入规则
+### image和background背景等静态资源引入规则
 ```
 1. 在js文件中require('路径')或import * from('路径')形式
 2. css文件中, 例如background: url('图片的相对路径');
 3. 本地的图片资源必须要手动压缩，大图片在200kb以内，尽量不要超过200kb，可以使用tinypng在线压缩图片资源，可以重复压缩
 ```
-### 目录说明
+### 目录说明和相应规范
 ```
     |-- .babelrc //babel配置文件
     |-- .eslintrc.js //eslint规则配置
@@ -72,9 +71,9 @@ css作用域: 1. 启用css modules后, 类名会被添加上hash字符串, 使�
     |       |-- index.less
     |-- src
     |   |-- api // 接口文件夹, 一个子文件代表一个功能模块
-    |   |-- common // 公共的业务代码都放在这里(公共的请求,公共的业务文件,兼容处理等等放在这里)
-    |   |-- components // 全局要使用的组件
-    |   |-- constants // 项目所有的常量全部放在这里, 禁止在别处定义常量,分散不宜管理, 一个子文件代表一个功能模块
+    |   |-- common // 公共的业务代码都放在这里(公共的接口,公共的业务文件,兼容处理等等放在这里)
+    |   |-- components // 全局要使用的组件必须要放在这里
+    |   |-- constants // 项目所有的常量必须全部放在这里, 一个子文件代表一个功能模块，禁止在别处定义常量,分散不宜管理
     |   |-- http      // 请求配置文件
     |   |   |-- config.js
     |   |   |-- jsonpRequest.js
@@ -88,11 +87,10 @@ css作用域: 1. 启用css modules后, 类名会被添加上hash字符串, 使�
     |   |       |-- index.js
     |   |-- store    // redux仓库
     |   |-- utils   // 全局要使用的js算法
-    |-- static     // 打包时要拷贝的静态资源, 需要在webpack/configs文件中配置引用路径后才能生效(外部引入)
+    |-- static     // 打包时要拷贝的静态资源, 需要在webpack/configs文件中配置引用路径后才能生效
     |-- webpack   // webpack配置文件夹
         |-- configs.js  // 自定义配置
         |-- webpack.dev.js // 开发环境
         |-- webpack.dll.js // 预编译文件(需要预编译时使用)
         |-- webpack.prod.js // 生产环境
-
 ```

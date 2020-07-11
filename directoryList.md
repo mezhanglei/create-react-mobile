@@ -62,7 +62,7 @@
     |   |   |   |-- empty-mobile.less
     |   |   |   |-- empty-web.js
     |   |   |   |-- empty-web.less
-    |   |   |-- loginWrap
+    |   |   |-- login
     |   |   |   |-- index.js
     |   |   |-- mask
     |   |   |   |-- mask.js
