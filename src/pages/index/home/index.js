@@ -3,7 +3,9 @@ import "./index.less";
 import { Button } from "antd-mobile";
 import http from "@/http/request.js";
 import { urlDelQuery, getUrlQuery } from "@/utils/url-utils";
-export default class Home extends React.Component {
+import { connect } from "react-redux";
+
+class Home extends React.Component {
     constructor(props) {
         super(props);
     }
@@ -15,8 +17,11 @@ export default class Home extends React.Component {
     render() {
         return (
             <div>
-                <div className="home">{this.props.type}</div>
+                <div className="home">首页
+                </div>
             </div>
         );
     }
 };
+
+export default Home;

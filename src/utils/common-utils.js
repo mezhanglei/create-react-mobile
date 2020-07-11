@@ -59,25 +59,3 @@ export function throttle(fn) {
         }
     };
 };
-
-/**
- * 发布-订阅者模式 用来实现消息传递
- * 使用方式: 1.首先实例化一个对象 const EventDefined = new EventDefined()
- *           2. 订阅一个事件用来接收值 EventDefined.on('自定义的事件名字', 事件函数)
- *           3. 发布将值传递过去 EventDefined.emit('已定阅的事件名', 需要传的值)
- *           4. 然后在事件函数中可以取到值 function fn(data) { // data就是发布传过来的值 }
- */
-// export function EventDefined() {
-//     //订阅自定义事件,同一个事件订阅几次,触发的时候就会触发几次
-//     this.on = function (type, callback) {
-//         this.handle = this.handle || {};
-//         this.handle[type] = this.handle[type] || [];
-//         this.handle[type].push(callback);
-//     };
-//     // 发布传值(目标自定义事件的所有函数都可以接收到值)
-//     this.emit = function (type, data) {
-//         this.handle[type].forEach((item, index) => {
-//             item(data);
-//         });
-//     };
-// }

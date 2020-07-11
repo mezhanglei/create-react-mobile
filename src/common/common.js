@@ -62,20 +62,6 @@ export function showhtml(htmlString) {
     return <div dangerouslySetInnerHTML={{ __html: htmlString }}></div>;
 }
 
-// 跳转微信授权链接
-export function wxLink() {
-    // 公众号的APPID
-    const appid = "wx7e66d486f850dc7c";
-    // 授权回调页面
-    const redirect_uri = encodeURIComponent(location.origin + '/#/' + "WxAuth");
-    // 返回值类型 这里是code
-    const response_type = "code";
-    // 授权作用域 snsapi_userinfo表示手动授权
-    const scope = "snsapi_userinfo";
-    // 跳转授权链接
-    window.location.href = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appid}&redirect_uri=${redirect_uri}&response_type=${response_type}&scope=${scope}&state=STATE#wechat_redirect`;
-}
-
 
 /**
  * 1.判断iOS和Android

@@ -5,7 +5,7 @@ import { TabBar } from 'antd-mobile';
  * 导航栏容器组件
  * @param {*} props 外界传过来的props
  */
-function FooterNav(props) {
+function TabNav(props) {
     // 底部导航栏
     const navList = [{
         title: "首页",
@@ -35,7 +35,7 @@ function FooterNav(props) {
         selectIcon: "iconfont iconweibiaoti2fuzhi12",
         badge: "",
         dot: true
-    }]
+    }];
 
     let [tabList] = useState(navList);
     return (
@@ -53,33 +53,30 @@ function FooterNav(props) {
                             icon={<i className={item.icon}></i>}
                             selectedIcon={<i className={item.selectIcon} style={{ color: '#33A3F4' }}></i>}
                             selected={props.location.pathname === item.path}
-                            onPress={() => { props.history.push(item.path) }}
+                            onPress={() => { props.history.push(item.path); }}
                         >
                             {/* 利用props.children接收 */}
                             {props.children}
                         </TabBar.Item>
-                    )
+                    );
                 })
             }
         </TabBar>
-    )
+    );
 }
 
 /**
- * 功能：将目标路由组件包裹起来变成有底部导航的页面
- * @param {*} ComponentModule 传入需要底部导航栏的页面组件
- * 使用方式：
- * 1. 先导入： import TabNav from "@/components/tabnav/index.js";
- * 2. 将目标组件包裹：TabNav(目标组件)
- * 3. 通过Route组件实例化(只要在@/router/routes.js中配置过路由的组件可以省略这一步)
+ * 接受一个组件返回另一个组件的高阶组件
+ * @param {*} ParentComponent 容器父组件
+ * @param {*} SubComponent 被包裹子组件
+ * 使用： TabNav(目标组件)
  */
-function TabNav(ComponentModule) {
-    const Wrap = FooterNav;
+function TabNavHigh(SubComponent) {
     return (props) => (
-        <Wrap {...props}>
-            <ComponentModule {...props}></ComponentModule>
-        </Wrap>
+        <TabNav {...props}>
+            <SubComponent {...props}></SubComponent>
+        </TabNav>
     );
-};
+}
 
-export default TabNav;
+export default TabNavHigh;

@@ -3,8 +3,8 @@ import configs from "./config";
 import { Toast } from "antd-mobile";
 import { myStorage } from "@/utils/cache.js";
 import { clearLoginInfo } from "@/common/common.js";
-import { TOKEN } from "@/constants/account/index"
-import { trimParams } from "@/utils/base-utils"
+import { TOKEN } from "@/constants/account/index";
+import { trimParams } from "@/utils/base-utils";
 // 定义loading变量(这里的loading为单例模式，如果不是单例则需要封装变成单例模式)
 let loading;
 
@@ -57,7 +57,7 @@ function errorHandle(status, msg) {
             msg = "请求超时";
             break;
         case 502:
-            msg = '网络连接错误，请稍后再试'
+            msg = '网络连接错误，请稍后再试';
             break;
         case 503:
             msg = "服务不可用";
@@ -101,7 +101,7 @@ function responseHandle(code, msg) {
 // 公共的请求参数
 const defaults = {
     // t: new Date().getTime()
-}
+};
 
 /**
  * @param {Object} config axios的config
@@ -116,10 +116,10 @@ function handleConfig(config) {
         data = data;
     }
     if (config.params) {
-        config.params = Object.assign(defaults, data)
+        config.params = Object.assign(defaults, data);
     }
     if (config.data) {
-        config.data = Object.assign(defaults, data)
+        config.data = Object.assign(defaults, data);
     }
     return config;
 }

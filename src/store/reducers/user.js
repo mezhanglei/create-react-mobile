@@ -20,14 +20,14 @@ export const userReducer = (state = initState, action) => {
     switch (action.type) {
         // 登录
         case 'LOGIN_IN':
-            return { ...state, userInfo: setLocalValue(USER_INFO, action.payload.userInfo) };
+            return { ...state, userInfo: setLocalValue(USER_INFO, action.payload) };
         // 退出账号
         case 'LOGIN_OUT':
             clearLoginInfo();
             return { ...state, userInfo: null };
         // 修改账号资料
         case 'CHANGE_ACCOUNT':
-            return { ...state, userInfo: setLocalValue(USER_INFO, action.payload.userInfo) };
+            return { ...state, userInfo: setLocalValue(USER_INFO, action.payload) };
         default:
             return { ...state };
     }

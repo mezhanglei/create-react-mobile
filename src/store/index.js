@@ -38,7 +38,12 @@ export default store;
  * 2. 合并多个reducer
  * 3. redux的createStore方法实例化一个store
  * 4.使用Provider组件包裹根组件, 从外部封装了整个应用，并向connect高阶组件传递store中的信息,
- * 5.在目标组件中的使用connect方法(获取store传过来的props): connect(mapStateToProps, 其他参数)(目标组件)
+ * 5. 将store中的state内的数据通过connect方法绑定到目标组件及子组件访问：
+ *    (1) 绑定：connect(mapStateToProps, mapDispatchToProps)(目标组件)
+ *   （2）目标组件中在mapStateToProps中定义需要的store中的数据：const mapStateToProps = (state, ownProps) => {return {属性名：state.reducer模块名.state中的属性名 }}
+ *   （3）目标组件中在mapDispatchToProps中定义更改store中值的方法：const mapDispatchToProps = (dispatch, ownProps) => { 方法名：(newState)=> {dispatch(action对象或返回action的函数)} }
+ *   （4）访问属性：在目标组件内通过this.props.属性名可以获取到该属性
+ *   （5）更新属性：在目标组件内通过this.props.方法名(要更新的值) 来更新store中的值
  */
 
 // connect方法参数说明如下：
