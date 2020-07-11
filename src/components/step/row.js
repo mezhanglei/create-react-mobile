@@ -4,19 +4,20 @@ import styles from './row.less';
 
 /**
  * 步骤条组件(横向)
+ * 必填参数
+ *    data：可以采取固定格式 [{
+ *            middle: // 中间节点
+ *            top:  // 上边节点
+ *            bottom: // 下边节点
+ *            }]
+ *        也可以不用转换格式通过renderTop,renderBottom,renderMiddle自定义节点
  *  非必填参数:
- *     currentStatus： 当前点的状态，参考代码里面定义的映射关系
- *     currentIndex：当前进行的步骤的状态，默认第一位
- *     data： 渲染的数据完整格式或者采取renderTop, renderBottom, renderMiddle来自定义渲染各个部分
- *              [{
- *                middle: // 中间节点
- *                top:  // 上边节点
- *                bottom: // 下边节点
- *              }]
+ *    currentStatus： 当前点的状态，参考代码里面定义的映射关系
+ *    currentIndex：当前进行的步骤的状态，默认第一位
  *    stop: 默认false，表示是否终止步骤条进行流转
  *    length: 具体数字或空 | flex  flex表示弹性布局，所有步骤均分父元素长度  具体数字或空则每个步骤有固定的长度
  *    renderTop: 类型function(item,index) | 数字或字符串 所有上边节点自定义（优先级最高）
- *    renderBottom: 类型function(item,index) | 数字或字符串 所有右下边节点自定义（优先级最高）
+ *    renderBottom: 类型function(item,index) | 数字或字符串 所有下边节点自定义（优先级最高）
  *    renderMiddle: 类型function(item,index) | 数字或字符串 所有中间节点自定义（优先级最高）
  */
 export default class MySteps extends React.Component {
