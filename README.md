@@ -47,6 +47,14 @@ css作用域: 1. 启用css modules后, 类名会被添加上hash字符串, 使�
 2. css文件中, 例如background: url('图片的相对路径');
 3. 本地的图片资源必须要手动压缩，大图片在200kb以内，尽量不要超过200kb，可以使用tinypng在线压缩图片资源，可以重复压缩
 ```
+### 本地mock数据模拟接口请求使用规则(非常简单)
+```
+1. 创建mock数据例如: 
+  1. 如果接口是 '/list', 则在mock文件夹下创建list.json,里面写json数据即可
+  2. 如果接口是 '/home/list', 则在mock文件夹下的home文件夹下创建list.json,里面写json数据即可
+  以此类推
+2. npm run dev-mock启动mock数据环境
+```
 ### 目录说明和相应规范
 ```
     |-- .babelrc //babel配置文件
@@ -78,7 +86,7 @@ css作用域: 1. 启用css modules后, 类名会被添加上hash字符串, 使�
     |   |   |-- config.js
     |   |   |-- jsonpRequest.js
     |   |   |-- request.js
-    |   |-- mock // mock数据文件夹(暂未实现)
+    |   |-- mock // mock数据文件夹(看上面使用说明)
     |   |-- pages // 页面代码所在文件夹
     |   |   |-- index.html // 公用的html模板
     |   |   |-- index.js // 多页面公用的js文件

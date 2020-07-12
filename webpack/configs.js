@@ -60,8 +60,13 @@ const commonCSS = [
 
 // 项目全局自定义变量
 const globalDefine = {
-    // 资源引用的公共路径字符串
-    "process.env.PUBLIC_PATH": JSON.stringify(publicPath)
+    'process.env': {
+        // NODE_ENV: process.env.NODE_ENV,
+        // mock数据环境
+        MOCK: process.env.MOCK,
+        // 资源引用的公共路径字符串
+        PUBLIC_PATH: JSON.stringify(publicPath),
+    }
 };
 
 // 页面配置信息
@@ -156,7 +161,9 @@ const devConfig = {
     // 启动页的html位置(相对于ouput的路径, 默认为第一个页面)
     indexHtml: htmlConfigs[0] && htmlConfigs[0].filename,
     // url访问页面的启动页的公共路径(不能以'/'开头)
-    openPage: /^\//.test(publicPath) ? publicPath.replace(/^\/+/, '') : publicPath
+    openPage: /^\//.test(publicPath) ? publicPath.replace(/^\/+/, '') : publicPath,
+    // mock文件夹位置
+    mock: path.join(srcPath, 'mock')
 };
 
 // 生产环境配置

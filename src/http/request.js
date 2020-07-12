@@ -30,7 +30,8 @@ export function endLoading() {
 // 3.multipart/form-data; boundary=${分隔符,尽量定义复杂点, 将请求体中的文本信息和传输文件分割开来}, 专门用于有效的传输文件, 既可以上传二进制数据，也可以上传表单键值对
 const http = axios.create({
     timeout: 1000 * 10,
-    withCredentials: true
+    withCredentials: true,
+    baseURL: process.env.MOCK ? '/mock' : ""
 });
 
 /**

@@ -4,6 +4,7 @@
 // 匹配规则: 1. * 在单个路径中间匹配一个目录/文件(不会匹配路径分隔符/), /* 则表示一个或多个子目录/文件 2. ** 在单个路径中间匹配部分0个或多个目录/文件
 const glob = require("glob");
 const globAll = require("glob-all");
+const fs = require('fs');
 // 1. path.join('字段1','字段2'....) 使用平台特定的分隔符把所有的片段链接生成相对路径,遇到..和../时会进行相对路径计算
 // 2. path.resolve('字段1','字段2'....) 从右到左拼接路径片段,返回一个相对于当前工作目录的绝对路径,当遇到/时表示根路径,遇到../表示上一个目录, 如果还不是完整路径则自动添加当前绝对路径
 const path = require("path");
@@ -335,8 +336,50 @@ module.exports = {
         //   warnings: false,
         //   // 显示错误信息
         //   errors: false
-        // }
+        // },
+        before: function (app, server) {
+            if (process.env.MOCK) {
+                app.get('/mock/*', handleRequest);
+                app.post('/mock/*', handleRequest);
+            }
+        }
     },
     // 开启source-map 用途是为了在开发环境中便于调试错误 因为打包过后的代码和源代码不一样很难阅读 source map一般只在开发环境运行 生产环境还是保持混乱的状态防止逻辑暴露
     devtool: "source-map",
 };
+
+// 接口前缀, 会拦截以此为开头的请求
+const API_PREFIX = '/mock/*';
+
+// 拦截请求
+function handleRequest(req, res) {
+    let data = "";
+    // 接口路径req.originalUrl或req.path
+    let reqPath = req.path.replace(/\/\//g, '/');
+    // 接口路径上的query参数
+    let reqQuery = req.query;
+    // 协议
+    let protocol = req.protocol;
+    let method = reqQuery['method'];
+    // mock请求的接口路径作为mock数据存放的文件路径
+    let fileUrl = path.join(configs.mock, reqPath.replace(/\/mock/ig, "") + '.json');
+    if (!fileUrl) {
+        res.json({
+            code: '-1',
+            msg: '接口不存在'
+        });
+        res.end();
+        return;
+    }
+    try {
+        data = fs.readFileSync(fileUrl, { encoding: 'utf-8' })
+        new Promise(function (resolve) {
+            setTimeout(function () {
+                resolve();
+                res.json(JSON.parse(data));
+            }, Math.random() * 3000);
+        });
+    } catch (e) {
+        console.error(e)
+    }
+}

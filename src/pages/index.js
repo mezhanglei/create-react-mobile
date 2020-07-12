@@ -2,10 +2,10 @@
 
 
 // 只在开发环境下引入
-if (process.env.NODE_ENV === 'development') {
-    import("vconsole").then(module => {
-        const VConsole = module.default;
-        new VConsole();
-    });
-}
+// if (process.env.NODE_ENV === 'development') {
+//     import("vconsole").then(module => {
+//         const VConsole = module.default;
+//         new VConsole();
+//     });
+// }
 
