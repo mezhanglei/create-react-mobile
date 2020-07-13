@@ -22,6 +22,7 @@
         }
       }
     ],
+    "@babel/preset-typescript",
     // 转换react语法
     "@babel/preset-react"
   ],
@@ -44,12 +45,14 @@
     // 异步加载语法解析插件,解析import().then()这种语法
     "@babel/plugin-syntax-dynamic-import",
     // 用来编译类,loose为true表示编译成赋值表达式
-    [
-      "@babel/plugin-proposal-class-properties",
-      {
-        "loose": false
-      }
-    ],
+    ["@babel/plugin-proposal-class-properties", {
+      "loose": true
+    }],
+    // 装饰器
+    ["@babel/plugin-proposal-decorators", {
+      // 使用旧式语法，但是@babel/plugin-proposal-class-properties也必须设置loose为true
+      "legacy": true
+    }],
     // babel-plugin-import配置类库按需加载
     [
       "import",

@@ -178,7 +178,7 @@ export function createArrayByLen(len) {
     return [...new Array(len).keys()];
 }
 
-//; 获取js数组中字符串的最长公共前缀
+// 获取js数组中字符串的最长公共前缀
 export function longCommonPrefix(strs) {
     if (strs.length == 0) {
         return "";
@@ -217,3 +217,35 @@ export function longCommonPrefix(strs) {
     }
     return prefix;
 };
+
+/**
+ * 使用indexof方法实现模糊查询
+ * @param  {Array}  list     进行查询的数组
+ * @param  {String} keyWord  查询的关键词
+ * @return {Array}           查询的结果
+ */
+export function indexOfQuery(list, keyWord) {
+    var arr = [];
+    for (var i = 0; i < list.length; i++) {
+        if (list[i].indexOf(keyWord) >= 0) {
+            arr.push(list[i]);
+        }
+    }
+    return arr;
+}
+
+/**
+ * 使用spilt方法实现模糊查询
+ * @param  {Array}  list     进行查询的数组
+ * @param  {String} keyWord  查询的关键词
+ * @return {Array}           查询的结果
+ */
+export function splitQuery(list, keyWord) {
+    var arr = [];
+    for (var i = 0; i < list.length; i++) {
+        if (list[i].split(keyWord).length > 1) {
+            arr.push(list[i]);
+        }
+    }
+    return arr;
+}
