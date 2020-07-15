@@ -315,9 +315,9 @@ module.exports = {
         proxy: [
             {
                 // 当以context里的任意一个字符串开头的接口都会通过本地代理访问目标接口域名下
-                context: ["/ov-wordorder"],
+                context: ["/xx"],
                 // 要代理访问的目标接口域名
-                target: "http://150.129.193.16:1080",
+                target: "http://xxx.xxx.xxx.com",
                 // 允许代理 websockets 协议
                 ws: true,
                 // true不接受运行在 HTTPS 上，且使用了无效证书的后端服务, false关闭安全检测
