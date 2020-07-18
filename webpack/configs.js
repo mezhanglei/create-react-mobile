@@ -49,7 +49,7 @@ const commonBase = publicPath;
 // script引入的公共js文件
 const commonJs = [
     // 屏幕适配手机
-    commonBase + 'static/flexible/index.js',
+    // commonBase + 'static/flexible/index.js',
     // 预编译文件
     // commonBase + 'static/dll/base_dll.js'
 ];
@@ -71,7 +71,8 @@ const globalDefine = {
 
 // 页面配置信息
 const pages = [
-    // name: src/pages下的页面目录名, 当目录名为index则表示启动页
+    // name: src/pages下的页面目录名, 数组的第一个项为启动页，index目录不建议改名，其他目录可以任意命名
+    // 访问多页面的方式： 域名 + 端口 + 入口的名.html
     { name: "index", title: "第一个页面", favicon: path.join(staticPath, "favicon.ico") },
     { name: "second", title: "第二个页面", favicon: path.join(staticPath, "favicon.ico") }
 ];

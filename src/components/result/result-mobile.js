@@ -1,5 +1,5 @@
 import { Result } from "antd-mobile";
-import styles from './empty-mobile.less';
+import styles from './result-mobile.less';
 import React from "react";
 import { isEmpty } from "@/utils/base-utils";
 
@@ -24,7 +24,7 @@ export default class extends React.Component {
     render() {
         const { imgUrl, title, text } = this.props;
         return (
-            <div className={styles['page-empty']}>
+            <div className={styles['page-result']}>
                 <div className={styles["page-result"]}>
                     <div className={styles['page-image']} style={{ backgroundImage: `url(${imgUrl})` }}>
                     </div>

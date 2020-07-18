@@ -93,6 +93,8 @@ css作用域: 1. 启用css modules后, 类名会被添加上hash字符串, 使�
     |   |   |-- index // 多页面中第一个页面
     |   |   |-- second // 多页面中第二个页面
     |   |       |-- index.js
+    |   |-- routes // 路由所在文件夹，其下的子文件夹名为各个多页入口的名
+    |   |   |-- index // 目前只有一个单页index
     |   |-- store    // redux仓库
     |   |-- utils   // 全局要使用的js算法
     |-- static     // 打包时要拷贝的静态资源, 需要在webpack/configs文件中配置引用路径后才能生效

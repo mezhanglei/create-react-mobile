@@ -1,35 +1,60 @@
 
 // 数组的一些方法
 
+// 归并排序（稳定O(nlogn) 和 快速排序排序(平均O(nlogn)) > sort(看个浏览器底层实现) > 冒泡排序
+
+function isEmpty(value) {
+    const type = ["", undefined, null];
+    if (type.indexOf(value) > -1) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 /**
- * 根据数组中的对象选项的某个属性值进行排序, 返回新的数组
+ * 数组排序，支持对象数组和常规简单数组
  * @param {Array} data 数组
- * @param {String} attr 属性名
+ * @param {String} attr 属性名，可选, 对象数组需指定根据哪个属性排序
  * @param {bool} asc // 表示升序或降序，默认true升序
  */
 export function sortByAttr(data, attr, asc = true) {
     let arr = data;
     arr.sort(function (a, b) {
-        a = a[attr];
-        b = b[attr];
+        if (typeof a != "object" && typeof b != "object") {
+            a = a;
+            b = b;
+        } else {
+            a = a[attr];
+            b = b[attr];
+        }
         return (a - b) * (asc ? 1 : -1);
     });
     return arr;
 }
 
 /**
- * 冒泡排序(从小到大)
+ * 冒泡排序(从小到大),支持对象数组和普通简单数组
  * @param {Array} arr
+ * @param {String} attr 属性名，可选, 对象数组需指定根据哪个属性排序
  */
-export function popSort(arr) {
+export function popSort(arr, attr) {
     if (arr == null) return arr;
     for (var i = 0; i < arr.length - 1; i++) {
         for (var j = 0; j < arr.length - 1 - i; j++) {
             // 相邻元素两两对比，元素交换，大的元素交换到后面
-            if (arr[j] > arr[j + 1]) {
-                var temp = arr[j];
-                arr[j] = arr[j + 1];
-                arr[j + 1] = temp;
+            if (typeof arr[j] != "object") {
+                if (arr[j] > arr[j + 1]) {
+                    var temp = arr[j];
+                    arr[j] = arr[j + 1];
+                    arr[j + 1] = temp;
+                }
+            } else {
+                if (arr[j][attr] > arr[j + 1][attr]) {
+                    var temp = arr[j];
+                    arr[j] = arr[j + 1];
+                    arr[j + 1] = temp;
+                }
             }
         }
     }
@@ -37,26 +62,40 @@ export function popSort(arr) {
 }
 
 /**
- * 快速排序(从小到大)
- * @param {Array} arr 
+ * 快速排序(从小到大)，支持对象数组和普通简单数组
+ * @param {Array} arr
+ * @param {String} attr 属性名，可选，对象数组需指定根据哪个属性排序
  */
-export const quickSort = function (arr) {
+export const quickSort = function (arr, attr) {
     if (arr.length <= 1) {//如果数组长度小于等于1无需判断直接返回即可 
         return arr;
     }
-    let pivotIndex = Math.floor(arr.length / 2);//取基准点 
-    let pivot = arr.splice(pivotIndex, 1)[0];//取基准点的值,splice(index,1)函数可以返回数组中被删除的那个数
+    let pivotIndex = Math.floor(arr.length / 2);//取基准点
+    let pivot = arr.splice(pivotIndex, 1)[0];
+
     let left = [];//存放比基准点小的数组
     let right = [];//存放比基准点大的数组 
     for (let i = 0; i < arr.length; i++) { //遍历数组，进行判断分配
-        if (arr[i] < pivot) {
-            left.push(arr[i]);//比基准点小的放在左边数组
+        if (typeof arr[i] != "object") {
+            if (arr[i] < pivot && !isEmpty(arr[i])) {
+                left.push(arr[i]);//比基准点小的放在左边数组
+            } else {
+                right.push(arr[i]);//比基准点大的放在右边数组
+            }
         } else {
-            right.push(arr[i]);//比基准点大的放在右边数组
+            if (arr[i][attr] < pivot[attr] && !isEmpty(arr[i][attr])) {
+                left.push(arr[i]);//比基准点小的放在左边数组
+            } else {
+                right.push(arr[i]);//比基准点大的放在右边数组
+            }
         }
     }
-    //递归执行以上操作,对左右两个数组进行操作，直到数组长度为<=1； 
-    return quickSort(left).concat([pivot], quickSort(right));
+    //递归执行以上操作,对左右两个数组进行操作，直到数组长度为<=1
+    if (isEmpty(pivot)) {
+        return quickSort(left, attr).concat([], quickSort(right, attr));
+    } else {
+        return quickSort(left, attr).concat([pivot], quickSort(right, attr));
+    }
 };
 
 /**
@@ -92,7 +131,7 @@ export function arrGroupByAtrr(array, { dependName = 'id', childName = 'children
     array &&
         array.map((item) => {
             // 如果是一条新数据则创建一条
-            if (!newObj[item[dependName]]) {
+            if (isEmpty(newObj[item[dependName]])) {
                 // 组合嵌套完成的对象
                 let getObj = {};
                 // 添加区分字段
@@ -122,21 +161,21 @@ export function arrGroupByAtrr(array, { dependName = 'id', childName = 'children
 /**
  * 数组去重(支持数组元素为对象的情况)
  * @param {Array} arr 数组
- * @param {String} attr 当数组元素为对象时需要指定attr
+ * @param {String} attr 可选，当数组元素为对象时需要指定attr属性名
  */
 export function unique(arr, attr) {
     const result = [];
     const tagobj = {};
     for (let item of arr) {
-        if (typeof item === 'object') {
-            if (!tagobj[item[attr]]) {
-                result.push(item);
-                tagobj[item[attr]] = 1;
-            }
-        } else {
-            if (!tagobj[item]) {
+        if (typeof item != 'object') {
+            if (isEmpty(tagobj[item]) && !isEmpty(item)) {
                 result.push(item);
                 tagobj[item] = 1;
+            }
+        } else {
+            if (isEmpty(tagobj[item[attr]]) && !isEmpty(item)) {
+                result.push(item);
+                tagobj[item[attr]] = 1;
             }
         }
     }
@@ -220,15 +259,23 @@ export function longCommonPrefix(strs) {
 
 /**
  * 使用indexof方法实现模糊查询
- * @param  {Array}  list     进行查询的数组
+ * @param  {Array}  list     数组
  * @param  {String} keyWord  查询的关键词
+ * @param {String} attr 可选，当数组元素为对象时需要指定attr属性名
  * @return {Array}           查询的结果
  */
-export function indexOfQuery(list, keyWord) {
-    var arr = [];
-    for (var i = 0; i < list.length; i++) {
-        if (list[i].indexOf(keyWord) >= 0) {
-            arr.push(list[i]);
+export function indexOfQuery(list, keyWord, attr) {
+    let newList = list;
+    let arr = [];
+    for (let i = 0; i < newList.length; i++) {
+        if (typeof newList[i] != "object") {
+            if (newList[i]?.toString().indexOf(keyWord) > -1) {
+                arr.push(newList[i]);
+            }
+        } else {
+            if (newList[i][attr]?.toString().indexOf(keyWord) > -1) {
+                arr.push(newList[i]);
+            }
         }
     }
     return arr;
@@ -238,13 +285,46 @@ export function indexOfQuery(list, keyWord) {
  * 使用spilt方法实现模糊查询
  * @param  {Array}  list     进行查询的数组
  * @param  {String} keyWord  查询的关键词
+ * @param {String} attr 可选，当数组元素为对象时需要指定attr属性名
  * @return {Array}           查询的结果
  */
-export function splitQuery(list, keyWord) {
-    var arr = [];
-    for (var i = 0; i < list.length; i++) {
-        if (list[i].split(keyWord).length > 1) {
-            arr.push(list[i]);
+export function splitQuery(list, keyWord, attr) {
+    let newList = list;
+    let arr = [];
+    for (let i = 0; i < newList.length; i++) {
+        if (typeof newList[i] != "object") {
+            if (newList[i]?.toString().split(keyWord).length > 1) {
+                arr.push(newList[i]);
+            }
+        } else {
+            if (newList[i][attr]?.toString().split(keyWord).length > 1) {
+                arr.push(newList[i]);
+            }
+        }
+    }
+    return arr;
+}
+
+/**
+ * 使用test方法实现模糊查询(推荐，可以给正则添加i规则来决定是否区分大小写)
+ * @param  {Array}  list     原数组
+ * @param  {String} keyWord  查询的关键词
+ * @param {String} attr 可选，当数组元素为对象时需要指定attr属性名
+ * @return {Array}           查询的结果
+ */
+export function regQuery(list, keyWord, attr) {
+    let newList = list;
+    const reg = new RegExp(keyWord);
+    let arr = [];
+    for (let i = 0; i < newList.length; i++) {
+        if (typeof newList[i] != 'object') {
+            if (reg.test(newList[i])) {
+                arr.push(newList[i]);
+            }
+        } else {
+            if (reg.test(newList[i][attr])) {
+                arr.push(newList[i]);
+            }
         }
     }
     return arr;

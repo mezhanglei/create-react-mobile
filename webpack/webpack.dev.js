@@ -34,17 +34,17 @@ const useEslintLoader = {
     }
 };
 
-// px2rem-loader的配置
-const pxToRemLoader = {
-    // 需放到less-loader前面
-    loader: "px2rem-loader",
-    options: {
-        // 1rem等于多少px
-        remUnit: 37.5,
-        // 小数点位数
-        remPrecision: 8
-    },
-};
+// // px2rem-loader的配置
+// const pxToRemLoader = {
+//     // 需放到less-loader前面
+//     loader: "px2rem-loader",
+//     options: {
+//         // 1rem等于多少px
+//         remUnit: 37.5,
+//         // 小数点位数
+//         remPrecision: 8
+//     },
+// };
 
 
 // === webpack的plugins扩展 === //
@@ -177,7 +177,7 @@ module.exports = {
                 use: [
                     "style-loader",
                     "css-loader",
-                    pxToRemLoader,
+                    // pxToRemLoader,
                     {
                         loader: "less-loader",
                         options: {
@@ -213,7 +213,7 @@ module.exports = {
                             localsConvention: 'camelCase'
                         } //css modules
                     },
-                    pxToRemLoader,
+                    // pxToRemLoader,
                     "less-loader"
                 ],
             },
@@ -282,7 +282,7 @@ module.exports = {
         // 在哪个url路径下首次访问启动页
         openPage: configs.openPage,
         // 有时无法访问可能是端口被占用
-        port: 8083,
+        port: 8084,
         // 启动webpack-dev-server时的host(设置为0.0.0.0无论是本机ip或127.0.0.1或localhost都会响应请求)
         host: getNetworkIp(),
         // 开启热更新
@@ -315,9 +315,9 @@ module.exports = {
         proxy: [
             {
                 // 当以context里的任意一个字符串开头的接口都会通过本地代理访问目标接口域名下
-                context: ["/ov-wordorder"],
+                context: ["/xx"],
                 // 要代理访问的目标接口域名
-                target: "http://150.129.193.16:1080",
+                target: "http://xxx.xxx.xxx.com",
                 // 允许代理 websockets 协议
                 ws: true,
                 // true不接受运行在 HTTPS 上，且使用了无效证书的后端服务, false关闭安全检测
@@ -372,7 +372,7 @@ function handleRequest(req, res) {
         return;
     }
     try {
-        data = fs.readFileSync(fileUrl, { encoding: 'utf-8' })
+        data = fs.readFileSync(fileUrl, { encoding: 'utf;-8' });
         new Promise(function (resolve) {
             setTimeout(function () {
                 resolve();
@@ -380,6 +380,6 @@ function handleRequest(req, res) {
             }, Math.random() * 3000);
         });
     } catch (e) {
-        console.error(e)
+        console.er; ror(e);
     }
 }
