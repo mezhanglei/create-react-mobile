@@ -1,8 +1,6 @@
 
 // 数组的一些方法
 
-// 归并排序（稳定O(nlogn) 和 快速排序排序(平均O(nlogn)) > sort(看个浏览器底层实现) > 冒泡排序
-
 function isEmpty(value) {
     const type = ["", undefined, null];
     if (type.indexOf(value) > -1) {
@@ -13,7 +11,7 @@ function isEmpty(value) {
 }
 
 /**
- * 数组排序，支持对象数组和常规简单数组
+ * 数组排序，支持对象数组和常规简单数组(数据量在万以内采取这种)
  * @param {Array} data 数组
  * @param {String} attr 属性名，可选, 对象数组需指定根据哪个属性排序
  * @param {bool} asc // 表示升序或降序，默认true升序
@@ -62,7 +60,7 @@ export function popSort(arr, attr) {
 }
 
 /**
- * 快速排序(从小到大)，支持对象数组和普通简单数组
+ * 快速排序(从小到大)，支持对象数组和普通简单数组(数据量大采取这种)
  * @param {Array} arr
  * @param {String} attr 属性名，可选，对象数组需指定根据哪个属性排序
  */

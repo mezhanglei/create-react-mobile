@@ -12,7 +12,6 @@ import { DefaultRoutes } from "./default-routes";
 import { initWX } from "@/common/wx";
 import LoginComponent from "@/components/login/index";
 import TabNav from "@/components/tabnav/index";
-import LeaveComponent from "@/components/routerHandle/router-leave";
 // import { TransitionGroup, CSSTransition } from "react-transition-group";
 
 /**
@@ -21,19 +20,14 @@ import LeaveComponent from "@/components/routerHandle/router-leave";
  *  1.path: 路由
  *  2.component: 组件
  * 非必填参数说明：
- *  1. exact: 默认false， 为true时表示严格匹配，只有访问的路由和目标完全相等时才会被渲染
- *  2. meta： Object 路由携带的参数对象, 其中的title属性表示页面当前的标题(只适用于非服务端渲染)
+ *  exact: 默认false， 为true时表示严格匹配，只有访问的路由和目标完全相等时才会被渲染
  */
 const routes = [
     {
         path: "/",
         component: TabNav(Home),
         // 路由为/时必须设置exact为true
-        exact: true,
-        // 非官方API，用来存储页面信息
-        meta: {
-            title: "首页",
-        },
+        exact: true
     },
     ...HomeRoutes,
     ...CategoryRoutes,
@@ -42,13 +36,28 @@ const routes = [
     ...DefaultRoutes,
     {
         path: '*',
-        component: TabNav(NotFound),
-        // 非官方API，在渲染页面之前生效
-        onEnter: (props) => {
-            console.log(props, "页面不存在");
-        }
+        component: TabNav(NotFound)
     }
 ];
+
+// 进入路由页面之前触发的方法
+function beforeRouter(props) {
+    // 微信授权
+    // initWX();
+}
+
+/**
+ * 对于路由拦截组件Prompt自定义使用, 离开当前路由页面之前触发
+ * @param {*} message Prompt组件的提示信息
+ * @param {*} callback 控制当前路由跳转或者不跳转
+ */
+function getConfirmation(message, callback) {
+    console.log(location.href)
+    alert(message);
+    callback(true);
+    // callback(true) 表示离开当前路由
+    // callback(false) 表示留在当前路由
+};
 
 /**
  * 渲染路由组件(根据需要修改)
@@ -69,7 +78,7 @@ export default function RouteComponent() {
     // 默认为设置的publicPath
     const basename = process.env.PUBLIC_PATH;
     return (
-        <Router basename={basename}>
+        <Router basename={basename} getUserConfirmation={getConfirmation}>
             <Switch>
                 {routes.map((item, index) => {
                     return (
@@ -78,12 +87,12 @@ export default function RouteComponent() {
                             exact={item.exact ? true : false}
                             path={item.path}
                             render={(props) => {
-                                // 微信授权
-                                // initWX();
-                                // 渲染路由组件前的处理
-                                item.onEnter && item.onEnter(props);
+                                beforeRouter(props);
                                 return (
-                                    <item.component {...props} meta={item.meta}></item.component>
+                                    <React.Fragment>
+                                        <Prompt message={`是否确定离开当前路由？${location.href}`} />
+                                        <item.component {...props} meta={item.meta}></item.component>
+                                    </React.Fragment>
                                 );
                             }}
                         />
