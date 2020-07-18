@@ -326,7 +326,7 @@ module.exports = {
                 changeOrigin: true,
                 // 实际请求中不存在代理字段则重写接口路径把api字符串去掉
                 // pathRewrite: {
-                // 	"^/api": "/ov-wordorder",
+                // 	"^/api": "/xx",
                 // }
             },
         ],
