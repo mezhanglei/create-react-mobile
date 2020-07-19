@@ -21,20 +21,44 @@ export function dataURLtoBlob(dataURL) {
 }
 
 /**
- * 将Blob数据转化为base64编码的DataURL字符串
- * @param {Object} blob Blob类型的数据
+ * base64编码的dataURL转化为file二进制数据(可以js操控的二进制数据)
+ * @param {String} dataURL base64编码的dataURL字符串,格式比如 data:image/png;base64,经过base64编码的字符串
+ * @param {String} filename 文件流的名称
+ * @result {Object} 返回值为File对象
  */
-export function blobToDataURL(blob) {
-    return new Promise(resolve => {
-        // 也可以采用window.URL.createObjectURL(blob)来创建，但注意所有图片加载完释放掉内存
-        if (window.FileReader) {
-            const file = new FileReader();
-            file.onload = function (e) {
-                resolve(e.target.result);
-            };
-            file.readAsDataURL(blob);
-        }
-    });
+export function dataURLtoFile(dataURL, filename) {
+    //获取MIME类型
+    let mime = dataURL.split(',')[0].split(':')[1].split(';')[0];
+    //对经过base64编码的数据进行解码
+    let byteString = window.atob(dataURL.split(',')[1]);
+    // 创建内存
+    let arrayBuffer = new ArrayBuffer(byteString.length);
+    // 生成内存的视图，通过TypeArray对象操作二进制
+    let typeArray = new Uint8Array(arrayBuffer);
+    // 遍历二进制数据通过typeArray对象将数据存储到arrayBuffer对象中
+    for (let i = 0; i < byteString.length; i++) {
+        typeArray[i] = byteString.charCodeAt(i);
+    }
+    // 生成file数据
+    return new File([typeArray], filename, { type: mime });
+}
+
+/**
+ * 将Blob数据转化为base64编码的DataURL字符串
+ * @param {Object} blob Blob类型或file类型的数据
+ * @param {Function} fn 回调函数
+ */
+export function blobToDataURL(blob, fn) {
+    // 也可以采用window.URL.createObjectURL(blob)来创建，但注意所有图片加载完释放掉内存
+    if (window.FileReader) {
+        const file = new FileReader();
+        //如果blob为空返回null
+        if (blob == undefined) return fn(null);
+        file.onload = function (e) {
+            fn(e.target.result);
+        };
+        file.readAsDataURL(blob);
+    }
 }
 
 /**
@@ -117,7 +141,7 @@ export function saveAs(blob, fileName) {
     // ie浏览器兼容不能打开blob链接的方法
     if (window.navigator.msSaveOrOpenBlob) {
         navigator.msSaveBlob(blob, fileName);
-    } else if(window.URL) {
+    } else if (window.URL) {
         //创建a标签
         const link = document.createElement('a');
         //获取body元素
@@ -154,7 +178,7 @@ export function downLoadByGet(url, fileName, headers = {}) {
     // 设置头文件
     Object.keys(headers).map(key => {
         const value = headers[key];
-        if(key) {
+        if (key) {
             xhr.setRequestHeader(key, value);
         };
     });

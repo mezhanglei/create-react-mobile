@@ -5,6 +5,7 @@ import http from "@/http/request.js";
 import { urlDelQuery, getUrlQuery } from "@/utils/url-utils";
 import { connect } from "react-redux";
 import SendVerifyCode from "@/components/sendCode/sendcode";
+import Loaders from "@/components/loader/index"
 
 class Home extends React.Component {
     constructor(props) {
@@ -17,6 +18,13 @@ class Home extends React.Component {
         type: '首页'
     }
     componentDidMount() {
+        // Loaders.start()
+        http({
+            method: "get",
+            url: "/list"
+        }).then(() => {
+            // Loaders.end()
+        })
     }
 
     handle = () => {
