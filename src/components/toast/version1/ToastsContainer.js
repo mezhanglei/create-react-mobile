@@ -40,7 +40,7 @@ class ToastsContainer extends React.Component {
     }
 
     componentWillUnmount() {
-        this.clearTime()
+        this.clearTime();
     }
 
     // 根据传入的position参数决定位置
@@ -139,14 +139,18 @@ ToastsContainer.showInstance = function (props) {
     document.body.appendChild(div);
 
     // 实例化容器并利用闭包存储
-    const instance = ReactDOM.render(<ToastsContainer {...props} />, div)
+    const instance = ReactDOM.render(<ToastsContainer {...props} />, div);
 
     return {
         show() {
-            instance.AddToast();
+            if (instance) {
+                instance.AddToast();
+            }
         },
         clear() {
-            instance.clear();
+            if (instance) {
+                instance.clear();
+            }
         },
         destroy() {
             // 销毁指定容器(DOM)的所有react节点
@@ -155,6 +159,6 @@ ToastsContainer.showInstance = function (props) {
             document.body.removeChild(div);
         }
     };
-}
+};
 
 export default ToastsContainer;

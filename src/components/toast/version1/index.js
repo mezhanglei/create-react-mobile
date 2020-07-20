@@ -19,18 +19,27 @@ const renderNotice = (props) => {
 
 export default {
     success: (message, timer, classNames) => {
-        renderNotice({ status: "success", message, timer, classNames })
+        // 异步延迟加载以遍页面实例化后再执行
+        setTimeout(() => {
+            renderNotice({ status: "success", message, timer, classNames });
+        }, 100);
     },
     info: (message, timer, classNames) => {
-        renderNotice({ status: "info", message, timer, classNames })
+        setTimeout(() => {
+            renderNotice({ status: "info", message, timer, classNames });
+        }, 100);
     },
     warning: (message, timer, classNames) => {
-        renderNotice({ status: "warning", message, timer, classNames })
+        setTimeout(() => {
+            renderNotice({ status: "warning", message, timer, classNames });
+        }, 100);
     },
     error: (message, timer, classNames) => {
-        renderNotice({ status: "error", message, timer, classNames })
+        setTimeout(() => {
+            renderNotice({ status: "error", message, timer, classNames });
+        }, 100);
     }
-}
+};
 
 /**
  * Toast提示(版本1,推荐版本)

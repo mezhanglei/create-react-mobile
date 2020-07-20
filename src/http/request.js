@@ -5,23 +5,16 @@ import { myStorage } from "@/utils/cache.js";
 import { clearLoginInfo } from "@/common/common.js";
 import { TOKEN } from "@/constants/account/index";
 import { trimParams } from "@/utils/base-utils";
-// 定义loading变量(这里的loading为单例模式，如果不是单例则需要封装变成单例模式)
-let loading;
+import Loader from "@/components/loader/index";
 
 // 开始loading
 export function startLoading() {
-    loading = Toast.loading({
-        content: "加载中...",
-        mask: true,
-        duration: 3,
-    });
+    Loader.start();
 }
 
 // 结束loading
 export function endLoading() {
-    if (loading) {
-        loading.clear();
-    }
+    Loader.end();
 }
 
 // 实例化一个axios实例(axios根据请求体自动设置请求头)
@@ -129,12 +122,12 @@ function handleConfig(config) {
 http.interceptors.request.use(
     (config) => {
         config.headers["Authorization"] = myStorage.get(TOKEN);
-        // startLoading();
+        startLoading();
         config = handleConfig(config);
         return config;
     },
     (error) => {
-        // endLoading();
+        endLoading();
         return Promise.reject(error);
     }
 );
@@ -145,7 +138,7 @@ http.interceptors.response.use(
         if (response == null || response === undefined) {
             return null;
         }
-        // endLoading();
+        endLoading();
         // 响应
         const code = response.data && response.data.code;
         const msg = response.data && response.data.message;
@@ -153,7 +146,7 @@ http.interceptors.response.use(
         return response.data;
     },
     (error) => {
-        // endLoading();
+        endLoading();
         let msg =
             error.response && error.response.data && error.response.data.message;
         const status = error.response && error.response.status;

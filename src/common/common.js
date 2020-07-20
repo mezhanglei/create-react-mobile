@@ -91,16 +91,16 @@ export function downLoadApp() {
         }, 2000);
     } else if (isIOS()) {
         // 苹果app应用商店
-        window.location.href = 'itms-apps://itunes.apple.com/cn/app/id1515056060?mt=8';
+        window.location.href = '';
         // if (isInWeChat() || isQQ()) {
-        //     window.location.href = 'itms-apps://itunes.apple.com/cn/app/id1515056060?mt=8';
+        //     window.location.href = '';
         //     return;
         // }
         // //iOS不支持iframe打开APP, 使用window.location.href
         // window.location.href = 'msfacepay://';
         // window.setTimeout(() => {
         //     //打开app应用商店，由app开发人员提供
-        //     window.location.href = 'itms-apps://itunes.apple.com/cn/app/id1515056060?mt=8';
+        //     window.location.href = '';
         // }, 2000);
     }
 }

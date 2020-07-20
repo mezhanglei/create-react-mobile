@@ -12,15 +12,25 @@ const getContainer = (props) => {
 
 export default {
     init: (props) => {
-        const instance = getContainer(props);
-        instance.init(props)
+        // 异步延迟加载以遍页面实例化后再执行
+        setTimeout(() => {
+            const instance = getContainer(props);
+            instance.init();
+            return instance;
+        }, 100);
     },
     start: (props) => {
-        const instance = getContainer(props);
-        instance.start(props)
+        setTimeout(() => {
+            const instance = getContainer(props);
+            instance.start();
+            return instance;
+        }, 100);
     },
     end: (props) => {
-        const instance = getContainer(props);
-        instance.end(props)
+        setTimeout(() => {
+            const instance = getContainer(props);
+            instance.end();
+            return instance;
+        }, 100);
     }
-}
+};

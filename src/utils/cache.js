@@ -15,14 +15,14 @@ const myStorage = {
             }
             return JSON.parse(localStorage.getItem(key));
         } catch (err) {
-            return null
+            return null;
         }
     },
     // 删除数据
     remove(key) {
         localStorage.removeItem(key);
     }
-}
+};
 
 /**
  * sessionStorage标准封装
@@ -41,14 +41,14 @@ const mySession = {
             }
             return JSON.parse(sessionStorage.getItem(key));
         } catch (err) {
-            return null
+            return null;
         }
     },
     // 删除数据
     remove(key) {
         sessionStorage.removeItem(key);
     }
-}
+};
 
 /**
  * localstorage定时缓存封装，设置缓存时如果没有设置时间,单位分钟，默认60分钟
@@ -82,7 +82,7 @@ const timeStorage = {
             //获取缓存数据
             const result = JSON.parse(localStorage.getItem(key));
             //目前时间的毫秒数
-            const now = (new Date()).getTime()
+            const now = (new Date()).getTime();
             //如果缓存时间过期则移除数据
             if (now > result.time) {
                 this.remove(key);
@@ -98,7 +98,7 @@ const timeStorage = {
     remove(key) {
         localStorage.removeItem(key);
     }
-}
+};
 
 // 暴露给外部访问
 export {

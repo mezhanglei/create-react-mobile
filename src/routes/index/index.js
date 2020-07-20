@@ -2,8 +2,9 @@ import React from "react";
 import { Prompt } from 'react-router';
 import { HashRouter as Router, Route, Switch } from "react-router-dom";
 // import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import CacheRoute, { CacheSwitch } from 'react-router-cache-route';
 import { Toast } from "antd-mobile";
-import { HomeRoutes, Home } from "./home-routes";
+import { HomeRoutes, Home, HomeInfo } from "./home-routes";
 import { CategoryRoutes } from "./category-routes";
 import { CartRoutes } from "./cart-routes";
 import { PersonalRoutes } from "./personal-routes";
@@ -12,7 +13,7 @@ import { DefaultRoutes } from "./default-routes";
 import { initWX } from "@/common/wx";
 import LoginComponent from "@/components/login/index";
 import TabNav from "@/components/tabnav/index";
-// import { TransitionGroup, CSSTransition } from "react-transition-group";
+import { myStorage } from "@/utils/cache";
 
 /**
  * 页面路由配置
@@ -29,6 +30,12 @@ const routes = [
         // 路由为/时必须设置exact为true
         exact: true
     },
+    {
+        path: "/home/info/:id",
+        component: HomeInfo,
+        // 路由为/时必须设置exact为true
+        exact: true
+    },
     ...HomeRoutes,
     ...CategoryRoutes,
     ...CartRoutes,
@@ -41,19 +48,21 @@ const routes = [
 ];
 
 // 进入路由页面之前触发的方法
-function beforeRouter(props) {
+function beforeRouter(props, item) {
+
+    // //使用它
+    // console.log(newFun);
     // 微信授权
     // initWX();
 }
 
 /**
- * 对于路由拦截组件Prompt自定义使用, 离开当前路由页面之前触发
+ * 离开当前路由页面之前触发的方法(需要实例化路由拦截组件Prompt)
  * @param {*} message Prompt组件的提示信息
  * @param {*} callback 控制当前路由跳转或者不跳转
  */
 function getConfirmation(message, callback) {
-    console.log(location.href)
-    alert(message);
+    // alert(message);
     callback(true);
     // callback(true) 表示离开当前路由
     // callback(false) 表示留在当前路由
@@ -87,11 +96,11 @@ export default function RouteComponent() {
                             exact={item.exact ? true : false}
                             path={item.path}
                             render={(props) => {
-                                beforeRouter(props);
+                                beforeRouter(props, item);
                                 return (
                                     <React.Fragment>
                                         <Prompt message={`是否确定离开当前路由？${location.href}`} />
-                                        <item.component {...props} meta={item.meta}></item.component>
+                                        <item.component {...props} data={item}></item.component>
                                     </React.Fragment>
                                 );
                             }}
@@ -102,3 +111,40 @@ export default function RouteComponent() {
         </Router>
     );
 }
+
+/**
+ * 缓存组件
+ * CacheRoute组件：默认forward, 可选back, always
+ * 额外的生命周期：didCache和didRecover
+ * props.cacheLifecycles.didCache(this.componentDidCache)
+ * props.cacheLifecycles.didRecover(this.componentDidRecover)
+ */
+// export default function RouteComponent() {
+//     // 默认为设置的publicPath
+//     const basename = process.env.PUBLIC_PATH;
+//     return (
+//         <Router basename={basename} getUserConfirmation={getConfirmation}>
+//             <CacheSwitch>
+//                 {routes.map((item, index) => {
+//                     return (
+//                         <CacheRoute
+//                             key={index}
+//                             when="forward"
+//                             exact={item.exact}
+//                             path={item.path}
+//                             render={(props) => {
+//                                 beforeRouter(props, item);
+//                                 return (
+//                                     <React.Fragment>
+//                                         <Prompt message={`是否确定离开当前路由？${location.href}`} />
+//                                         <item.component {...props} data={item}></item.component>
+//                                     </React.Fragment>
+//                                 );
+//                             }}
+//                         />
+//                     );
+//                 })}
+//             </CacheSwitch>
+//         </Router>
+//     );
+// }
