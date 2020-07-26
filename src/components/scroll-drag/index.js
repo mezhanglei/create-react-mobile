@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { IsDOM, IsNodeList } from '@/utils/dom.js';
+import { isDom, isNodeList } from '@/utils/type.js';
 /**
  * 功能：对于启用了scroll的目标提供鼠标点击拖拽滚动区域横向滑动的功能
  * @param {*} props
@@ -17,9 +17,9 @@ export default function ScrollTableWrapper(props) {
     const [isScroll, setIsScroll] = useState(false);
     const [downPositionX, setDownPositionX] = useState(0);
     // 要操作的dom数组
-    const target = (props.target instanceof Array) ? props.target : (IsNodeList(props.target) ? [...props.target] : [props.target]);
+    const target = (props.target instanceof Array) ? props.target : (isNodeList(props.target) ? [...props.target] : [props.target]);
     const doms = target.map((item) => {
-        if (IsDOM(item)) {
+        if (isDom(item)) {
             return item;
         }
     });

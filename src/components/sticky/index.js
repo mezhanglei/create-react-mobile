@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { IsDOM, IsNodeList } from '@/utils/dom.js';
+import { isDom, isNodeList } from '@/utils/type.js';
 
 // 监听的事件类别
 // const EVENTS = [
@@ -29,9 +29,9 @@ const EVENTS = [
  */
 export default function EasySticky(props) {
     // 要操作的dom数组
-    const target = (props.target instanceof Array) ? props.target : (IsNodeList(props.target) ? [...props.target] : [props.target]);
+    const target = (props.target instanceof Array) ? props.target : (isNodeList(props.target) ? [...props.target] : [props.target]);
     // 要吸顶的根节点
-    const root = IsDOM(props.root) ? props.root : null;
+    const root = isDom(props.root) ? props.root : null;
     // 绑定事件
     const addEvent = () => {
         EVENTS.map((event) => {
@@ -49,9 +49,9 @@ export default function EasySticky(props) {
     // 事件处理函数
     const handleEvent = (e) => {
         try {
-            if (IsDOM(root)) {
+            if (isDom(root)) {
                 target.map((dom) => {
-                    if (IsDOM(dom)) {
+                    if (isDom(dom)) {
                         // 距离滚动根节点的初始距离
                         const initDistance = props.initDistance || 0;
                         // 距离滚动根节点多少开始吸顶
@@ -68,6 +68,7 @@ export default function EasySticky(props) {
                             `-o-transform:${transform}`
                         ];
 
+                        // 当正常情况时
                         if (rootScrollTop - initDistance < topDistance) {
                             // console.log(rootScrollTop, '上');
                             // dom.style.cssText = '';
@@ -80,7 +81,7 @@ export default function EasySticky(props) {
                 });
             }
         } catch (error) {
-            console.error(error);
+            console.log(error);
         }
     };
 

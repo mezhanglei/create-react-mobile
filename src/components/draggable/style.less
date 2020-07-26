@@ -1,0 +1,38 @@
+.DraggableTags {
+  position: relative;
+  height: 100%;
+  &::after {
+    content: '';
+    display: block;
+    clear: both;
+  }
+
+  &-tag {
+    display: inline-block;
+    position: relative;
+    color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+  &-undraggable {
+    cursor: no-drop;
+  }
+  &-tag-drag {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1;
+  }
+}
+
+.hotspot-9485743 {
+  cursor: move;
+}
+.excludedInHotspot-9485743 {
+  cursor: default;
+}

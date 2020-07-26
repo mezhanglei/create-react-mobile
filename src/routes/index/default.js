@@ -1,3 +1,6 @@
+// tab栏高阶组件
+import TabNav from "@/components/tabnav/index";
+
 const NotWechat = React.lazy(() => import(/* webpackChunkName: "cart" */ '@/components/default/not-wechat'));
 const NotFound = React.lazy(() => import(/* webpackChunkName: "cart" */ '@/components/default/not-found'));
 const AuthWechat = React.lazy(() => import(/* webpackChunkName: "cart" */ '@/components/default/wechat-auth'));
@@ -7,15 +10,15 @@ export const DefaultRoutes = [
     // 404页面路由
     {
         path: "/not-found",
-        component: NotFound
+        component: TabNav(NotFound)
     },
     // 不是微信的页面
     {
         path: "/not-wechat",
-        component: NotWechat
+        component: TabNav(NotWechat)
     },
     {
         path: "/auth-wechat",
-        component: AuthWechat
+        component: TabNav(AuthWechat)
     },
 ];

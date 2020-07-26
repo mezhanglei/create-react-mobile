@@ -34,6 +34,18 @@ const useEslintLoader = {
     }
 };
 
+// // px2rem-loader的配置
+// const pxToRemLoader = {
+//     // 需放到less-loader前面
+//     loader: "px2rem-loader",
+//     options: {
+//         // 1rem等于多少px
+//         remUnit: 37.5,
+//         // 小数点位数
+//         remPrecision: 8
+//     },
+// };
+
 
 // === webpack的plugins扩展 === //
 
@@ -165,6 +177,7 @@ module.exports = {
                 use: [
                     "style-loader",
                     "css-loader",
+                    // pxToRemLoader,
                     {
                         loader: "less-loader",
                         options: {
@@ -200,6 +213,7 @@ module.exports = {
                             localsConvention: 'camelCase'
                         } //css modules
                     },
+                    // pxToRemLoader,
                     "less-loader"
                 ],
             },
@@ -208,6 +222,7 @@ module.exports = {
             // 	use: [
             // 		"style-loader",
             // 		"css-loader",
+            // 		pxToRemLoader,
             // 		"sass-loader",
             // 	],
             // },
@@ -267,7 +282,7 @@ module.exports = {
         // 在哪个url路径下首次访问启动页
         openPage: configs.openPage,
         // 有时无法访问可能是端口被占用
-        port: 8083,
+        port: 8084,
         // 启动webpack-dev-server时的host(设置为0.0.0.0无论是本机ip或127.0.0.1或localhost都会响应请求)
         host: getNetworkIp(),
         // 开启热更新

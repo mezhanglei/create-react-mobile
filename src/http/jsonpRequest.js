@@ -15,7 +15,7 @@ export function jsonpRequest(obj) {
         //定义后台执行的函数名,默认callback
         let defaultKey = obj.jsonpKey || 'callback';
         //定义前端的执行函数名(默认一个随机的名称))
-        let defaultName = obj.jsonpCallback || 'jsonp' + ('v1.0.0' + Math.random()).replace(/\D/g, '') + '_' + new Date().getTime();
+        let defaultName = obj.jsonpCallback || 'jsonp' + Math.random().replace(/\D/g, '') + '_' + new Date().getTime();
         //请求参数拼接字符串
         let dataStr = '';
         for (let key in obj.data) {
@@ -32,6 +32,8 @@ export function jsonpRequest(obj) {
         // 定义前端的执行函数
         window[defaultName] = function (result) {
             resolve(result);
+            // 移出标签
+            // script.remove();
         };
     });
-}
+}  

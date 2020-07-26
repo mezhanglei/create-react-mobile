@@ -61,7 +61,7 @@ export function isNodeList(data) {
     return getType(data) == '[object NodeList]';
 }
 
-// 判断值是否为空, true为空，false为非空
+// 判断值是否为空
 export function isEmpty(value) {
     const type = ["", undefined, null];
     if (type.indexOf(value) > -1) {

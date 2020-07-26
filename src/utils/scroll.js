@@ -8,26 +8,26 @@
  * @param {Number} time 每次执行时间间隔,单位ms
  */
 export function scroll(dom, currentY, targetY, step = 10, time = 0) {
-  clearInterval(dom.timeID)
-  dom.timeID = setInterval(function () {
-    //  向下运动
-    if (currentY < targetY) {
-      currentY += step;
-      dom.scrollTop = currentY;
-      if (currentY > targetY) {  //边界检测
-        dom.scrollTop = targetY;
-        clearInterval(dom.timeID);
-      }
-      // 向上运动
-    } else {
-      currentY -= step;
-      dom.scrollTop = currentY;
-      if (currentY <= targetY) {   //边界检测
-        dom.scrollTop = currentY;
-        clearInterval(dom.timeID);
-      }
-    }
-  }, time)
+    clearInterval(dom.timeID);
+    dom.timeID = setInterval(function () {
+        //  向下运动
+        if (currentY < targetY) {
+            currentY += step;
+            dom.scrollTop = currentY;
+            if (currentY > targetY) { //边界检测
+                dom.scrollTop = targetY;
+                clearInterval(dom.timeID);
+            }
+            // 向上运动
+        } else {
+            currentY -= step;
+            dom.scrollTop = currentY;
+            if (currentY <= targetY) { //边界检测
+                dom.scrollTop = currentY;
+                clearInterval(dom.timeID);
+            }
+        }
+    }, time);
 }
 
 
@@ -39,24 +39,24 @@ export function scroll(dom, currentY, targetY, step = 10, time = 0) {
  * @param {Number} time 每次执行时间间隔,单位ms
  */
 export function windowScroll(currentY, targetY, step = 10, time = 0) {
-  clearInterval(document.timeID)
-  document.timeID = setInterval(function () {
-    //  向下运动
-    if (currentY < targetY) {
-      currentY += step;
-      window.scrollTo(0, currentY);
-      if (currentY > targetY) {  //边界检测
-        window.scrollTo(0, targetY);
-        clearInterval(document.timeID);
-      }
-      // 向上运动
-    } else {
-      currentY -= step;
-      window.scrollTo(0, currentY);
-      if (currentY <= targetY) {   //边界检测
-        window.scrollTo(0, targetY);
-        clearInterval(document.timeID);
-      }
-    }
-  }, time)
+    clearInterval(document.timeID);
+    document.timeID = setInterval(function () {
+        //  向下运动
+        if (currentY < targetY) {
+            currentY += step;
+            window.scrollTo(0, currentY);
+            if (currentY > targetY) { //边界检测
+                window.scrollTo(0, targetY);
+                clearInterval(document.timeID);
+            }
+            // 向上运动
+        } else {
+            currentY -= step;
+            window.scrollTo(0, currentY);
+            if (currentY <= targetY) { //边界检测
+                window.scrollTo(0, targetY);
+                clearInterval(document.timeID);
+            }
+        }
+    }, time);
 }

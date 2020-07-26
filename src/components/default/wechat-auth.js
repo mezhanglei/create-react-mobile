@@ -1,4 +1,4 @@
-import { message } from "antd";
+import { Toast } from "antd-mobile";
 import { getUrlQuery } from "@/utils/url";
 import { WECHAT_TOKEN } from "@/constants/account/index";
 import { myStorage } from "@/utils/cache.js";
@@ -6,6 +6,7 @@ import { handleRedirect } from "@/common/wx";
 
 /**
  * 微信授权页面（中转页）
+ * 只处理授权逻辑，不做渲染
  */
 
 const AuthWechat = (props) => {
@@ -20,7 +21,7 @@ const AuthWechat = (props) => {
     myStorage.remove(WECHAT_TOKEN);
     // 授权失败的处理
     const errorHandle = () => {
-        message.error("微信授权失败, 请稍后再试");
+        Toast.fail("微信授权失败, 请稍后再试");
     };
 
     // 请求token

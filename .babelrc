@@ -57,10 +57,9 @@
     [
       "import",
       {
-        "libraryName": "antd",
-        "libraryDirectory": "es",
+        "libraryName": "antd-mobile",
         // css 表示导入解析后的css文件
-        // true 表示在解析阶段引入less
+        // true 表示在解析阶段引入
         "style": true
       }
     ]

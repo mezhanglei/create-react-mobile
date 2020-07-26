@@ -9,7 +9,7 @@
 import { clearLoginInfo } from '@/common/common.js';
 import { TOKEN, USER_INFO } from "@/constants/account/index";
 // 用来持久化数据的方法
-import { myStorage, mySession } from "@/utils/cache";
+import { mySession, myStorage } from "@/utils/cache";
 // 初始数据
 let initState = {
     // 登录信息

@@ -1,15 +1,19 @@
 import React from "react";
 import { Prompt } from 'react-router';
-import { HashRouter as Router, Route, Switch } from "react-router-dom";
-// import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import { HomeRoutes, Home } from "./home";
+// import { HashRouter as Router, Route, Switch } from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import CacheRoute, { CacheSwitch, dropByCacheKey, getCachingKeys } from 'react-router-cache-route';
+import { Toast } from "antd-mobile";
+import { HomeRoutes, Home, HomeInfo } from "./home";
 import { CategoryRoutes } from "./category";
 import { CartRoutes } from "./cart";
 import { PersonalRoutes } from "./personal";
 import NotFound from "@/components/default/not-found";
 import { DefaultRoutes } from "./default";
 import { initWX } from "@/common/wx";
-import LoginComponent from "@/components/login";
+import LoginComponent from "@/components/login/index";
+import TabNav from "@/components/tabnav/index";
+import { myStorage } from "@/utils/cache";
 
 /**
  * 页面路由配置
@@ -22,9 +26,15 @@ import LoginComponent from "@/components/login";
 const routes = [
     {
         path: "/",
-        component: Home,
+        component: TabNav(Home),
         // 路由为/时必须设置exact为true
-        exact: true
+        exact: true,
+        // 缓存控制
+        cache: true
+    },
+    {
+        path: "/home/info/:id",
+        component: HomeInfo
     },
     ...HomeRoutes,
     ...CategoryRoutes,
@@ -33,7 +43,7 @@ const routes = [
     ...DefaultRoutes,
     {
         path: '*',
-        component: NotFound
+        component: TabNav(NotFound)
     }
 ];
 

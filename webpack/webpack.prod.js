@@ -36,6 +36,18 @@ const configs = require('./configs.js');
 
 // === webpack的loader扩展 === //
 
+// px2rem-loader的配置
+const pxToRemLoader = {
+    // 需放到less-loader前面
+    loader: "px2rem-loader",
+    options: {
+        // 1rem等于多少px
+        remUnit: 37.5,
+        // 小数点位数
+        remPrecision: 8
+    },
+};
+
 
 // === webpack的plugins扩展(plugins中不允许空值存在) === //
 
@@ -151,6 +163,7 @@ const webpackConfig = {
                         },
                     },
                     "css-loader",
+                    // pxToRemLoader,
                     "postcss-loader",
                     {
                         loader: "less-loader",
@@ -193,6 +206,7 @@ const webpackConfig = {
                             localsConvention: 'camelCase'
                         } //css modules
                     },
+                    // pxToRemLoader,
                     // 提供一种用js来处理css方法,抽象成语法树结构,一般不单独使用
                     // 1. 在postcss.config.js导出autoprefixer用来自动添加前缀,在cssloader之后执行
                     // 2. 然后在package.json里设置borowserslist选项来设置浏览器兼容版本
@@ -211,6 +225,7 @@ const webpackConfig = {
             // 		},
             // 		// 'style-loader',
             // 		"css-loader",
+            // 		pxToRemLoader,
             // 		// 提供一种用js来处理css方法,抽象成语法树结构,一般不单独使用
             // 		// 1. 在postcss.config.js导出autoprefixer用来自动添加前缀,在cssloader之后执行
             // 		// 2. 然后在package.json里设置borowserslist选项来设置浏览器兼容版本

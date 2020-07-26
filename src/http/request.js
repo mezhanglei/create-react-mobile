@@ -1,10 +1,10 @@
 import axios from "axios";
 import configs from "./config";
-import { message } from "antd";
+import { Toast } from "antd-mobile";
 import { myStorage } from "@/utils/cache.js";
 import { clearLoginInfo } from "@/common/common.js";
 import { TOKEN } from "@/constants/account/index";
-import { trimParams } from "@/utils/base";
+import { trimParams } from "@/utils/base.js";
 import Loader from "@/components/loader/index";
 
 // 开始loading

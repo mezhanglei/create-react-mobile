@@ -58,8 +58,10 @@
     "mini-css-extract-plugin": "^0.8.0",
     "optimize-css-assets-webpack-plugin": "^5.0.3",
     "postcss-loader": "^3.0.0",
+    "postcss-px-to-viewport": "^1.1.1",
     "prop-types": "^15.7.2",
     "purgecss-webpack-plugin": "^1.6.0",
+    "px2rem-loader": "^0.1.9",
     "regenerator-runtime": "^0.13.5",
     "speed-measure-webpack-plugin": "^1.3.1",
     "style-loader": "^1.0.0",
@@ -77,9 +79,8 @@
     "webpack-merge": "^4.2.2"
   },
   "dependencies": {
-    "antd": "^4.4.2",
+    "antd-mobile": "^2.3.1",
     "axios": "^0.19.2",
-    "bpmn-js": "^7.2.1",
     "clipboard": "^2.0.6",
     "crypto-js": "^4.0.0",
     "fastclick": "^1.0.6",
