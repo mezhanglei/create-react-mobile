@@ -1,4 +1,4 @@
-import { WatchableStore } from "@/utils/watchable-utils";
+import { WatchableStore } from "@/utils/watchable";
 
 /**
  * 实例化一个字类，监听添加Toast事件

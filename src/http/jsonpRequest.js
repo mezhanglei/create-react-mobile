@@ -34,4 +34,4 @@ export function jsonpRequest(obj) {
             resolve(result);
         };
     });
-}  
+}

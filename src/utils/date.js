@@ -1,4 +1,5 @@
-import { formatFloat } from './base-utils.js';
+import { formatFloat } from './base.js';
+import { isArray, isString, isEmpty } from "./type";
 
 //===时间格式化操作===//
 
@@ -90,9 +91,12 @@ export function dateFormat(time, fmt = 'YYYY-MM-DD') {
 /**
  * 将时间转换成几分钟前，几小时前等等
  * @param {*} time 时间字符串/对象/时间戳
- * @param {Array} name 数组类型，默认从秒到年依次匹配,也可以指定某个单位。
+ * @param {String | Array} unitType  支持数组和字符串类型，表示指定要展示的单位
+ *                                   1. 没有指定则默认从年到秒时间跨度大于1个单位的优先展示
+ *                                   2. 单位为字符串类型, 则返回该类型的时间数据
+ *                                   3. 单位为数组类型，则从年到秒时间跨度大于1个单位的优先展示
  */
-export function getDateDiff(time, name) {
+export function getDateDiff(time, unitType) {
     if (!getNewDate(time)) {
         return "";
     }
@@ -100,65 +104,65 @@ export function getDateDiff(time, name) {
     const now = new Date().getTime();
     const diffValue = now - timestamp;
     if (diffValue < 0) { return; }
+    if (diffValue < 1000) { return "刚刚"; }
     // 要展示的时间单位，按照从小到大书写
     const opt = [{
-        name: "second",
+        type: "second",
         label: '秒前',
         value: 1000
     }, {
-        name: "minute",
+        type: "minute",
         label: '分钟前',
         value: 1000 * 60
     }, {
-        name: "hour",
+        type: "hour",
         label: '小时前',
         value: 1000 * 60 * 60
     }, {
-        name: "day",
+        type: "day",
         label: '天前',
         value: 1000 * 60 * 60 * 24
     }, {
-        name: "week",
+        type: "week",
         label: '周前',
         value: 1000 * 60 * 60 * 24 * 7
     }, {
-        name: "month",
+        type: "month",
         label: '月前',
         value: 1000 * 60 * 60 * 24 * 30
     }, {
-        name: "year",
+        type: "year",
         label: '年前',
         value: 1000 * 60 * 60 * 24 * 30 * 12
     }];
+    // 转换后的时间数组
     let result = [];
-    opt.forEach(item => {
-        let count = diffValue / item.value || 0;
-        // 如果name为空则默认会返回所有时间单位
-        if (name === undefined || name === null || name === "" || (name instanceof Array && name.length === 0)) {
-            if (count > 1) {
-                result.push({
-                    name: item.name,
-                    value: item.value,
-                    text: formatFloat(count) + item.label
-                });
+    // 如果单位为字符串, 则返回指定的单位时间
+    if (isString(unitType)) {
+        opt.map(item => {
+            if (item.type == unitType) {
+                const count = diffValue / item.value || 0;
+                result.push(formatFloat(count) + item.label);
             }
-            // 如果name有值则只返回指定name的时间单位
-        } else if (name instanceof Array && name.length > 0) {
-            if (name.indexOf(item.name) > -1 && count > 0) {
-                result.push({
-                    name: item.name,
-                    value: item.value,
-                    text: formatFloat(count) + item.label
-                });
+        });
+        // 单位为字符串数组类型，则从年到秒时间跨度大于1个单位的优先展示
+    } else if (isArray(unitType) && unitType.length > 0) {
+        opt.map(item => {
+            const count = diffValue / item.value || 0;
+            if (unitType.indexOf(item.type) > -1 && count > 1) {
+                result.push(formatFloat(count) + item.label);
             }
-        }
-    });
-    if (result && result.length > 0) {
-        const recent = result[result.length - 1];
-        return recent.text;
+        });
+        // 默认
     } else {
-        return "刚刚";
+        opt.map(item => {
+            const count = diffValue / item.value || 0;
+            if (count > 1) {
+                result.push(formatFloat(count) + item.label);
+            }
+        });
     }
+    return result[result.length - 1];
 }
 
 // ===日的操作=== //
@@ -180,7 +184,7 @@ export function getDateList(startTime, endTime, fmt = 'YYYY-MM-DD') {
     // 结束时间对象
     let end = getNewDate(endTime);
 
-    // 注意set方法: 设置当前时间跨度下的0-n(年/月/日/时/分/秒)加上当前的具体时间,返回时间戳
+    // 年月日规则对应的时间跨度
     const rules = [{
         type: 'YYYY',
         setName: 'setFullYear',

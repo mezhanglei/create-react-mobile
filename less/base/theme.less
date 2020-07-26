@@ -1,99 +1,18 @@
 @import "./color.less";
 
-// ant-mobile的ui库的主题颜色定制
+// ant-design的ui库的主题颜色定制
 
-// 全局/品牌色
-@brand-primary: @mine-primary-color;
-// 成功颜色
-@brand-success: @mine-success-color;
-// 警告颜色
-@brand-warning: @mine-warning-color;
-// 错误颜色
-@brand-error: @mine-error-color;
-
-// 文字基本颜色
-@color-text-base: @mine-text-color;
-// 基本颜色的反色
-@color-text-base-inverse: #fff;
-// 次要颜色
-@color-text-secondary: @mine-text-color-secondary;
-// 短文字的描述颜色
-@color-text-caption: @mine-text-color-short;
-// 失效的颜色
-@color-text-disabled: @mine-disbaled-color;
-// 长文字的基本颜色
-@color-text-paragraph: @mine-text-color-long;
-// 链接的颜色
-@color-link: @mine-link-color;
-
-
-// === 背景色 === //
-// 组件默认背景
-@fill-base: #fff;
-// 页面背景
-@fill-body: #f5f5f9;
-// 组件默认背景 - 按下
-@fill-tap: #ddd;
-// 不能点击的背景色
-@fill-disabled: #ddd;
-// 遮罩背景
-@fill-mask: rgba(0, 0, 0, 0.4);
-// 许多小图标的颜色，比如一些小圆点，加减号
-@color-icon-base: #ccc;
-// 灰色填充背景
-@fill-grey: #f7f7f7;
-
-
-// === 边框 === //
-// 透明度
-@opacity-disabled: 0.3; // switch checkbox radio 等组件禁用的透明度
-// 圆的圆角设置
-@radius-circle: 50%;
-// 边框色
-@border-color-base: @mine-border-color-base;
-
-// === 按钮的颜色 === //
-// 实心的按钮的颜色
-@primary-button-fill: @mine-primary-color;
-// 实心的按钮点击时的颜色
-@primary-button-fill-tap: fade(@mine-primary-color, 60%);
-// 空心按钮 同时应用于背景、文字颜色、边框色
-@ghost-button-color: @mine-primary-color;
-// 空心按钮点击时的颜色渐变
-@ghost-button-fill-tap: fade(@mine-primary-color, 60%);
-// 警告的按钮填充色
-@warning-button-fill: @mine-warning-color;
-// 警告按钮点击时的颜色
-@warning-button-fill-tap: fade(@mine-warning-color, 60%);
-// 点击警告按钮颜色
-@link-button-fill-tap: @mine-disbaled-color;
-
-// === input控件的颜色 === //
-// input clear icon 的背景色
-@input-color-icon: #ccc;
-// input clear icon 选中时的颜色
-@input-color-icon-tap: @mine-primary-color;
-// segmented-control， 同时应用于背景、文字颜色、边框色
-@segmented-control-color: @mine-primary-color;
-// 文本框的占位符颜色
-@color-text-placeholder: #bbb;
-// search-bar
-@search-bar-fill: #efeff4;
-// input search icon 的背景色
-@search-color-icon: #bbb;
-
-// === toast提示的颜色 === //
-// toast: activity-indicator 的背景颜色
-@toast-fill: rgba(58, 58, 58, 0.9);
-
-// notice-bar 背景色
-@notice-bar-fill: #fefcec;
-// notice-bar 文字色
-@notice-bar-color: #f76a24;
-
-// switch 填充色
-@switch-fill: @mine-primary-color;
-// 安卓下的填充色
-@switch-fill-android: @mine-primary-color;
-// tag 选中时的颜色
-@tag-color: @mine-primary-color;
+//  ===全局=== //
+@primary-color: @mine-primary-color; // 全局主色
+@link-color: @mine-link-color; // 链接色
+@success-color: @mine-success-color; // 成功色
+@warning-color: @mine-warning-color; // 警告色
+@error-color: @mine-error-color; // 错误色
+@font-size-base: @mine-font-size-base; // 主字号
+@heading-color: @mine-text-color; // 标题色
+@text-color: @mine-text-color; // 主文本色
+@text-color-secondary : @mine-text-color-secondary; // 次文本色
+@disabled-color : @mine-disbaled-color; // 失效色
+@border-radius-base: 4px; // 组件/浮层圆角
+@border-color-base: @mine-border-color-base; // 边框色
+@box-shadow-base: @mine-box-shadow-base; // 浮层阴影

@@ -1,10 +1,10 @@
-import { dataURLtoFile, blobToDataURL } from "./file-utils"
+import { dataURLtoFile, blobToDataURL } from "./file";
 /**
-* canvas压缩图片, 返回base64 的dataUrl数据
+* canvas压缩图片, 返回file类型二进制文件流
 * @param {参数obj} param 
 * @param {文件二进制流} param.file 必传
 * @param {目标压缩大小} param.targetSize 不传初始赋值-1
-* @param {输出图片宽度} param.width 不传初始赋值-1，等比缩放不用传高度
+* @param {输出图片宽度} param.width 不传初始赋值-1
 * @param {输出图片名称} param.fileName 不传初始赋值new Date().toString()时间字符串
 * @param {压缩图片程度} param.quality 不传初始赋值0.92。值范围0~1
 * @param {回调函数} param.succ 必传
@@ -62,7 +62,7 @@ export function pressImg(param) {
                         //返回文件流
                         param.succ(resultFile);
                     }
-                }
+                };
             }
         });
     }

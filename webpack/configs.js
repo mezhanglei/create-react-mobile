@@ -48,8 +48,6 @@ const baseConfig = {
 const commonBase = publicPath;
 // script引入的公共js文件
 const commonJs = [
-    // 屏幕适配手机
-    // commonBase + 'static/flexible/index.js',
     // 预编译文件
     // commonBase + 'static/dll/base_dll.js'
 ];
@@ -61,7 +59,6 @@ const commonCSS = [
 // 项目全局自定义变量
 const globalDefine = {
     'process.env': {
-        // NODE_ENV: process.env.NODE_ENV,
         // mock数据环境
         MOCK: process.env.MOCK,
         // 资源引用的公共路径字符串

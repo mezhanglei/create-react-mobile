@@ -4,7 +4,7 @@
 
 import { myStorage, mySession } from "@/utils/cache.js";
 import { TOKEN, USER_INFO } from "@/constants/account/index";
-import { isIOS, isAndroid, isInWeChat, isQQ } from "@/utils/reg-utils";
+import { isIOS, isAndroid, isInWeChat, isQQ } from "@/utils/reg.js";
 
 // 清空用户信息和token等信息
 export function clearLoginInfo() {
@@ -90,17 +90,7 @@ export function downLoadApp() {
             window.location.href = "安卓下载地址";
         }, 2000);
     } else if (isIOS()) {
-        // 苹果app应用商店
-        window.location.href = '';
-        // if (isInWeChat() || isQQ()) {
-        //     window.location.href = '';
-        //     return;
-        // }
-        // //iOS不支持iframe打开APP, 使用window.location.href
-        // window.location.href = 'msfacepay://';
-        // window.setTimeout(() => {
-        //     //打开app应用商店，由app开发人员提供
-        //     window.location.href = '';
-        // }, 2000);
+        // 苹果app应用商店, iOS不支持iframe打开APP, 使用window.location.href
+        window.location.href = '应用商店地址';
     }
 }

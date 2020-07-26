@@ -1,6 +1,6 @@
 import wx from 'weixin-js-sdk';
 import http from '@/http/request.js';
-import { isInWeChat, isIOS } from "@/utils/reg-utils.js";
+import { isInWeChat, isIOS } from "@/utils/reg.js";
 /**
  * 微信分享
  */

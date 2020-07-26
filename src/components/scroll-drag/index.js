@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { IsDOM, IsNodeList } from '@/utils/dom-utils.js';
+import { IsDOM, IsNodeList } from '@/utils/dom.js';
 /**
  * 功能：对于启用了scroll的目标提供鼠标点击拖拽滚动区域横向滑动的功能
  * @param {*} props

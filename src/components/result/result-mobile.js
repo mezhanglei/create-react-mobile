@@ -1,7 +1,6 @@
-import { Result } from "antd-mobile";
 import styles from './result-mobile.less';
 import React from "react";
-import { isEmpty } from "@/utils/base-utils";
+import { isEmpty } from "@/utils/type";
 
 /**
  * 移动端notFound页面

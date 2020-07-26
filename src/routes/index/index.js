@@ -2,18 +2,14 @@ import React from "react";
 import { Prompt } from 'react-router';
 import { HashRouter as Router, Route, Switch } from "react-router-dom";
 // import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import CacheRoute, { CacheSwitch } from 'react-router-cache-route';
-import { Toast } from "antd-mobile";
-import { HomeRoutes, Home, HomeInfo } from "./home-routes";
-import { CategoryRoutes } from "./category-routes";
-import { CartRoutes } from "./cart-routes";
-import { PersonalRoutes } from "./personal-routes";
+import { HomeRoutes, Home } from "./home";
+import { CategoryRoutes } from "./category";
+import { CartRoutes } from "./cart";
+import { PersonalRoutes } from "./personal";
 import NotFound from "@/components/default/not-found";
-import { DefaultRoutes } from "./default-routes";
+import { DefaultRoutes } from "./default";
 import { initWX } from "@/common/wx";
-import LoginComponent from "@/components/login/index";
-import TabNav from "@/components/tabnav/index";
-import { myStorage } from "@/utils/cache";
+import LoginComponent from "@/components/login";
 
 /**
  * 页面路由配置
@@ -26,13 +22,7 @@ import { myStorage } from "@/utils/cache";
 const routes = [
     {
         path: "/",
-        component: TabNav(Home),
-        // 路由为/时必须设置exact为true
-        exact: true
-    },
-    {
-        path: "/home/info/:id",
-        component: HomeInfo,
+        component: Home,
         // 路由为/时必须设置exact为true
         exact: true
     },
@@ -43,13 +33,17 @@ const routes = [
     ...DefaultRoutes,
     {
         path: '*',
-        component: TabNav(NotFound)
+        component: NotFound
     }
 ];
 
+// 路由跳转历史
+let RoutesHistory = [];
+
 // 进入路由页面之前触发的方法
 function beforeRouter(props, item) {
-
+    // 路由跳转历史
+    RoutesHistory.push(item.path);
     // //使用它
     // console.log(newFun);
     // 微信授权
@@ -88,63 +82,62 @@ export default function RouteComponent() {
     const basename = process.env.PUBLIC_PATH;
     return (
         <Router basename={basename} getUserConfirmation={getConfirmation}>
-            <Switch>
+            {/* <Switch> */}
+            <CacheSwitch>
                 {routes.map((item, index) => {
                     return (
-                        <Route
-                            key={index}
-                            exact={item.exact ? true : false}
-                            path={item.path}
-                            render={(props) => {
-                                beforeRouter(props, item);
-                                return (
-                                    <React.Fragment>
-                                        <Prompt message={`是否确定离开当前路由？${location.href}`} />
-                                        <item.component {...props} data={item}></item.component>
-                                    </React.Fragment>
-                                );
-                            }}
-                        />
+                        item.cache ? cacheRoute(item, index) : normalRoute(item, index)
                     );
                 })}
-            </Switch>
+            </CacheSwitch>
+            {/* </Switch> */}
         </Router>
     );
 }
 
+// 普通正常Route
+function normalRoute(item, index) {
+    return <Route
+        key={index}
+        exact={item.exact}
+        path={item.path}
+        render={(props) => {
+            beforeRouter(props, item);
+            return (
+                <React.Fragment>
+                    <Prompt message={`是否确定离开当前路由？${location.href}`} />
+                    <item.component {...props} data={item}></item.component>
+                </React.Fragment>
+            );
+        }}
+    />;
+}
+
 /**
- * 缓存组件
- * CacheRoute组件：默认forward, 可选back, always
+ * 缓存Route(外层需要套CacheSwitch)
+ * CacheRoute组件的when：默认forward：缓存当前页面，下个页面不缓存, 
+ *                      back: 不缓存当前页面，下个页面缓存
+ *                      always：缓存当前页面和下个页面
  * 额外的生命周期：didCache和didRecover
  * props.cacheLifecycles.didCache(this.componentDidCache)
  * props.cacheLifecycles.didRecover(this.componentDidRecover)
+ * 
  */
-// export default function RouteComponent() {
-//     // 默认为设置的publicPath
-//     const basename = process.env.PUBLIC_PATH;
-//     return (
-//         <Router basename={basename} getUserConfirmation={getConfirmation}>
-//             <CacheSwitch>
-//                 {routes.map((item, index) => {
-//                     return (
-//                         <CacheRoute
-//                             key={index}
-//                             when="forward"
-//                             exact={item.exact}
-//                             path={item.path}
-//                             render={(props) => {
-//                                 beforeRouter(props, item);
-//                                 return (
-//                                     <React.Fragment>
-//                                         <Prompt message={`是否确定离开当前路由？${location.href}`} />
-//                                         <item.component {...props} data={item}></item.component>
-//                                     </React.Fragment>
-//                                 );
-//                             }}
-//                         />
-//                     );
-//                 })}
-//             </CacheSwitch>
-//         </Router>
-//     );
-// }
+function cacheRoute(item, index) {
+    return <CacheRoute
+        key={index}
+        when="back"
+        exact={item.exact}
+        path={item.path}
+        saveScrollPosition={true}
+        render={(props) => {
+            beforeRouter(props, item);
+            return (
+                <React.Fragment>
+                    <Prompt message={`是否确定离开当前路由？${location.href}`} />
+                    <item.component {...props} data={item}></item.component>
+                </React.Fragment>
+            );
+        }}
+    />;
+};

@@ -1,7 +1,6 @@
 /**
  * 正则表达式的校验放在这里
  */
-import wx from 'weixin-js-sdk';
 
 // 邮箱
 export function isEmail(s) {
@@ -57,6 +56,7 @@ export function isInWeChat() {
 
 // 判断是否在微信小程序环境中, true表示是在微信小程序环境中
 export function isInMini() {
+    const wx = require("weixin-js-sdk");
     var ua = navigator.userAgent.toLowerCase();
     if (ua.match(/MicroMessenger/i) == "micromessenger") {
         //ios的ua中无miniProgram，但都有MicroMessenger（表示是微信浏览器）

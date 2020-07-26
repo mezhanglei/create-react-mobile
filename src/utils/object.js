@@ -1,24 +1,5 @@
 
-// 获取类型
-export function getType(obj) {
-    const map = {
-        '[object Boolean]': 'boolean',
-        '[object Number]': 'number',
-        '[object String]': 'string',
-        '[object Function]': 'function',
-        '[object Array]': 'array',
-        '[object Date]': 'date',
-        '[object RegExp]': 'regExp',
-        '[object Undefined]': 'undefined',
-        '[object Null]': 'null',
-        '[object Object]': 'object'
-    };
-    if (obj instanceof Element) {
-        return 'element';
-    }
-    return map[Object.prototype.toString.call(obj)];
-}
-
+import { isObject, isArray } from "type.js";
 /**
  * 完全深拷贝
  * @param {*} copyObj 目标对象或数组
@@ -32,21 +13,20 @@ export function getType(obj) {
  * 所以上述情况下是不适合使用JSON.parse(JSON.stringify())这种方式实现深拷贝的，但除了上述情况，建议使用JSON.parse(JSON.stringify())
  */
 export function deepClone(copyObj) {
-    let type = getType(copyObj);
     let obj;
-    if (type === 'array') {
+    if (isArray(copyObj)) {
         obj = [];
-    } else if (type === 'object') {
+    } else if (isObject(copyObj)) {
         obj = {};
     } else {
         //不再具有下一层次
         return copyObj;
     }
-    if (type === 'array') {
+    if (isArray(copyObj)) {
         for (let i = 0, len = copyObj.length; i < len; i++) {
             obj.push(deepClone(copyObj[i]));
         }
-    } else if (type === 'object') {
+    } else if (isObject(copyObj)) {
         for (let key in copyObj) {
             obj[key] = deepClone(copyObj[key]);
         }

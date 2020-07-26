@@ -36,7 +36,12 @@ export function cacheProxy(fn, cache) {
     };
 };
 
-// 防抖函数(一段时间内没有其他操作才会执行)
+/**
+ * 防抖
+ * @param {*} fn 目标函数
+ * 使用： 1. 实例化一个对象: const fn = debounce(函数)
+ *        2. 执行fn()
+ */
 export function debounce(fn) {
     let timeout = null;
     return function () {
@@ -47,7 +52,12 @@ export function debounce(fn) {
     };
 };
 
-// 节流函数(一段时间内只能执行一次)
+/**
+ * 节流
+ * @param {*} fn 目标函数
+ * 使用: 1. 实例化一个对象: const fn = throttle(函数)
+ *       2. 执行fn()
+ */
 export function throttle(fn) {
     let timer = null;
     return function () {

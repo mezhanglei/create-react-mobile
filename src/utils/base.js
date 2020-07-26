@@ -1,15 +1,6 @@
-//===字符串或数字的处理===//
+//===基础字符串或数字的处理===//
+import { isObject, isNumber } from "./type";
 
-
-// 判断值是否为空, true为空，false为非空
-export function isEmpty(value) {
-    const type = ["", undefined, null];
-    if (type.indexOf(value) > -1) {
-        return true;
-    } else {
-        return false;
-    }
-}
 //保留n位小数并格式化输出字符串类型的数据
 export function formatFloat(value, n = 2) {
     if (value === undefined || value === '') {
@@ -37,7 +28,7 @@ export function numberToRate(value, n = 2) {
     if (value === undefined || value === '') {
         return '';
     }
-    let num = typeof value === 'number' ? value : Number(value);
+    let num = typeof value === 'number' ? value : parseFloat(value);
     return formatFloat(num * 100, n) + '%';
 }
 
@@ -52,38 +43,40 @@ export function getPower(integer) {
 }
 
 /**
- * 
+ * 将大数字转为带单位的数字, 
  * @param {*} number 数字
- * @param {*} n 保留几位小数，默认保留2位
+ * @param {String} unit 指定单位，默认 "万"
+ * @param {Number} n 保留几位小数，默认保留2位
  */
-export function unitChange(number, n = 2) {
+export function unitChange(number, unit = "万", n = 2) {
+    if (!isNumber(number)) {
+        number = parseInt(number);
+    }
     // 目标数字首先向下取整
     let integer = Math.floor(number);
     // 十的几次幂 从0开始对应匹配单位个, 十, 百, 千, 万, 十万, 百万, 千万...
     let power = getPower(integer);
-    // 首先判断是否上万
-    if (power > 3) {
-        // 然后判断是否上亿
-        if (power >= 8) {
-            return formatFloat(integer / Math.pow(10, 8), n) + '亿+';
-        } else {
-            return formatFloat(integer / Math.pow(10, 4), n) + '万+';
-        }
-    } else {
-        return number;
+    // 单位对应十的几次幂的映射规则
+    const unitMap = {
+        "十": 1,
+        "百": 2,
+        "千": 3,
+        "万": 4,
+        "十万": 5,
+        "百万": 6,
+        "千万": 7,
+        "亿": 8,
+        "十亿": 9,
+        "百亿": 10,
+        "千亿": 11,
+        "万亿": 12
+    };
+    // 当前单位对应的十的幂次
+    const unitPower = unitMap[unit];
+    if (power >= unitPower) {
+        return formatFloat(integer / Math.pow(10, unitPower), n) + unit;
     }
-}
-
-/**
- * 判断目标是否是DOM类型
- * @param {*} ele 目标
- */
-export function IsDOM(ele) {
-    if (typeof HTMLElement === 'object') {
-        return ele instanceof HTMLElement;
-    } else {
-        return ele && typeof ele === 'object' && ele.nodeType === 1 && typeof ele.nodeName === 'string';
-    }
+    return number;
 }
 
 /**
@@ -91,14 +84,11 @@ export function IsDOM(ele) {
  * @param {*} data 参数
  */
 export const trimParams = (data) => {
-    if (!data) return data;
-    if (typeof data === 'boolean' || typeof data === 'number' || data instanceof Array) return data;
     if (typeof data === 'string') return data.trim();
-    if (data instanceof Object && Object.prototype.toString.call(data) === '[object Object]') {
+    if (isObject(data)) {
         for (let key in data) {
             data[key] = trimParams(data[key]);
         }
     }
     return data;
 };
-

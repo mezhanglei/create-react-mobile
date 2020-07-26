@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { IsDOM, IsNodeList } from '@/utils/dom-utils.js';
+import { IsDOM, IsNodeList } from '@/utils/dom.js';
 
 // 监听的事件类别
 // const EVENTS = [
@@ -68,7 +68,6 @@ export default function EasySticky(props) {
                             `-o-transform:${transform}`
                         ];
 
-                        // 当正常情况时
                         if (rootScrollTop - initDistance < topDistance) {
                             // console.log(rootScrollTop, '上');
                             // dom.style.cssText = '';
@@ -81,7 +80,7 @@ export default function EasySticky(props) {
                 });
             }
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
     };
 

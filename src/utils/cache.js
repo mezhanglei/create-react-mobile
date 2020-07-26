@@ -5,6 +5,7 @@ const myStorage = {
     //存储
     set(key, value) {
         localStorage.setItem(key, JSON.stringify(value));
+        return value;
     },
     //取出数据
     get(key) {
@@ -31,6 +32,7 @@ const mySession = {
     //存储
     set(key, value) {
         sessionStorage.setItem(key, JSON.stringify(value));
+        return value;
     },
     //取出数据
     get(key) {
@@ -69,6 +71,7 @@ const timeStorage = {
             const endTime = (new Date()).getTime() + time * 60 * 1000;
             // 将时间和值一起存储
             localStorage.setItem(key, JSON.stringify({ data: value, time: endTime }));
+            return value;
         } catch (e) {
             return null;
         }
@@ -94,13 +97,11 @@ const timeStorage = {
             return null;
         }
     },
-    // 删除数据
     remove(key) {
         localStorage.removeItem(key);
     }
 };
 
-// 暴露给外部访问
 export {
     myStorage,
     mySession,

@@ -1,8 +1,8 @@
-import { getUrlQuery } from "@/utils/url-utils";
-import { isInWeChat, isCompanyChat } from "@/utils/reg-utils.js";
+import { getUrlQuery } from "@/utils/url";
+import { isInWeChat, isCompanyChat } from "@/utils/reg.js";
 import { myStorage } from "@/utils/cache";
 import { WECHAT_TOKEN } from "@/constants/account/index";
-import { isEmpty } from "@/utils/base-utils";
+import { isEmpty } from "@/utils/type.js";
 
 /**
  * 微信授权登录

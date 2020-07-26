@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { isLogin } from "@/common/common.js";
 
 /**
- * 需要登录的容器组件(需配合Route使用)
+ * 需要登录的容器组件
  * 功能说明:
  * props: 父组件传来的参数
  */

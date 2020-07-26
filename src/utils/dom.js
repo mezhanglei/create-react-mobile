@@ -25,28 +25,3 @@ export function getElementXY(ele, target = null) {
     }
     return { pos, parentNode };
 }
-
-
-/**
- * 判断是不是dom
- * @param {*} ele 
- */
-export function IsDOM(ele) {
-    if (typeof HTMLElement === 'object') {
-        return ele instanceof HTMLElement;
-    } else {
-        return ele && typeof ele === 'object' && ele.nodeType === 1 && typeof ele.nodeName === 'string';
-    }
-}
-
-/**
- * 判断是不是NodeList类型的DOM伪数组
- * @param {*} ele 
- */
-export function IsNodeList(ele) {
-    if (Object.prototype.toString.call(ele) === '[object NodeList]') {
-        return true;
-    } else {
-        return false;
-    }
-}
