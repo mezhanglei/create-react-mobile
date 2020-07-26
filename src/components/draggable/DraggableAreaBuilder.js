@@ -129,7 +129,7 @@ export default function buildDraggableArea({ isInAnotherArea = () => { }, passAd
                 // 触摸移动过程中
                 elmnt.addEventListener("touchmove", elementDrag, false);
 
-                // 重新计算序号
+                // 重新计算当前元素的序号
                 this.positions.forEach((p, i) => {
                     if (p.id === id) index = i;
                 });
@@ -155,7 +155,7 @@ export default function buildDraggableArea({ isInAnotherArea = () => { }, passAd
                 let l = elmnt.offsetLeft + movedX;
                 elmnt.style.top = t + "px";
                 elmnt.style.left = l + "px";
-                // 
+                // 移动后的拖拽元素的定位中心
                 let baseCenterTop = parent.offsetTop + elmnt.offsetHeight / 2;
                 let baseCenterLeft = parent.offsetLeft + elmnt.offsetWidth / 2;
                 let ctop = baseCenterTop + t;
@@ -164,7 +164,7 @@ export default function buildDraggableArea({ isInAnotherArea = () => { }, passAd
                 let i; // safari 10 bug
                 // Check if the tag could be put into a new position
                 for (i = 0; i < this.positions.length - 1; i++) {
-                    // Do not check its left-side space and right-side space
+                    // 当前元素序号改变或者元素序号没有改但变成最后一位
                     if ((index !== i || (index === this.positions.length - 2 && i === this.positions.length - 2)) && !(index - 1 === i && i !== 0)) {
                         const p1 = this.positions[i];
                         const p2 = this.positions[i + 1];
@@ -352,9 +352,9 @@ export default function buildDraggableArea({ isInAnotherArea = () => { }, passAd
                 // 清空位置信息
                 this.positions = [];
                 this.state.tags.forEach((t, i) => {
-                    // 拖拽过的dom
+                    // 拖拽内容
                     const draggableTag = this.draggableTagEles[t.id];
-                    // 目标dom
+                    // 拖拽外壳
                     const tag = this.tagEles[t.id];
                     // 目标dom的位置和形状描述
                     this.positions.push({
