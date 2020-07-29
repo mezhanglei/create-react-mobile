@@ -7,7 +7,7 @@ import DefineEvent from "@/utils/event";
  * @param {*} data 默认传输的参数，选填
  * 使用说明: 
  * 1. 在入口文件处调用函数：Dpoint(url, data = {});
- * 2. 拥有event-name="point"自定义属性的标配将会被拦截点击事件，触发埋点发送请求的操作
+ * 2. 拥有event-name="point"自定义属性的标签将会被拦截点击事件，触发埋点发送请求的操作
  */
 export function Dpoint(url, data = {}) {
     const event = new DefineEvent({

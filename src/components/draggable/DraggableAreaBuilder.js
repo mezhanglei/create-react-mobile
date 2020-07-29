@@ -171,9 +171,9 @@ export default function buildDraggableArea({ isInAnotherArea = () => { }, passAd
                         const space = 8;
 
                         if (!isList) {
-                            // Is not "list view"
+                            // 非列表组件
                             if (
-                                // 当第一位时
+                                // 当在序号第一的目标的左上时
                                 i === 0 &&
                                 ctop > p1.top &&
                                 ctop < p1.bottom &&
@@ -181,14 +181,14 @@ export default function buildDraggableArea({ isInAnotherArea = () => { }, passAd
                             ) isHead = true;
 
                             if (
-                                // 当在尾部
+                                // 当在尾部目标的左上时
                                 i === this.positions.length - 2 && ((
                                     ctop > p2.top &&
                                     cleft > p2.left - space) || ctop > p2.bottom)
                             ) isTail = true;
-                            console.log(ctop, p2.bottom);
+
                             if (
-                                // Between two tags
+                                // 当在两个目标左右中间时
                                 ctop > p1.top &&
                                 ctop < p1.bottom &&
                                 cleft > p1.right - 8 &&
@@ -196,7 +196,7 @@ export default function buildDraggableArea({ isInAnotherArea = () => { }, passAd
                             ) between2Tags = true;
 
                             if (
-                                // Start of line
+                                // 当在两个目标的上下中间偏左时
                                 ctop > p2.top &&
                                 ctop < p2.bottom &&
                                 cleft < p2.left + 8 &&
@@ -204,47 +204,53 @@ export default function buildDraggableArea({ isInAnotherArea = () => { }, passAd
                             ) startOfLine = true;
 
                             if (
-                                // End of line
+                                // 当在两个目标的上下中间偏右时
                                 ctop > p1.top &&
                                 ctop < p1.bottom &&
                                 cleft > p1.right - 8 &&
                                 p1.top < p2.top
                             ) endOfLine = true;
                         } else {
-                            // Is "list view"
+                            // 列表组件
                             if (
-                                // Between two tags
+                                // 在上下两个中间
                                 ctop > p1.bottom - 4 &&
                                 ctop < p2.top + 4
                             ) between2Tags = true;
 
                             if (
-                                // Head of tag list
+                                // 在最上面
                                 i === 0 &&
                                 ctop < p1.top + 4
                             ) isHead = true;
 
                             if (
-                                // Tail of tag list
+                                // 在最下面
                                 i === this.positions.length - 2 &&
                                 ctop > p2.bottom - 4
                             ) isTail = true;
                         }
 
+                        // 如果满足上述位置要求, 则
                         if (
                             (!isList && (isHead || isTail || between2Tags || startOfLine || endOfLine))
                             ||
                             (isList && (isHead || isTail || between2Tags))
                         ) {
+                            // 当前拖拽元素
                             let cur = this.state.tags.get(index);
+                            // 将当前拖拽元素删除
                             let tags = this.state.tags.splice(index, 1);
+                            // 如果序号在前面,则将拖拽元素放到前面
                             if ((index < i || isHead) && !isTail) {
                                 tags = tags.splice(i, 0, cur);
                                 index = i;
+                                // 否则将拖拽元素添加到后面
                             } else {
                                 tags = tags.splice(i + 1, 0, cur);
                                 index = i + 1;
                             }
+                            // 重置positions
                             this.positions = [];
                             const prevBaseTop = this.tagEles[cur.id].offsetTop;
                             const prevBaseLeft = this.tagEles[cur.id].offsetLeft;
@@ -351,7 +357,7 @@ export default function buildDraggableArea({ isInAnotherArea = () => { }, passAd
                     const draggableTag = this.draggableTagEles[item.id];
                     // 可拖拽元素的定位父元素
                     const tag = this.tagEles[item.id];
-                    // 定位父元素的位置信息
+                    // 定位父元素的四条边的定位位置
                     this.positions.push({
                         id: item.id,
                         top: tag.offsetTop,
