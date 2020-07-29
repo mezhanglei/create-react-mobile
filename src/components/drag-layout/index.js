@@ -114,7 +114,7 @@ class DragResize extends Component {
         // 计算规则：根据当前方向匹配对应的计算公式
         const rules = [{
             positions: 'e', // 方向
-            property: 'width', // 要变更的属性
+            property: 'width', // 要变更的styles属性
             value: Math.max(minWidth, origWidth + e.clientX - origClientX) //变更的数值，单位px
         }, {
             positions: 's',

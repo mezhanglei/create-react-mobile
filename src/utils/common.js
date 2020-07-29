@@ -37,7 +37,7 @@ export function cacheProxy(fn, cache) {
 };
 
 /**
- * 防抖
+ * 防抖， 一段时间内没有再执行则执行完一次，否则重新执行
  * @param {*} fn 目标函数
  * 使用： 1. 实例化一个对象: const fn = debounce(函数)
  *        2. 执行fn()
@@ -53,7 +53,7 @@ export function debounce(fn) {
 };
 
 /**
- * 节流
+ * 节流, 一段时间只能执行一次
  * @param {*} fn 目标函数
  * 使用: 1. 实例化一个对象: const fn = throttle(函数)
  *       2. 执行fn()

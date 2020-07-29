@@ -44,13 +44,16 @@ class Home extends React.Component {
             this.props.history.push(`home/info/${item}`);
         }, 1000);
     }
+    show = () => {
+        console.log(222222);
+    }
 
     render() {
         const { current, arr } = this.state;
         return (
             <div>
                 <div points="woshihaoren" className={styles["home"]}>首页{getDateDiff('2020-7-12', { key: 1 })}</div>
-                <div>当前：{current}</div>
+                <div event-name="handle-point" onClick={this.show}>当前：{current}</div>
                 {
                     arr.map((item, index) => {
                         return <p onClick={() => this.clickDom(item)} style={{ fontSize: '30px' }} key={index}><a>{index + '-' + item}</a></p>;

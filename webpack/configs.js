@@ -48,7 +48,7 @@ const baseConfig = {
 const commonBase = publicPath;
 // script引入的公共js文件
 const commonJs = [
-    // 屏幕适配手机
+    // 屏幕适配手机(目前采取vw布局，不需要此文件了)
     // commonBase + 'static/flexible/index.js',
     // 预编译文件
     // commonBase + 'static/dll/base_dll.js'
@@ -94,7 +94,7 @@ const entries = (function () {
 const htmlConfigs = (function () {
     const pluginConfigs = pages.map((item, index) => {
         return {
-            // title: '生成的html文档的标题',
+            title: item.title,
             // 指定输出的html文档
             filename: `${item.name}.html`,
             // html模板所在的位置，默认支持html和ejs模板语法，处理文件后缀为html的模板会与html-loader冲突
