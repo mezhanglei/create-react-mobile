@@ -1,4 +1,4 @@
-import { formatFloat } from './base.js';
+import { formatFloat } from './character.js';
 import { isArray, isString, isEmpty } from "./type";
 
 //===时间格式化操作===//

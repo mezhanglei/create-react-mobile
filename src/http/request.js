@@ -4,7 +4,7 @@ import { Toast } from "antd-mobile";
 import { myStorage } from "@/utils/cache.js";
 import { clearLoginInfo } from "@/common/common.js";
 import { TOKEN } from "@/constants/account/index";
-import { trimParams } from "@/utils/base.js";
+import { trimParams } from "@/utils/character.js";
 import Loader from "@/components/loader/index";
 
 // 开始loading
