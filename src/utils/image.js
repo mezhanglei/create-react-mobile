@@ -1,4 +1,4 @@
-import { dataURLtoFile, blobToDataURL } from "./file";
+import { dataURLtoFile, binaryToDataURL } from "./file";
 /**
 * canvas压缩图片, 返回file类型二进制文件流
 * @param {参数obj} param 
@@ -31,7 +31,7 @@ export function pressImg(param) {
             return param.succ(param.file);
         }
         // 读取file文件,得到的结果为base64位
-        blobToDataURL(param.file, function (base64) {
+        binaryToDataURL(param.file, function (base64) {
             if (base64) {
                 let image = new Image();
                 image.src = base64;

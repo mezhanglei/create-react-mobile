@@ -23,7 +23,11 @@ class Home extends React.Component {
     }
 
     componentDidMount() {
-
+        http.get({
+            url: '/list'
+        }).then(res => {
+            console.log(res);
+        });
     }
 
     handle = () => {

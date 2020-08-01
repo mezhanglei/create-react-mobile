@@ -1,3 +1,5 @@
+import { isDom } from "./type";
+import { func } from "prop-types";
 /**
  * 返回目标元素相对于定位父元素的位置和定位父元素
  * @param {*} ele 元素
@@ -24,4 +26,24 @@ export function getElementXY(ele, target = null) {
         parentNode = null;
     }
     return { pos, parentNode };
+}
+
+/**
+ * 判断目标元素内部是否可以滚动
+ * @param {*} ele 内容可以scroll的元素
+ */
+export function eleCanScroll(ele) {
+    if (!isDom(ele)) {
+        return;
+    }
+    if (ele.scrollTop > 0) {
+        return true;
+    } else {
+        ele.scrollTop++;
+        // 元素不能滚动的话，scrollTop 设置不会生效，还会置为 0
+        const top = ele.scrollTop;
+        // 重置滚动位置
+        top && (ele.scrollTop = 0);
+        return top > 0;
+    }
 }

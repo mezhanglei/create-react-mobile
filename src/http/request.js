@@ -1,5 +1,5 @@
 import axios from "axios";
-import configs from "./config";
+import { STATUS_ERROR, CODE_ERROR } from "./config";
 import { Toast } from "antd-mobile";
 import { myStorage } from "@/utils/cache.js";
 import { clearLoginInfo } from "@/common/common.js";
@@ -32,69 +32,33 @@ const http = axios.create({
  * @param {Number} status 表示响应状态码
  * @param {String} msg 表示响应的信息
  */
-function errorHandle(status, msg) {
-    switch (status) {
-        case 401:
-            msg = "请先登录";
-            clearLoginInfo();
-            break;
-        case 403:
-            msg = '无访问权限';
-            break;
-        case 404:
-            msg = "资源不存在";
-            break;
-        case 405:
-            msg = "请求方法未允许";
-            break;
-        case 408:
-            msg = "请求超时";
-            break;
-        case 502:
-            msg = '网络连接错误，请稍后再试';
-            break;
-        case 503:
-            msg = "服务不可用";
-            break;
-        case 504:
-            msg = "网络超时";
-            break;
-        case 505:
-            msg = "http版本不支持该请求";
-            break;
-        default:
-            msg = msg;
+function statusError(status, msg) {
+    if (status === 401) {
+        clearLoginInfo();
     }
-    if (status && msg) {
-        Toast.info(msg);
-    }
+    status && Toast.info(STATUS_ERROR[status] || msg);
 }
 
 /**
- * 响应成功后返回的数据的code处理
+ * 返回code异常处理
  * @param {Number} code 表示后台返回的code
  * @param {String} msg 表示后台返回的信息
  */
-function responseHandle(code, msg) {
-    switch (code) {
-        case 401:
-            msg = "请先登录";
-            clearLoginInfo();
-            break;
-        case 403:
-            msg = "拒绝访问";
-            break;
-        default:
-            msg = msg;
+function resultError(code, msg) {
+    if (code == 401) {
+        clearLoginInfo();
     }
-    if (code) {
-        Toast.info(msg);
-    }
+    code && Toast.info(CODE_ERROR[code] || msg);
 }
 
 // 公共的请求参数
 const defaults = {
     // t: new Date().getTime()
+};
+
+// 公共的headers
+const headers = {
+    Authorization: myStorage.get(TOKEN)
 };
 
 /**
@@ -121,9 +85,13 @@ function handleConfig(config) {
 // 请求拦截(axios自动对请求类型进行类型转换)
 http.interceptors.request.use(
     (config) => {
-        config.headers["Authorization"] = myStorage.get(TOKEN);
-        startLoading();
+        // 公共headers
+        Object.keys(headers).map(item => {
+            config.headers[item] = headers[item];
+        });
+        // 公共请求处理
         config = handleConfig(config);
+        startLoading();
         return config;
     },
     (error) => {
@@ -142,8 +110,12 @@ http.interceptors.response.use(
         // 响应
         const code = response.data && response.data.code;
         const msg = response.data && response.data.message;
-        responseHandle(code, msg);
-        return response.data;
+        const result = response.data;
+        // 响应异常提示
+        if (result.code != 200) {
+            resultError(code, msg);
+        }
+        return result;
     },
     (error) => {
         endLoading();
@@ -151,9 +123,20 @@ http.interceptors.response.use(
             error.response && error.response.data && error.response.data.message;
         const status = error.response && error.response.status;
         // 错误响应
-        errorHandle(status, msg);
+        statusError(status, msg);
         return Promise.reject(error);
     }
 );
 
-export default http;
+// 转换调用http请求的方式：例如http.post({}).then(res={})
+const request = {};
+['get', 'post', 'delete', 'put'].map(item => {
+    request[item] = function (configs) {
+        return http({
+            ...configs,
+            method: item
+        });
+    };
+});
+
+export default request;

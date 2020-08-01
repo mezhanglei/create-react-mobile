@@ -73,8 +73,8 @@ const globalDefine = {
 const pages = [
     // name: src/pages下的页面目录名, 数组的第一个项为启动页，index目录不建议改名，其他目录可以任意命名
     // 访问多页面的方式： 域名 + 端口 + 入口的名.html
-    { name: "index", title: "第一个页面", favicon: path.join(staticPath, "favicon.ico") },
-    { name: "second", title: "第二个页面", favicon: path.join(staticPath, "favicon.ico") }
+    { name: "index", title: "第一个页面", favicon: "" },
+    { name: "second", title: "第二个页面", favicon: "" }
 ];
 
 
@@ -111,7 +111,7 @@ const htmlConfigs = (function () {
             //    3. false：所有静态资源css和JavaScript都不会注入到模板文件中
             inject: true,
             // 图标的所在路径，最终会被打包到到输出目录
-            favicon: item.favicon,
+            // favicon: item.favicon,
             // 注入meta标签，例如{viewport: 'width=device-width, initial-scale=1, shrink-to-fit=no'}
             // meta: {},
             // 注入base标签。例如base: "https://example.com/path/page.html
