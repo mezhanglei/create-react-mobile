@@ -153,7 +153,7 @@ export function exportCSV(str, dataList, fileName) {
     }
     //在字符串前面添加\ufeff解决构造Blob中文乱码问题
     str = '\ufeff' + str;
-    //构造Blob数据
+    //构造Blob数据(text/plain纯文本格式)
     let blob = new Blob([str], { type: "text/plain;charset=utf-8" });
     //创建url和下载标签
     let url = window.URL.createObjectURL(blob);

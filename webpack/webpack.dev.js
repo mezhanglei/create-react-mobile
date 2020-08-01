@@ -361,7 +361,7 @@ function handleRequest(req, res) {
     // 协议
     let protocol = req.protocol;
     let method = reqQuery['method'];
-    // mock请求的接口路径作为mock数据存放的文件路径
+    // mock数据存放的文件路径作为mock请求的接口路径
     let fileUrl = path.join(configs.mock, reqPath.replace(/\/mock/ig, "") + '.json');
     if (!fileUrl) {
         res.json({
