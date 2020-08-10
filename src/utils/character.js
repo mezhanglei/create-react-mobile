@@ -50,12 +50,8 @@ export function getPower(integer) {
  */
 export function unitChange(number, unit = "万", n = 2) {
     if (!isNumber(number)) {
-        number = parseInt(number);
+        number = parseFloat(number);
     }
-    // 目标数字首先向下取整
-    let integer = Math.floor(number);
-    // 十的几次幂 从0开始对应匹配单位个, 十, 百, 千, 万, 十万, 百万, 千万...
-    let power = getPower(integer);
     // 单位对应十的几次幂的映射规则
     const unitMap = {
         "十": 1,
@@ -71,10 +67,14 @@ export function unitChange(number, unit = "万", n = 2) {
         "千亿": 11,
         "万亿": 12
     };
+    // 目标数字首先向下取整
+    let integer = Math.floor(number);
+    // 十的几次幂 从0开始对应匹配单位个, 十, 百, 千, 万, 十万, 百万, 千万...
+    let power = getPower(integer);
     // 当前单位对应的十的幂次
     const unitPower = unitMap[unit];
     if (power >= unitPower) {
-        return formatFloat(integer / Math.pow(10, unitPower), n) + unit;
+        return formatFloat(number / Math.pow(10, unitPower), n) + unit;
     }
     return number;
 }

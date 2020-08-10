@@ -320,3 +320,23 @@ export function regQuery(list, keyWord, attr) {
     }
     return arr;
 }
+
+/**
+ * 嵌套数组中根据key查询父元素并返回
+ * @param {*} key 查询的key
+ * @param {*} tree 嵌套数组
+ */
+export function getParent(key, tree) {
+    let parent;
+    for (let i = 0; i < tree.length; i++) {
+        const node = tree[i];
+        if (node.children) {
+            if (node.children.some((item) => item.key === key)) {
+                parent = node;
+            } else if (getParent(key, node.children)) {
+                parent = getParent(key, node.children);
+            }
+        }
+    }
+    return parent;
+};

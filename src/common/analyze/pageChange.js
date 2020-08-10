@@ -11,7 +11,7 @@ window.addEventListener('hashchange', function () {
     // 上报事件
 }, true);
 
-// 重写路由事件
+// 监听history路由
 function aop(type) {
     const source = window.history[type];
     return function () {
@@ -21,7 +21,7 @@ function aop(type) {
         window.dispatchEvent(event);
         // 正常执行原事件
         const rewrite = source.apply(this, arguments);
-        // return rewrite;
+        return rewrite;
     };
 }
 
