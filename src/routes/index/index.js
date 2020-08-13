@@ -1,7 +1,6 @@
 import React from "react";
-import { Prompt } from 'react-router';
-// import { HashRouter as Router, Route, Switch } from "react-router-dom";
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+// import { HashRouter as Router, Route, Switch, Prompt } from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch, Prompt } from "react-router-dom";
 import { Toast } from "antd-mobile";
 import { HomeRoutes, Home, HomeInfo } from "./home";
 import { CategoryRoutes } from "./category";
@@ -47,6 +46,7 @@ const routes = [
 // 路由跳转历史
 let RoutesHistory = [];
 
+
 // 进入路由页面之前触发的方法
 function beforeRouter(props, item) {
     // 路由跳转历史
@@ -55,7 +55,8 @@ function beforeRouter(props, item) {
     // console.log(newFun);
     // 微信授权
     // initWX();
-}
+};
+
 
 /**
  * 离开当前路由页面之前触发的方法(需要实例化路由拦截组件Prompt)

@@ -1,4 +1,4 @@
-import Result from "@/components/result/result-mobile";
+import Result from "@/components/result/result";
 import { useEffect } from "react";
 import { Toast } from "antd-mobile";
 
@@ -9,5 +9,5 @@ export default function NotFound(props) {
         document.title = title;
         Toast.fail(title);
     });
-    return <Result title={title} />;
+    return <Result height="100vh" title={title} />;
 } 

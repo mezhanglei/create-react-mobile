@@ -11,7 +11,7 @@ import { isObject, isArray, isEmpty } from "./type";
 export function sortByAttr(data, attr, asc = true) {
     let arr = data;
     arr.sort(function (a, b) {
-        if (typeof a != "object" && typeof b != "object") {
+        if (!isObject(a) && !isObject(b)) {
             a = a;
             b = b;
         } else {
@@ -33,7 +33,7 @@ export function popSort(arr, attr) {
     for (var i = 0; i < arr.length - 1; i++) {
         for (var j = 0; j < arr.length - 1 - i; j++) {
             // 相邻元素两两对比，元素交换，大的元素交换到后面
-            if (typeof arr[j] != "object") {
+            if (!isObject(arr[j])) {
                 if (arr[j] > arr[j + 1]) {
                     var temp = arr[j];
                     arr[j] = arr[j + 1];
@@ -66,7 +66,7 @@ export const quickSort = function (arr, attr) {
     let left = [];//存放比基准点小的数组
     let right = [];//存放比基准点大的数组 
     for (let i = 0; i < arr.length; i++) { //遍历数组，进行判断分配
-        if (typeof arr[i] != "object") {
+        if (!isObject(arr[i])) {
             if (arr[i] < pivot && !isEmpty(arr[i])) {
                 left.push(arr[i]);//比基准点小的放在左边数组
             } else {
@@ -157,7 +157,7 @@ export function unique(arr, attr) {
     const result = [];
     const tagobj = {};
     for (let item of arr) {
-        if (typeof item != 'object') {
+        if (!isObject(item)) {
             if (isEmpty(tagobj[item]) && !isEmpty(item)) {
                 result.push(item);
                 tagobj[item] = 1;
@@ -258,7 +258,7 @@ export function indexOfQuery(list, keyWord, attr) {
     let newList = list;
     let arr = [];
     for (let i = 0; i < newList.length; i++) {
-        if (typeof newList[i] != "object") {
+        if (!isObject(newList[i])) {
             if (newList[i]?.toString().indexOf(keyWord) > -1) {
                 arr.push(newList[i]);
             }
@@ -278,11 +278,11 @@ export function indexOfQuery(list, keyWord, attr) {
  * @param {String} attr 可选，当数组元素为对象时需要指定attr属性名
  * @return {Array}           查询的结果
  */
-export function splitQuery(list, keyWord, attr) {
+export function splitQuery(list, keyWord = "", attr) {
     let newList = list;
     let arr = [];
     for (let i = 0; i < newList.length; i++) {
-        if (typeof newList[i] != "object") {
+        if (!isObject(newList[i])) {
             if (newList[i]?.toString().split(keyWord).length > 1) {
                 arr.push(newList[i]);
             }
@@ -302,12 +302,12 @@ export function splitQuery(list, keyWord, attr) {
  * @param {String} attr 可选，当数组元素为对象时需要指定attr属性名
  * @return {Array}           查询的结果
  */
-export function regQuery(list, keyWord, attr) {
+export function regQuery(list, keyWord = "", attr) {
     let newList = list;
     const reg = new RegExp(keyWord);
     let arr = [];
     for (let i = 0; i < newList.length; i++) {
-        if (typeof newList[i] != 'object') {
+        if (!isObject(newList[i])) {
             if (reg.test(newList[i])) {
                 arr.push(newList[i]);
             }
@@ -322,19 +322,20 @@ export function regQuery(list, keyWord, attr) {
 }
 
 /**
- * 嵌套数组中根据key查询父元素并返回
- * @param {*} key 查询的key
+ * 嵌套数组中根据key值查询父元素并返回
+ * @param {*} key 查询的字段名key
+ * @param {*} value 查询的字段值value
  * @param {*} tree 嵌套数组
  */
-export function getParent(key, tree) {
+export function getParent(key, value, tree) {
     let parent;
     for (let i = 0; i < tree.length; i++) {
         const node = tree[i];
         if (node.children) {
-            if (node.children.some((item) => item.key === key)) {
-                parent = node;
-            } else if (getParent(key, node.children)) {
-                parent = getParent(key, node.children);
+            if (node.children.some((item) => item[key] === value)) {
+                parent = node[key];
+            } else if (getParent(value, node.children)) {
+                parent = getParent(value, node.children);
             }
         }
     }

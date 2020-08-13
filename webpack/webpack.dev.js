@@ -248,11 +248,7 @@ module.exports = {
     plugins: [
         // 加载webpack内置的热更新插件
         new webpack.HotModuleReplacementPlugin(),
-        new webpack.ProvidePlugin({
-            React: "react",
-            ReactDOM: "react-dom",
-            ReactRouter: "react-router",
-        }),
+        new webpack.ProvidePlugin(configs.providePlugin),
         // 清理dist目录
         // new CleanWebpackPlugin(),
         // 统计信息提示插件(比如错误或者警告会用带颜色的字体来显示,更加友好)

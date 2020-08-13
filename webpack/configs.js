@@ -40,22 +40,27 @@ const baseConfig = {
             "less": `${lessPath}`
         }
     },
+    // 暴露的全局模块，如果加载的模块没有使用，则不会被打包
+    providePlugin: {
+        React: "react",
+        ReactDOM: "react-dom",
+        ReactRouterDOM: "react-router-dom"
+    },
     // babel的配置文件路径
     babelPath: path.join(root, './.babelrc')
 };
 
-// 引入外部文件的基础路径
-const commonBase = publicPath;
+
 // script引入的公共js文件
 const commonJs = [
     // 屏幕适配手机(目前采取vw布局，不需要此文件了)
-    // commonBase + 'static/flexible/index.js',
+    // publicPath + 'static/flexible/index.js',
     // 预编译文件
-    // commonBase + 'static/dll/base_dll.js'
+    // publicPath + 'static/dll/base_dll.js'
 ];
 // link引入的公共css文件
 const commonCSS = [
-    // commonBase + `static/fonts/iconfont.css?time=${new Date().getTime()}`
+    // publicPath + `static/fonts/iconfont.css?time=${new Date().getTime()}`
 ];
 
 // 项目全局自定义变量

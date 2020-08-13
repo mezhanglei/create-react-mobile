@@ -4,7 +4,7 @@ import styles from "./top.less";
 
 /**
  * 回到顶部组件
- * 参数：scrollDom：默认为body，也可以指定目标Dom，作为滚动的根节点
+ * 参数：scrollDom：默认为body，也可以指定目标Dom，作为滚动的根节点，但需要设置overflow:auto
  */
 export default class ToTop extends React.Component {
     constructor(props) {
@@ -23,9 +23,14 @@ export default class ToTop extends React.Component {
         this.init();
     }
 
-    UNSAFE_componentWillReceiveProps(props) {
-        // 当props改变时接收props
-        this.props = props;
+    componentDidUpdate(preProps) {
+        // 异步更新的字段
+        const changeProps = ["scrollDom"];
+        changeProps.map(item => {
+            if (preProps[item]?.toString() != this.props[item]?.toString()) {
+                this.init();
+            }
+        });
     }
 
     componentWillUnmount() {
@@ -56,7 +61,9 @@ export default class ToTop extends React.Component {
         // 滚动节点
         const { scrollDom } = this.props;
         if (scrollDom) {
-            scrollDom.addEventListener("scroll", this.scrollChange, true);
+            // 只有目标设置为auto才能监听滚动
+            scrollDom.style.overflowY = "auto";
+            scrollDom.addEventListener("scroll", this.scrollChange, false);
         }
     }
 

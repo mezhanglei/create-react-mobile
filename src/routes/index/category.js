@@ -1,10 +1,9 @@
 
 // tab栏高阶组件
 import TabNav from "@/components/tabnav/index";
-// 登录拦截高阶组件
-import LoginComponent from "@/components/login/index";
+import loadable from "@/components/lazy";
 
-const Category = React.lazy(() => import(/* webpackChunkName: "category" */ '@/pages/index/category/index.js'));
+const Category = loadable({ loader: () => import(/* webpackChunkName: "category" */ '@/pages/index/category/index.js') });
 
 export const CategoryRoutes = [
     {
