@@ -15,6 +15,7 @@ export default class DraggableTagsGroup {
 
     addArea(areaId) {
         return buildDraggableArea({
+            // 拖拽结束后如果拖拽到盒子外面, 则会触发事件池里的所有方法
             isInAnotherArea: (tagRect, tag) => {
                 let x = tagRect.left + tagRect.width / 2;
                 let y = tagRect.top + tagRect.height / 2;
@@ -31,9 +32,11 @@ export default class DraggableTagsGroup {
 
                 return result;
             },
+            // 初始化时会将添加事件到事件池
             passAddFunc: (ele, addTag) => {
                 this.isInAreas.push(function ({ tag, x, y, areaId: fromAreaId }) {
 
+                    // 将拖拽进来的tag添加进来
                     const rect = ele.getBoundingClientRect();
                     if (x > rect.left && x < rect.right && y > rect.top && y < rect.bottom) {
                         addTag({ tag, fromAreaId, x, y });

@@ -1,4 +1,5 @@
 import React from 'react';
+// immutable一般用于不可变对象, 不会被其他地方的对象改变
 import { List } from 'immutable';
 
 import styles from './style.less';
@@ -55,6 +56,7 @@ export default function buildDraggableArea({ isInAnotherArea = () => { }, passAd
         }
 
         componentDidUpdate(prevProps, { tags }) {
+            // 监听tag是否变化
             this.tagChanged = this.tagChanged ||
                 tags.size !== this.state.tags.size ||
                 this.state.tags.some((tag, i) => !tags.get(i) || tag.id !== tags.get(i).id);
@@ -94,7 +96,7 @@ export default function buildDraggableArea({ isInAnotherArea = () => { }, passAd
                 if (window.dragMouseDown) return;
                 window.dragMouseDown = true;
 
-                // 最外层的盒子的位置
+                // 最外层的盒子的可视位置
                 rect = this.container.getBoundingClientRect();
                 e = e || window.event;
                 // 事件对象的触发位置
@@ -108,7 +110,7 @@ export default function buildDraggableArea({ isInAnotherArea = () => { }, passAd
                 while (window.parentDragTag && !window.parentDragTag.classList.contains('DraggableTags-tag-drag')) {
                     window.parentDragTag = window.parentDragTag.parentElement;
                 }
-                // 如果存在可拖拽的父元素则也增加层级
+                // 移动过程中如果存在可拖拽的父元素则也增加层级
                 if (window.parentDragTag) window.parentDragTag.style.zIndex = 2;
 
                 // 拖拽结束
@@ -149,7 +151,7 @@ export default function buildDraggableArea({ isInAnotherArea = () => { }, passAd
                 let dragLeft = elmnt.offsetLeft + movedX;
                 elmnt.style.top = dragTop + "px";
                 elmnt.style.left = dragLeft + "px";
-                // 拖拽元素相对于定位父元素外面的容器的位置
+                // tag中心点相对于盒子的位置
                 let baseCenterTop = parent.offsetTop + elmnt.offsetHeight / 2;
                 let baseCenterLeft = parent.offsetLeft + elmnt.offsetWidth / 2;
                 let ctop = baseCenterTop + dragTop;
@@ -252,15 +254,18 @@ export default function buildDraggableArea({ isInAnotherArea = () => { }, passAd
                             }
                             // 重置positions
                             this.positions = [];
+                            // 拖拽元素定位父元素的之前定位位置
                             const prevBaseTop = this.tagEles[cur.id].offsetTop;
                             const prevBaseLeft = this.tagEles[cur.id].offsetLeft;
 
+                            // 重新计算定位父元素
                             this.setState({ tags }, () => {
                                 let curBaseTop;
                                 let curBaseLeft;
                                 tags.forEach((item, i) => {
                                     const tag = this.tagEles[item.id];
                                     if (i === index) {
+                                        // 当前的定位父元素的位置
                                         curBaseLeft = tag.offsetLeft;
                                         curBaseTop = tag.offsetTop;
                                     }
@@ -275,17 +280,9 @@ export default function buildDraggableArea({ isInAnotherArea = () => { }, passAd
                                     });
                                 });
 
-                                // 根据不同情况计算移动后的坐标
-                                if (curBaseLeft > prevBaseLeft) {
-                                    elmnt.style.left = `${dragLeft - (curBaseLeft - prevBaseLeft)}px`;
-                                } else {
-                                    elmnt.style.left = `${dragLeft + (prevBaseLeft - curBaseLeft)}px`;
-                                }
-                                if (prevBaseTop > curBaseTop) {
-                                    elmnt.style.top = `${dragTop + (prevBaseTop - curBaseTop)}px`;
-                                } else {
-                                    elmnt.style.top = `${dragTop - (curBaseTop - prevBaseTop)}px`;
-                                }
+                                // 重新计算拖拽元素相对于定位父元素位置 = 当前相对于拖拽父元素定位位置 - (当前定位父元素位置 - 之前的定位父元素位置)
+                                elmnt.style.left = `${dragLeft - (curBaseLeft - prevBaseLeft)}px`;
+                                elmnt.style.top = `${dragTop - (curBaseTop - prevBaseTop)}px`;
                             });
                             break;
                         }
@@ -293,10 +290,10 @@ export default function buildDraggableArea({ isInAnotherArea = () => { }, passAd
                 }
             };
 
-
+            // 拖拽结束后
             const closeDragElement = (e) => {
                 if (isMobile) this.container.style.overflowY = 'auto';
-
+                // 关闭拖拽
                 window.dragMouseDown = false;
 
                 document.removeEventListener("mouseup", closeDragElement, false);
@@ -305,6 +302,7 @@ export default function buildDraggableArea({ isInAnotherArea = () => { }, passAd
                 elmnt.removeEventListener("touchcancel", closeDragElement, false);
                 elmnt.removeEventListener("touchmove", elementDrag, false);
 
+                // 降低可拖拽父元素的层级
                 if (window.parentDragTag) window.parentDragTag.style.zIndex = 1;
 
                 let eRect = elmnt.getBoundingClientRect();
@@ -312,6 +310,7 @@ export default function buildDraggableArea({ isInAnotherArea = () => { }, passAd
                 let y = eRect.top + eRect.height / 2;
                 if (x < rect.left || x > rect.right || y < rect.top || y > rect.bottom) {
                     this.forbitSetTagsState = true;
+                    // 判断当前元素是否被拖拽到另一个区域
                     const result = isInAnotherArea(elmnt.getBoundingClientRect(), this.state.tags.get(index));
                     if (result && result.isIn) {
                         this.positions.splice(index, 1);
@@ -381,7 +380,7 @@ export default function buildDraggableArea({ isInAnotherArea = () => { }, passAd
 
         addTag({ tag, fromAreaId, x, y }) {
             const rect = this.container.getBoundingClientRect();
-            // The center position of the tag
+            // tag中心点在盒子内部的位置
             let ctop = y - rect.top;
             let cleft = x - rect.left;
             let i; // safari 10 bug
@@ -394,7 +393,7 @@ export default function buildDraggableArea({ isInAnotherArea = () => { }, passAd
 
             // Check if the tag could be put into a new position
             for (i = 0; i < this.positions.length - 1; i++) {
-                // Do not check its left-side space and right-side space
+                // 相邻两个元素的中心位置
                 const p1 = this.positions[i];
                 const p1Ctop = p1.top + p1.height / 2;
                 const p1Cleft = p1.left + p1.width / 2;
@@ -409,7 +408,7 @@ export default function buildDraggableArea({ isInAnotherArea = () => { }, passAd
                 startOfLine = false;
 
                 if (!this.props.isList) {
-                    // Is not "list view"
+                    // 在列表最前面
                     if (
                         // Head of tag list
                         i === 0 &&
@@ -420,7 +419,7 @@ export default function buildDraggableArea({ isInAnotherArea = () => { }, passAd
 
 
                     if (
-                        // Between two tags
+                        // 当在两个目标左右中间时
                         ctop > p1.top &&
                         ctop < p1.bottom &&
                         cleft > p1Cleft &&
@@ -428,7 +427,7 @@ export default function buildDraggableArea({ isInAnotherArea = () => { }, passAd
                     ) between2Tags = true;
 
                     if (
-                        // Start of line
+                        // 当在两个目标的上下中间偏左时
                         ctop > p2.top &&
                         ctop < p2.bottom &&
                         cleft < p2Cleft &&
@@ -436,7 +435,7 @@ export default function buildDraggableArea({ isInAnotherArea = () => { }, passAd
                     ) startOfLine = true;
 
                     if (
-                        // End of line
+                        // 当在两个目标的上下中间偏右时
                         ctop > p1.top &&
                         ctop < p1.bottom &&
                         cleft > p1Cleft &&
@@ -444,7 +443,7 @@ export default function buildDraggableArea({ isInAnotherArea = () => { }, passAd
                     ) endOfLine = true;
 
                     if (
-                        // Tail of tag list
+                        // 当在尾部时
                         i === this.positions.length - 2 &&
                         !(isHead || between2Tags || startOfLine || endOfLine)
                     ) isTail = true;
@@ -452,7 +451,7 @@ export default function buildDraggableArea({ isInAnotherArea = () => { }, passAd
                     if (isHead || isTail || between2Tags || startOfLine || endOfLine) break;
 
                 } else {
-                    // Is "list view"
+                    // 竖直列表
                     if (
                         // Between two tags
                         ctop > p1Ctop &&
@@ -483,6 +482,7 @@ export default function buildDraggableArea({ isInAnotherArea = () => { }, passAd
             } else {
                 tags = tags.splice(i + 1, 0, tag);
             }
+            // 重置positions
             this.positions = [];
 
             this.setState({ tags }, () => {
@@ -495,6 +495,7 @@ export default function buildDraggableArea({ isInAnotherArea = () => { }, passAd
             });
         }
 
+        // 删除指定tag
         buildDeleteTagFunc(tag) {
             return () => {
                 const tags = this.state.tags.filter(t => tag.id !== t.id);
