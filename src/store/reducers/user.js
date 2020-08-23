@@ -6,8 +6,8 @@
  * }
  */
 
-import { clearLoginInfo } from '@/common/common.js';
-import { TOKEN, USER_INFO } from "@/constants/account/index";
+import { loginOut } from '@/common/common.js';
+import { USER_INFO } from "@/constants/account/index";
 // 用来持久化数据的方法
 import { mySession, myStorage } from "@/utils/cache";
 // 初始数据
@@ -23,7 +23,7 @@ export const userReducer = (state = initState, action) => {
             return { ...state, userInfo: myStorage.set(USER_INFO, action.payload) };
         // 退出账号
         case 'LOGIN_OUT':
-            clearLoginInfo();
+            loginOut();
             return { ...state, userInfo: null };
         // 修改账号资料
         case 'CHANGE_ACCOUNT':

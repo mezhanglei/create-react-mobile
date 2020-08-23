@@ -2,8 +2,7 @@ import axios from "axios";
 import { STATUS_ERROR, CODE_ERROR } from "./config";
 import { Toast } from "antd-mobile";
 import { myStorage } from "@/utils/cache.js";
-import { clearLoginInfo } from "@/common/common.js";
-import { TOKEN } from "@/constants/account/index";
+import { loginOut, getToken } from "@/common/common.js";
 import { trimParams } from "@/utils/character.js";
 import Loader from "@/components/loader/index";
 
@@ -34,7 +33,7 @@ const http = axios.create({
  */
 function statusError(status, msg) {
     if (status === 401) {
-        clearLoginInfo();
+        loginOut();
     }
     status && Toast.info(STATUS_ERROR[status] || msg);
 }
@@ -46,7 +45,7 @@ function statusError(status, msg) {
  */
 function resultError(code, msg) {
     if (code == 401) {
-        clearLoginInfo();
+        loginOut();
     }
     code && Toast.info(CODE_ERROR[code] || msg);
 }
@@ -58,7 +57,7 @@ const defaults = {
 
 // 公共的headers
 const headers = {
-    Authorization: myStorage.get(TOKEN)
+    Authorization: getToken()
 };
 
 /**

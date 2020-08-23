@@ -8,16 +8,16 @@
 
 import { createStore, applyMiddleware, combineReducers } from 'redux';
 // 日志中间件,仅在开发环境下使用,必须放在最后
-import logger from 'redux-logger';
+// import logger from 'redux-logger';
 // 异步分发action中间件
 import thunk from 'redux-thunk';
 import { userReducer } from './reducers/user.js';
 // 多个reducer合并, 每个reducer都代表一个模块, 访问state中的值需要去要访问对应模块下面的state
 const RootReducer = combineReducers({
-    userModule: userReducer
+    userReducer
 });
 // applyMiddleware可以作为第二个参数也可以作为第三个参数
-let store = createStore(RootReducer, applyMiddleware(thunk, logger));
+let store = createStore(RootReducer, applyMiddleware(thunk));
 export default store;
 
 /**

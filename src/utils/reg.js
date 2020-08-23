@@ -97,11 +97,11 @@ export function isIOS() {
     return /(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent);
 }
 
-// 判断是否在安卓或uc浏览器
+// 判断是否在安卓
 export function isAndroid() {
     let u = navigator.userAgent;
     // android终端或者uc浏览器
-    let isAndroid = u.indexOf('Android') > -1 || u.indexOf('Linux') > -1;
+    let isAndroid = u.indexOf('Android') > -1 || u.indexOf('Adr') > -1;
     return isAndroid == true ? true : false;
 }
 
