@@ -2,12 +2,11 @@ import React, { Component, useState, useEffect } from 'react';
 import styles from "./index.less";
 import { Button } from "antd-mobile";
 import http from "@/http/request.js";
-import { urlDelQuery, getUrlQuery } from "@/utils/url";
 import { connect } from "react-redux";
 import SendVerifyCode from "@/components/sendCode/sendcode";
 import Loaders from "@/components/loader/index";
 import { isNumber, isString, isUndefined } from "@/utils/type";
-import { getDateDiff } from "@/utils/date";
+import { getDateDiff } from "@/utils/date/format";
 
 class Home extends React.Component {
     constructor(props) {
@@ -45,7 +44,8 @@ class Home extends React.Component {
             current: item
         });
         setTimeout(() => {
-            this.props.history.push(`home/info/${item}`);
+            this.props.history.push({ pathname: `home/info/${item}`, search: 'name=张磊' });
+            // window.location.pathname = `/home/info/${item}?name=zhanglei`;
         }, 1000);
     }
     show = () => {
@@ -56,7 +56,7 @@ class Home extends React.Component {
         const { current, arr } = this.state;
         return (
             <div>
-                <div points="woshihaoren" className={styles["home"]}>首页{getDateDiff('2020-7-12', { key: 1 })}</div>
+                <div points="woshihaoren" className={styles["home"]}>首页{getDateDiff('2020-8-25 23:20:22')}</div>
                 <div event-name="handle-point" onClick={this.show}>当前：{current}</div>
                 {
                     arr.map((item, index) => {

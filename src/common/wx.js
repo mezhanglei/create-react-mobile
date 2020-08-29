@@ -21,7 +21,7 @@ export function wxLink() {
     const response_type = "code";
     // 授权作用域 snsapi_userinfo表示手动授权 snsapi_base：不弹出授权页面，直接跳转，只能获取用户openid
     const scope = "snsapi_userinfo";
-    // 跳转授权链接
+    // 跳转授权链接 进入这个链接后，如果用户同意授权，页面将跳转至 redirect_uri?code=CODE&state=STATE。若用户禁止授权，则重定向后不会带上code参数，仅会带上state参数redirect_uri?state=STATE
     window.location.href = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appid}&redirect_uri=${redirect_uri}&response_type=${response_type}&scope=${scope}&state=STATE#wechat_redirect`;
 }
 

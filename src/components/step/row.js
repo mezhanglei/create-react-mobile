@@ -13,7 +13,7 @@ import styles from './row.less';
  *        也可以不用转换格式通过renderTop,renderBottom,renderMiddle自定义节点
  *  非必填参数:
  *    currentStatus： 当前点的状态，参考代码里面定义的映射关系
- *    currentIndex：当前进行的步骤的状态，默认第一位
+ *    currentIndex：当前进行的步骤，默认第一位
  *    stop: 默认false，表示是否终止步骤条进行流转
  *    length: 具体数字或空 | flex  flex表示弹性布局，所有步骤均分父元素长度  具体数字或空则每个步骤有固定的长度
  *    renderTop: 类型function(item,index) | 数字或字符串 所有上边节点自定义（优先级最高）

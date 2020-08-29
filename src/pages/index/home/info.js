@@ -1,4 +1,5 @@
 import React, { Component, useState, useEffect } from 'react';
+import { delUrlQuery } from "@/utils/url";
 
 class HomeInfo extends React.Component {
     constructor(props) {
@@ -8,6 +9,7 @@ class HomeInfo extends React.Component {
     }
 
     componentDidMount() {
+        console.log(delUrlQuery('name'));
         setTimeout(() => {
             this.setState({
                 title: this.props.match.params.id

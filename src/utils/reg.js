@@ -55,8 +55,7 @@ export function isInWeChat() {
 }
 
 // 判断是否在微信小程序环境中, true表示是在微信小程序环境中
-export function isInMini() {
-    const wx = require("weixin-js-sdk");
+export function isInMini(wx) {
     var ua = navigator.userAgent.toLowerCase();
     if (ua.match(/MicroMessenger/i) == "micromessenger") {
         //ios的ua中无miniProgram，但都有MicroMessenger（表示是微信浏览器）

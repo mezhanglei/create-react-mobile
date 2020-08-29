@@ -33,7 +33,7 @@ export function animateMove(ele, target, step, time) {
 }
 
 /**
-* 多个任意属性同时操纵缓动动画的函数
+* 缓动动画
 * @param {DOM 对象} ele 元素对象
 * @param {Objet} obj 目标属性对象(如果是位置变换则为绝对定位时的位置)
 * @param {Number} base 缓动基准,缓动基准越大,则越平滑,一般为10
@@ -42,7 +42,7 @@ export function animateMove(ele, target, step, time) {
 * 步长越多 过度越平滑
 * (步长 * 时间)越小 则过渡越快
 */
-export function animationAllSlow(ele, obj, base, time, callback) {
+export function animationSlow(ele, obj, base, time, callback) {
     clearInterval(ele.timeID);
     ele.timeID = setInterval(function () {
         var isAllok = true;
