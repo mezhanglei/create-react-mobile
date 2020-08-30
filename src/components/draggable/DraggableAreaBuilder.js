@@ -10,8 +10,15 @@ const dragClassName = 'move';
 // 不可拖拽时的样式类
 const excludedInDragClassName = 'default';
 
-// 高阶组件，返回内容可拖拽的组件盒子
-export default function buildDraggableArea({ isInAnotherArea = () => { }, passAddFunc = () => { } } = {}) {
+/**
+ * 实例化可拖拽的盒子
+ * 参数:
+ * initialTags: 初始化的tag组件
+ * tags: tag组件
+ * 方法:
+ * getAddTagFunc: function(addTags) {} 获取添加进盒子的tag
+ */
+export default function buildDraggableArea({ isInAnotherArea = () => { }, listenAddFunc = () => { } } = {}) {
 
     class DraggableArea extends React.Component {
         constructor() {
@@ -25,10 +32,9 @@ export default function buildDraggableArea({ isInAnotherArea = () => { }, passAd
             // 拖拽元素的定位父元素
             this.tagEles = {};
             this.positions = [];
-            this.rect = {};
             this.dragStart = {};
             this.tagChanged = false;
-
+            // 临时存放dom节点
             this.tagsElesWhichBindedDrag = new WeakSet();
         }
 
@@ -39,24 +45,23 @@ export default function buildDraggableArea({ isInAnotherArea = () => { }, passAd
                 this.setTags(List(this.props.tags));
             }
 
-            passAddFunc(this.container, this.addTag.bind(this));
+            listenAddFunc(this.container, this.addTag.bind(this));
             this.props.getAddTagFunc && this.props.getAddTagFunc(this.addTag.bind(this));
         }
 
-        componentWillReceiveProps({ tags }) {
+        UNSAFE_componentWillReceiveProps({ tags }) {
             if (!tags) return;
             if ((
                 tags.length !== this.props.tags.length ||
                 tags.length !== this.state.tags.size ||
                 tags.some((tag, i) => !this.state.tags.get(i) || tag.id !== this.state.tags.get(i).id)
-            ) && !this.forbitSetTagsState
+            ) && !this.setTagsStatus
             ) {
                 this.setTags(List(tags));
             }
         }
 
         componentDidUpdate(prevProps, { tags }) {
-            // 监听tag是否变化
             this.tagChanged = this.tagChanged ||
                 tags.size !== this.state.tags.size ||
                 this.state.tags.some((tag, i) => !tags.get(i) || tag.id !== tags.get(i).id);
@@ -309,7 +314,7 @@ export default function buildDraggableArea({ isInAnotherArea = () => { }, passAd
                 let x = eRect.left + eRect.width / 2;
                 let y = eRect.top + eRect.height / 2;
                 if (x < rect.left || x > rect.right || y < rect.top || y > rect.bottom) {
-                    this.forbitSetTagsState = true;
+                    this.setTagsStatus = true;
                     // 判断当前元素是否被拖拽到另一个区域
                     const result = isInAnotherArea(elmnt.getBoundingClientRect(), this.state.tags.get(index));
                     if (result && result.isIn) {
@@ -322,11 +327,11 @@ export default function buildDraggableArea({ isInAnotherArea = () => { }, passAd
                                     tag: tagDraggedOut
                                 }
                             }));
-                            this.forbitSetTagsState = false;
+                            this.setTagsStatus = false;
                         });
                         return;
                     } else {
-                        this.forbitSetTagsState = false;
+                        this.setTagsStatus = false;
                     }
                 }
                 elmnt.style.top = 0;
@@ -345,7 +350,7 @@ export default function buildDraggableArea({ isInAnotherArea = () => { }, passAd
             elmnt.addEventListener("touchstart", dragStart, false);
         }
 
-        // 根据tags数组来设置新的排列
+        // 设置tags的排列
         setTags(tags, callback) {
             this.setState({ tags }, () => {
                 callback && callback();
