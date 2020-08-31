@@ -1,6 +1,7 @@
 .DraggableTags {
   position: relative;
   height: 100%;
+
   &::after {
     content: '';
     display: block;
@@ -19,9 +20,7 @@
     -ms-user-select: none;
     user-select: none;
   }
-  &-undraggable {
-    cursor: no-drop;
-  }
+
   &-tag-drag {
     position: absolute;
     top: 0;
@@ -34,6 +33,7 @@
 .move {
   cursor: move;
 }
+
 .default {
-  cursor: default;
+  cursor: not-allowed;
 }

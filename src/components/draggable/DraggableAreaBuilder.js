@@ -17,8 +17,10 @@ const excludedInDragClassName = 'default';
  * tags: tag组件
  * 方法:
  * getAddTagFunc: function(addTags) {} 获取添加进盒子的tag
+ * tags数据的参数
+ *  undraggable： 不允许拖拽
  */
-export default function buildDraggableArea({ isInAnotherArea = () => { }, listenAddFunc = () => { } } = {}) {
+export default function buildDraggableArea({ triggerAddFunc = () => { }, listenAddFunc = () => { } } = {}) {
 
     class DraggableArea extends React.Component {
         constructor() {
@@ -27,13 +29,12 @@ export default function buildDraggableArea({ isInAnotherArea = () => { }, listen
                 tags: List([]),
             };
 
-            // 拖拽元素，绝对定位
+            // 缓存拖拽元素，绝对定位
             this.draggableTagEles = {};
-            // 拖拽元素的定位父元素
+            // 缓存拖拽元素的定位父元素
             this.tagEles = {};
+            // 所有tag定位父元素的位置信息
             this.positions = [];
-            this.dragStart = {};
-            this.tagChanged = false;
             // 临时存放dom节点
             this.tagsElesWhichBindedDrag = new WeakSet();
         }
@@ -49,22 +50,14 @@ export default function buildDraggableArea({ isInAnotherArea = () => { }, listen
             this.props.getAddTagFunc && this.props.getAddTagFunc(this.addTag.bind(this));
         }
 
-        UNSAFE_componentWillReceiveProps({ tags }) {
-            if (!tags) return;
-            if ((
-                tags.length !== this.props.tags.length ||
-                tags.length !== this.state.tags.size ||
-                tags.some((tag, i) => !this.state.tags.get(i) || tag.id !== this.state.tags.get(i).id)
-            ) && !this.setTagsStatus
-            ) {
-                this.setTags(List(tags));
+        componentDidUpdate(prevProps) {
+            if (!this.props.tags) {
+                return;
             }
-        }
-
-        componentDidUpdate(prevProps, { tags }) {
-            this.tagChanged = this.tagChanged ||
-                tags.size !== this.state.tags.size ||
-                this.state.tags.some((tag, i) => !tags.get(i) || tag.id !== tags.get(i).id);
+            if (prevProps.tags.length !== this.props.tags.length ||
+                prevProps.tags.some((tag, i) => !this.props.tags[i] || tag.id !== this.props.tags[i].id)) {
+                this.setTags(List(this.props.tags));
+            }
         }
 
         dragElement(elmnt, id, parent) {
@@ -84,7 +77,7 @@ export default function buildDraggableArea({ isInAnotherArea = () => { }, listen
 
             // 拖拽开始事件
             const dragStart = (e) => {
-                // 判断是否禁止拖拽(嵌套的内部拖拽元素不受影响)
+                // 判断是否禁止拖拽
                 if (this.props.forbidDrag) {
                     // closest: 触发点的最近的含该类名的祖先元素
                     const canDrag = e.target.closest(`.${styles[dragClassName]}`);
@@ -94,8 +87,6 @@ export default function buildDraggableArea({ isInAnotherArea = () => { }, listen
                     if (canDrag.contains(notDrag)) return;
                 }
                 // e.preventDefault();
-                // 初始化tag改变状态
-                this.tagChanged = false;
 
                 // 定义一个鼠标按下拖拽属性
                 if (window.dragMouseDown) return;
@@ -164,133 +155,130 @@ export default function buildDraggableArea({ isInAnotherArea = () => { }, listen
 
                 // Check if the tag could be put into a new position
                 for (let i = 0; i < this.positions.length - 1; i++) {
-                    // 
-                    if ((index !== i || (index === this.positions.length - 2 && i === this.positions.length - 2)) && !(index - 1 === i && i !== 0)) {
-                        const p1 = this.positions[i];
-                        const p2 = this.positions[i + 1];
+                    const p1 = this.positions[i];
+                    const p2 = this.positions[i + 1];
 
-                        let isHead = false;
-                        let isTail = false;
-                        let between2Tags = false;
-                        let endOfLine = false;
-                        let startOfLine = false;
-                        // 缝隙的宽度
-                        const space = 8;
+                    let isHead = false;
+                    let isTail = false;
+                    let between2Tags = false;
+                    let endOfLine = false;
+                    let startOfLine = false;
+                    // 缝隙的宽度
+                    const space = 8;
 
-                        if (!isList) {
-                            // 非列表组件
-                            if (
-                                // 当在序号第一的目标的左上时
-                                i === 0 &&
-                                ctop > p1.top &&
-                                ctop < p1.bottom &&
-                                cleft < p1.left + space
-                            ) isHead = true;
-
-                            if (
-                                // 当在尾部目标的左上时
-                                i === this.positions.length - 2 && ((
-                                    ctop > p2.top &&
-                                    cleft > p2.left - space) || ctop > p2.bottom)
-                            ) isTail = true;
-
-                            if (
-                                // 当在两个目标左右中间时
-                                ctop > p1.top &&
-                                ctop < p1.bottom &&
-                                cleft > p1.right - 8 &&
-                                cleft < p2.left + 8
-                            ) between2Tags = true;
-
-                            if (
-                                // 当在两个目标的上下中间偏左时
-                                ctop > p2.top &&
-                                ctop < p2.bottom &&
-                                cleft < p2.left + 8 &&
-                                p1.top < p2.top
-                            ) startOfLine = true;
-
-                            if (
-                                // 当在两个目标的上下中间偏右时
-                                ctop > p1.top &&
-                                ctop < p1.bottom &&
-                                cleft > p1.right - 8 &&
-                                p1.top < p2.top
-                            ) endOfLine = true;
-                        } else {
-                            // 列表组件
-                            if (
-                                // 在上下两个中间
-                                ctop > p1.bottom - 4 &&
-                                ctop < p2.top + 4
-                            ) between2Tags = true;
-
-                            if (
-                                // 在最上面
-                                i === 0 &&
-                                ctop < p1.top + 4
-                            ) isHead = true;
-
-                            if (
-                                // 在最下面
-                                i === this.positions.length - 2 &&
-                                ctop > p2.bottom - 4
-                            ) isTail = true;
-                        }
-
-                        // 如果满足上述位置要求, 则
+                    if (!isList) {
+                        // 非列表组件
                         if (
-                            (!isList && (isHead || isTail || between2Tags || startOfLine || endOfLine))
-                            ||
-                            (isList && (isHead || isTail || between2Tags))
-                        ) {
-                            // 当前拖拽元素
-                            let cur = this.state.tags.get(index);
-                            // 将当前拖拽元素删除
-                            let tags = this.state.tags.splice(index, 1);
-                            // 如果序号在前面,则将拖拽元素放到前面
-                            if ((index < i || isHead) && !isTail) {
-                                tags = tags.splice(i, 0, cur);
-                                index = i;
-                                // 否则将拖拽元素添加到后面
-                            } else {
-                                tags = tags.splice(i + 1, 0, cur);
-                                index = i + 1;
-                            }
-                            // 重置positions
-                            this.positions = [];
-                            // 拖拽元素定位父元素的之前定位位置
-                            const prevBaseTop = this.tagEles[cur.id].offsetTop;
-                            const prevBaseLeft = this.tagEles[cur.id].offsetLeft;
+                            // 当在序号第一的目标的左上时
+                            i === 0 &&
+                            ctop > p1.top &&
+                            ctop < p1.bottom &&
+                            cleft < p1.left + space
+                        ) isHead = true;
 
-                            // 重新计算定位父元素
-                            this.setState({ tags }, () => {
-                                let curBaseTop;
-                                let curBaseLeft;
-                                tags.forEach((item, i) => {
-                                    const tag = this.tagEles[item.id];
-                                    if (i === index) {
-                                        // 当前的定位父元素的位置
-                                        curBaseLeft = tag.offsetLeft;
-                                        curBaseTop = tag.offsetTop;
-                                    }
-                                    this.positions.push({
-                                        id: item.id,
-                                        top: tag.offsetTop,
-                                        left: tag.offsetLeft,
-                                        bottom: tag.offsetTop + tag.offsetHeight,
-                                        right: tag.offsetLeft + tag.offsetWidth,
-                                        width: tag.offsetWidth,
-                                        height: tag.offsetHeight,
-                                    });
-                                });
+                        if (
+                            // 当在尾部目标的左上时
+                            i === this.positions.length - 2 && ((
+                                ctop > p2.top &&
+                                cleft > p2.left - space) || ctop > p2.bottom)
+                        ) isTail = true;
 
-                                // 重新计算拖拽元素相对于定位父元素位置 = 当前相对于拖拽父元素定位位置 - (当前定位父元素位置 - 之前的定位父元素位置)
-                                elmnt.style.left = `${dragLeft - (curBaseLeft - prevBaseLeft)}px`;
-                                elmnt.style.top = `${dragTop - (curBaseTop - prevBaseTop)}px`;
-                            });
-                            break;
+                        if (
+                            // 当在两个目标左右中间时
+                            ctop > p1.top &&
+                            ctop < p1.bottom &&
+                            cleft > p1.right - 8 &&
+                            cleft < p2.left + 8
+                        ) between2Tags = true;
+
+                        if (
+                            // 当在两个目标的上下中间偏左时
+                            ctop > p2.top &&
+                            ctop < p2.bottom &&
+                            cleft < p2.left + 8 &&
+                            p1.top < p2.top
+                        ) startOfLine = true;
+
+                        if (
+                            // 当在两个目标的上下中间偏右时
+                            ctop > p1.top &&
+                            ctop < p1.bottom &&
+                            cleft > p1.right - 8 &&
+                            p1.top < p2.top
+                        ) endOfLine = true;
+                    } else {
+                        // 列表组件
+                        if (
+                            // 在上下两个中间
+                            ctop > p1.bottom - 4 &&
+                            ctop < p2.top + 4
+                        ) between2Tags = true;
+
+                        if (
+                            // 在最上面
+                            i === 0 &&
+                            ctop < p1.top + 4
+                        ) isHead = true;
+
+                        if (
+                            // 在最下面
+                            i === this.positions.length - 2 &&
+                            ctop > p2.bottom - 4
+                        ) isTail = true;
+                    }
+
+                    // 如果满足上述位置要求, 则
+                    if (
+                        (!isList && (isHead || isTail || between2Tags || startOfLine || endOfLine))
+                        ||
+                        (isList && (isHead || isTail || between2Tags))
+                    ) {
+                        // 当前拖拽元素
+                        let cur = this.state.tags.get(index);
+                        // 将当前拖拽元素删除
+                        let tags = this.state.tags.splice(index, 1);
+                        // 如果序号在前面,则将拖拽元素放到前面
+                        if ((index < i || isHead) && !isTail) {
+                            tags = tags.splice(i, 0, cur);
+                            index = i;
+                            // 否则将拖拽元素添加到后面
+                        } else {
+                            tags = tags.splice(i + 1, 0, cur);
+                            index = i + 1;
                         }
+                        // 重置positions
+                        this.positions = [];
+                        // 拖拽元素定位父元素的之前定位位置
+                        const prevBaseTop = this.tagEles[cur.id].offsetTop;
+                        const prevBaseLeft = this.tagEles[cur.id].offsetLeft;
+
+                        // 重新计算定位父元素
+                        this.setState({ tags }, () => {
+                            let curBaseTop;
+                            let curBaseLeft;
+                            tags.forEach((item, i) => {
+                                const tag = this.tagEles[item.id];
+                                if (i === index) {
+                                    // 当前的定位父元素的位置
+                                    curBaseLeft = tag.offsetLeft;
+                                    curBaseTop = tag.offsetTop;
+                                }
+                                this.positions.push({
+                                    id: item.id,
+                                    top: tag.offsetTop,
+                                    left: tag.offsetLeft,
+                                    bottom: tag.offsetTop + tag.offsetHeight,
+                                    right: tag.offsetLeft + tag.offsetWidth,
+                                    width: tag.offsetWidth,
+                                    height: tag.offsetHeight,
+                                });
+                            });
+
+                            // 重新计算拖拽元素相对于定位父元素位置 = 当前相对于拖拽父元素定位位置 - (当前定位父元素位置 - 之前的定位父元素位置)
+                            elmnt.style.left = `${dragLeft - (curBaseLeft - prevBaseLeft)}px`;
+                            elmnt.style.top = `${dragTop - (curBaseTop - prevBaseTop)}px`;
+                        });
+                        break;
                     }
                 }
             };
@@ -314,9 +302,8 @@ export default function buildDraggableArea({ isInAnotherArea = () => { }, listen
                 let x = eRect.left + eRect.width / 2;
                 let y = eRect.top + eRect.height / 2;
                 if (x < rect.left || x > rect.right || y < rect.top || y > rect.bottom) {
-                    this.setTagsStatus = true;
-                    // 判断当前元素是否被拖拽到另一个区域
-                    const result = isInAnotherArea(elmnt.getBoundingClientRect(), this.state.tags.get(index));
+                    // 存在接收的目标
+                    const result = triggerAddFunc(elmnt.getBoundingClientRect(), this.state.tags.get(index));
                     if (result && result.isIn) {
                         this.positions.splice(index, 1);
                         const tagDraggedOut = this.state.tags.get(index);
@@ -327,20 +314,14 @@ export default function buildDraggableArea({ isInAnotherArea = () => { }, listen
                                     tag: tagDraggedOut
                                 }
                             }));
-                            this.setTagsStatus = false;
                         });
                         return;
-                    } else {
-                        this.setTagsStatus = false;
                     }
                 }
                 elmnt.style.top = 0;
                 elmnt.style.left = 0;
                 elmnt.style.zIndex = 1;
-                if (this.tagChanged && this.props.onChange) {
-                    this.tagChanged = false;
-                    this.props.onChange(this.state.tags.toJS(), this.buildOnChangeObj());
-                }
+                this.props.onChange && this.props.onChange(this.state.tags.toJS(), this.buildOnChangeObj());
             };
 
             elmnt.removeEventListener("mousedown", dragStart);
@@ -357,8 +338,6 @@ export default function buildDraggableArea({ isInAnotherArea = () => { }, listen
                 // 清空位置信息
                 this.positions = [];
                 this.state.tags.forEach((item, i) => {
-                    // 可拖拽元素
-                    const draggableTag = this.draggableTagEles[item.id];
                     // 可拖拽元素的定位父元素
                     const tag = this.tagEles[item.id];
                     // 定位父元素的四条边的定位位置
@@ -373,7 +352,7 @@ export default function buildDraggableArea({ isInAnotherArea = () => { }, listen
                     });
                     // 如果模块是可拖拽的
                     if (!item.undraggable) {
-                        // 防止添加进相同的模块
+                        const draggableTag = this.draggableTagEles[item.id];
                         if (this.tagsElesWhichBindedDrag.has(draggableTag)) return;
                         this.tagsElesWhichBindedDrag.add(draggableTag);
                         // 每个元素绑定拖拽事件
@@ -523,7 +502,7 @@ export default function buildDraggableArea({ isInAnotherArea = () => { }, listen
             const tags = this.state.tags.toJS().map((tag, index) => (
                 <div
                     key={tag.id}
-                    className={`${styles['DraggableTags-tag']} ${tag.undraggable ? styles['DraggableTags-undraggable'] : ''} ${!forbidDrag ? styles[dragClassName] : styles[excludedInDragClassName]}`}
+                    className={`${styles['DraggableTags-tag']} ${(tag.undraggable || forbidDrag) ? styles[excludedInDragClassName] : styles[dragClassName]}`}
                     ref={(target) => {
                         this.tagEles[tag.id] = target;
                     }}

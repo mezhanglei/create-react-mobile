@@ -2,11 +2,10 @@ import React from 'react';
 import buildDraggableArea from './DraggableAreaBuilder';
 
 /**
- * 拖拽的容器组件
+ * 拖拽容器组件，可以实例化一组拖拽组件
  * 使用：
- * 1. 实例化const group = new DraggableAreasGroup();
- * 2. 通过实例的方法：group.addArea(key)生成一个区域，区域里的元素可以拖拽
- *                  同个group实例生成的区域，可以互相往各区域内拖拽元素，每个区域，样式独立
+ *   实例化： const DraggableAreaGroup = new DraggableTagsGroup();
+ *   const DraggableArea = DraggableAreaGroup.addArea(areaId)
  */
 export default class DraggableTagsGroup {
     constructor() {
@@ -15,12 +14,12 @@ export default class DraggableTagsGroup {
 
     addArea(areaId) {
         return buildDraggableArea({
-            // 拖拽结束后如果拖拽到盒子外面, 此方法用来触发事件池里的所有方法
-            isInAnotherArea: (tagRect, tag) => {
+            // 触发所有绑定事件， 如果存在添加进新tag的area，返回该area信息
+            triggerAddFunc: (tagRect, tag) => {
                 let x = tagRect.left + tagRect.width / 2;
                 let y = tagRect.top + tagRect.height / 2;
 
-                let result = { isIn: false };
+                let result = {};
                 this.isInAreas.forEach(isInArea => {
                     const r = isInArea({ tag, x, y, areaId });
                     if (r.isIn) {
@@ -28,11 +27,9 @@ export default class DraggableTagsGroup {
                     }
                 });
 
-                console.log(result);
-
                 return result;
             },
-            // 初始化时会添加事件到事件池
+            // 实例化时给每个区域绑定一个事件
             listenAddFunc: (ele, addTag) => {
                 this.isInAreas.push(function ({ tag, x, y, areaId: fromAreaId }) {
 
