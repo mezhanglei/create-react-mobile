@@ -4,6 +4,7 @@ import { List } from 'immutable';
 
 import styles from './style.less';
 
+
 const isMobile = (typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1);
 // 拖拽时的样式类
 const dragClassName = 'move';
@@ -60,23 +61,56 @@ export default function buildDraggableArea({ triggerAddFunc = () => { }, listenA
             }
         }
 
+        // 获取tag的index序号
+        getTagIndex = (id) => {
+            let index;
+            this.positions.forEach((p, i) => {
+                if (p.id === id) index = i;
+            });
+            return index;
+        }
+
+        // 获取事件对象的位置
+        getEventPosition = (e) => {
+            e = e || window.event;
+            return {
+                x: isMobile ? e.touches[0].clientX : e.clientX,
+                y: isMobile ? e.touches[0].clientY : e.clientY
+            };
+        }
+
+        // 获取最外层的可拖拽元素
+        getDragElement = (dragEle) => {
+            let dragParent = dragEle.parentElement;
+            while (dragParent && !dragParent.classList.contains('DraggableTags-tag-drag')) {
+                dragParent = dragParent.parentElement;
+            }
+            return dragParent;
+        }
+
+        // 
+
         dragElement(elmnt, id, parent) {
             // 是否属于列表拖拽
             const isList = this.props.isList;
             // 事件触发位置
-            let prevX = 0, prevY = 0;
-            // 盒子的可视化位置
-            let rect = {};
+            // let prevX = 0, prevY = 0;
 
-            // 当前元素序号
-            let index;
-            // 初始化计算当前元素的位置序号
-            this.positions.forEach((p, i) => {
-                if (p.id === id) index = i;
-            });
+            // 拖拽之前的信息
+            let preInfo = {
+                eventX: 0,
+                eventY: 0,
+                positionLeft: 0,
+                positionTop: 0,
+                positionX: 0,
+                positionY: 0,
+                zIndex: 2
+            };
 
             // 拖拽开始事件
             const dragStart = (e) => {
+                // 移动设备拖动会导致奇怪的问题
+                e.type === 'touchmove' && e.preventDefault();
                 // 判断是否禁止拖拽
                 if (this.props.forbidDrag) {
                     // closest: 触发点的最近的含该类名的祖先元素
@@ -86,28 +120,25 @@ export default function buildDraggableArea({ triggerAddFunc = () => { }, listenA
                     if (!canDrag) return;
                     if (canDrag.contains(notDrag)) return;
                 }
-                // e.preventDefault();
 
-                // 定义一个鼠标按下拖拽属性
+                // 拖拽限制
                 if (window.dragMouseDown) return;
                 window.dragMouseDown = true;
 
-                // 最外层的盒子的可视位置
-                rect = this.container.getBoundingClientRect();
-                e = e || window.event;
                 // 事件对象的触发位置
-                prevX = e.clientX || e.touches[0].clientX;
-                prevY = e.clientY || e.touches[0].clientY;
-                // 增加拖拽元素的层级
-                elmnt.style.zIndex = 2;
+                // prevX = this.getEventPosition(e).x;
+                // prevY = this.getEventPosition(e).y;
+                preInfo.eventX = this.getEventPosition(e).x;
+                preInfo.eventY = this.getEventPosition(e).y;
+                preInfo.positionLeft = elmnt.offsetLeft;
+                preInfo.positionTop = elmnt.offsetTop;
+                preInfo.positionX = elmnt.offsetLeft + elmnt.offsetWidth / 2;
+                preInfo.positionY = elmnt.offsetTop + elmnt.offsetHeight / 2;
 
-                // 循环找到拖拽元素的父元素看是否存在可拖拽的父元素
-                window.parentDragTag = elmnt.parentElement;
-                while (window.parentDragTag && !window.parentDragTag.classList.contains('DraggableTags-tag-drag')) {
-                    window.parentDragTag = window.parentDragTag.parentElement;
-                }
-                // 移动过程中如果存在可拖拽的父元素则也增加层级
-                if (window.parentDragTag) window.parentDragTag.style.zIndex = 2;
+                // 增加拖拽元素的层级
+                elmnt.style.zIndex = preInfo.zIndex;
+                const dragParent = this.getDragElement(elmnt);
+                if (dragParent) dragParent.style.zIndex = preInfo.zIndex;
 
                 // 拖拽结束
                 document.addEventListener("mouseup", closeDragElement, false);
@@ -119,39 +150,34 @@ export default function buildDraggableArea({ triggerAddFunc = () => { }, listenA
                 elmnt.addEventListener("touchcancel", closeDragElement, false);
                 // 触摸移动过程中
                 elmnt.addEventListener("touchmove", elementDrag, false);
-
-                // 初始化计算当前元素的位置序号
-                this.positions.forEach((p, i) => {
-                    if (p.id === id) index = i;
-                });
             };
 
             // 拖拽过程中
             const elementDrag = (e) => {
-
                 if (isMobile) this.container.style.overflowY = 'visible';
-                // 拖拽过程中禁止scrolling等默认行为
+                // 阻止默认行为
                 e.type === 'touchmove' && e.preventDefault();
 
-                // 计算tag的新的位置信息
-                e = e || window.event;
                 // 计算拖拽元素的移动距离
-                let nowX = e.clientX || e.touches[0].clientX;
-                let nowY = e.clientY || e.touches[0].clientY;
-                let movedX = nowX - prevX;
-                let movedY = nowY - prevY;
-                prevX = nowX;
-                prevY = nowY;
+                let nowX = this.getEventPosition(e).x;
+                let nowY = this.getEventPosition(e).y;
+                let movedX = nowX - preInfo.eventX;
+                let movedY = nowY - preInfo.eventY;
+                // prevX = nowX;
+                // prevY = nowY;
                 // 拖拽元素移动后相对于定位父元素的位置
-                let dragTop = elmnt.offsetTop + movedY;
-                let dragLeft = elmnt.offsetLeft + movedX;
+                let dragTop = preInfo.positionTop + movedY;
+                let dragLeft = preInfo.positionLeft + movedX;
                 elmnt.style.top = dragTop + "px";
                 elmnt.style.left = dragLeft + "px";
                 // tag中心点相对于盒子的位置
-                let baseCenterTop = parent.offsetTop + elmnt.offsetHeight / 2;
-                let baseCenterLeft = parent.offsetLeft + elmnt.offsetWidth / 2;
-                let ctop = baseCenterTop + dragTop;
-                let cleft = baseCenterLeft + dragLeft;
+                // let baseCenterTop = parent.offsetTop + elmnt.offsetHeight / 2;
+                // let baseCenterLeft = parent.offsetLeft + elmnt.offsetWidth / 2;
+                // let ctop = baseCenterTop + dragTop;
+                // let cleft = baseCenterLeft + dragLeft;
+
+                let ctop = preInfo.positionY + movedY;
+                let cleft = preInfo.positionX + movedX;
 
                 // Check if the tag could be put into a new position
                 for (let i = 0; i < this.positions.length - 1; i++) {
@@ -234,8 +260,9 @@ export default function buildDraggableArea({ triggerAddFunc = () => { }, listenA
                         (isList && (isHead || isTail || between2Tags))
                     ) {
                         // 当前拖拽元素
+                        let index = this.getTagIndex(id);
                         let cur = this.state.tags.get(index);
-                        // 将当前拖拽元素删除
+                        // 将当前拖拽元素删除, 返回剩余的元素(这里的splice和原生方法不一样)
                         let tags = this.state.tags.splice(index, 1);
                         // 如果序号在前面,则将拖拽元素放到前面
                         if ((index < i || isHead) && !isTail) {
@@ -248,36 +275,36 @@ export default function buildDraggableArea({ triggerAddFunc = () => { }, listenA
                         }
                         // 重置positions
                         this.positions = [];
-                        // 拖拽元素定位父元素的之前定位位置
+                        // 没有重新排列tags之前的位置
                         const prevBaseTop = this.tagEles[cur.id].offsetTop;
                         const prevBaseLeft = this.tagEles[cur.id].offsetLeft;
+                        console.log(tags.toJS());
 
                         // 重新计算定位父元素
-                        this.setState({ tags }, () => {
-                            let curBaseTop;
-                            let curBaseLeft;
-                            tags.forEach((item, i) => {
-                                const tag = this.tagEles[item.id];
-                                if (i === index) {
-                                    // 当前的定位父元素的位置
-                                    curBaseLeft = tag.offsetLeft;
-                                    curBaseTop = tag.offsetTop;
-                                }
-                                this.positions.push({
-                                    id: item.id,
-                                    top: tag.offsetTop,
-                                    left: tag.offsetLeft,
-                                    bottom: tag.offsetTop + tag.offsetHeight,
-                                    right: tag.offsetLeft + tag.offsetWidth,
-                                    width: tag.offsetWidth,
-                                    height: tag.offsetHeight,
-                                });
-                            });
-
-                            // 重新计算拖拽元素相对于定位父元素位置 = 当前相对于拖拽父元素定位位置 - (当前定位父元素位置 - 之前的定位父元素位置)
-                            elmnt.style.left = `${dragLeft - (curBaseLeft - prevBaseLeft)}px`;
-                            elmnt.style.top = `${dragTop - (curBaseTop - prevBaseTop)}px`;
-                        });
+                        // this.setState({ tags }, () => {
+                        //     let curBaseTop;
+                        //     let curBaseLeft;
+                        //     tags.forEach((item, i) => {
+                        //         const tag = this.tagEles[item.id];
+                        //         if (i === index) {
+                        //             // 重新排列tags之后的位置
+                        //             curBaseLeft = tag.offsetLeft;
+                        //             curBaseTop = tag.offsetTop;
+                        //         }
+                        //         this.positions.push({
+                        //             id: item.id,
+                        //             top: tag.offsetTop,
+                        //             left: tag.offsetLeft,
+                        //             bottom: tag.offsetTop + tag.offsetHeight,
+                        //             right: tag.offsetLeft + tag.offsetWidth,
+                        //             width: tag.offsetWidth,
+                        //             height: tag.offsetHeight,
+                        //         });
+                        //     });
+                        //     // 重新计算拖拽元素相对于定位父元素位置 = 当前相对于拖拽父元素定位位置 - (重新排列之后的位置 - 重新排列之前的位置)
+                        //     elmnt.style.left = `${dragLeft - (curBaseLeft - prevBaseLeft)}px`;
+                        //     elmnt.style.top = `${dragTop - (curBaseTop - prevBaseTop)}px`;
+                        // });
                         break;
                     }
                 }
@@ -295,15 +322,18 @@ export default function buildDraggableArea({ triggerAddFunc = () => { }, listenA
                 elmnt.removeEventListener("touchcancel", closeDragElement, false);
                 elmnt.removeEventListener("touchmove", elementDrag, false);
 
-                // 降低可拖拽父元素的层级
-                if (window.parentDragTag) window.parentDragTag.style.zIndex = 1;
+                const dragParent = this.getDragElement(elmnt);
+                if (dragParent) dragParent.style.zIndex = 1;
 
                 let eRect = elmnt.getBoundingClientRect();
+                // 最外层的盒子的可视位置
+                const areaPosition = this.container.getBoundingClientRect();
+                const index = this.getTagIndex(id);
                 let x = eRect.left + eRect.width / 2;
                 let y = eRect.top + eRect.height / 2;
-                if (x < rect.left || x > rect.right || y < rect.top || y > rect.bottom) {
+                if (x < areaPosition.left || x > areaPosition.right || y < areaPosition.top || y > areaPosition.bottom) {
                     // 存在接收的目标
-                    const result = triggerAddFunc(elmnt.getBoundingClientRect(), this.state.tags.get(index));
+                    const result = triggerAddFunc(elmnt.getBoundingClientRect(), this.state.tags.get(index), e);
                     if (result && result.isIn) {
                         this.positions.splice(index, 1);
                         const tagDraggedOut = this.state.tags.get(index);
@@ -318,6 +348,7 @@ export default function buildDraggableArea({ triggerAddFunc = () => { }, listenA
                         return;
                     }
                 }
+                // 重置
                 elmnt.style.top = 0;
                 elmnt.style.left = 0;
                 elmnt.style.zIndex = 1;
@@ -362,11 +393,11 @@ export default function buildDraggableArea({ triggerAddFunc = () => { }, listenA
             });
         }
 
-        addTag({ tag, fromAreaId, x, y }) {
-            const rect = this.container.getBoundingClientRect();
+        addTag({ tag, fromAreaId, x, y, e }) {
+            const areaPosition = this.container.getBoundingClientRect();
             // tag中心点在盒子内部的位置
-            let ctop = y - rect.top;
-            let cleft = x - rect.left;
+            let ctop = y - areaPosition.top;
+            let cleft = x - areaPosition.left;
             let i; // safari 10 bug
 
             let isHead = false;

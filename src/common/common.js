@@ -102,7 +102,7 @@ export function downLoadApp() {
             document.body.removeChild(ifr);
             // 安卓下载地址
             window.location.href = "安卓下载地址";
-        }, 2000);
+        }, 800);
     }
 }
 
