@@ -94,7 +94,7 @@ export default function buildDraggableArea({ triggerAddFunc = () => { }, listenA
             // 是否属于列表拖拽
             const isList = this.props.isList;
             // 事件触发位置
-            // let prevX = 0, prevY = 0;
+            let prevX = 0, prevY = 0;
 
             // 拖拽之前的信息
             let preInfo = {
@@ -126,14 +126,15 @@ export default function buildDraggableArea({ triggerAddFunc = () => { }, listenA
                 window.dragMouseDown = true;
 
                 // 事件对象的触发位置
-                // prevX = this.getEventPosition(e).x;
-                // prevY = this.getEventPosition(e).y;
+                prevX = this.getEventPosition(e).x;
+                prevY = this.getEventPosition(e).y;
+
                 preInfo.eventX = this.getEventPosition(e).x;
                 preInfo.eventY = this.getEventPosition(e).y;
                 preInfo.positionLeft = elmnt.offsetLeft;
                 preInfo.positionTop = elmnt.offsetTop;
-                preInfo.positionX = elmnt.offsetLeft + elmnt.offsetWidth / 2;
-                preInfo.positionY = elmnt.offsetTop + elmnt.offsetHeight / 2;
+                preInfo.positionX = parent.offsetLeft + elmnt.offsetWidth / 2;
+                preInfo.positionY = parent.offsetTop + elmnt.offsetHeight / 2;
 
                 // 增加拖拽元素的层级
                 elmnt.style.zIndex = preInfo.zIndex;
@@ -161,23 +162,30 @@ export default function buildDraggableArea({ triggerAddFunc = () => { }, listenA
                 // 计算拖拽元素的移动距离
                 let nowX = this.getEventPosition(e).x;
                 let nowY = this.getEventPosition(e).y;
-                let movedX = nowX - preInfo.eventX;
-                let movedY = nowY - preInfo.eventY;
-                // prevX = nowX;
-                // prevY = nowY;
+                // let movedX = nowX - preInfo.eventX;
+                // let movedY = nowY - preInfo.eventY;
+                let movedX = nowX - prevX;
+                let movedY = nowY - prevY;
+                // tag更换位置后重新计算起点
+                prevX = nowX;
+                prevY = nowY;
                 // 拖拽元素移动后相对于定位父元素的位置
-                let dragTop = preInfo.positionTop + movedY;
-                let dragLeft = preInfo.positionLeft + movedX;
+                // let dragTop = preInfo.positionTop + movedY;
+                // let dragLeft = preInfo.positionLeft + movedX;
+                // elmnt.style.top = dragTop + "px";
+                // elmnt.style.left = dragLeft + "px";
+                let dragTop = elmnt.offsetTop + movedY;
+                let dragLeft = elmnt.offsetLeft + movedX;
                 elmnt.style.top = dragTop + "px";
                 elmnt.style.left = dragLeft + "px";
                 // tag中心点相对于盒子的位置
-                // let baseCenterTop = parent.offsetTop + elmnt.offsetHeight / 2;
-                // let baseCenterLeft = parent.offsetLeft + elmnt.offsetWidth / 2;
-                // let ctop = baseCenterTop + dragTop;
-                // let cleft = baseCenterLeft + dragLeft;
+                let baseCenterTop = parent.offsetTop + elmnt.offsetHeight / 2;
+                let baseCenterLeft = parent.offsetLeft + elmnt.offsetWidth / 2;
+                let ctop = baseCenterTop + dragTop;
+                let cleft = baseCenterLeft + dragLeft;
 
-                let ctop = preInfo.positionY + movedY;
-                let cleft = preInfo.positionX + movedX;
+                // let ctop = preInfo.positionY + movedY;
+                // let cleft = preInfo.positionX + movedX;
 
                 // Check if the tag could be put into a new position
                 for (let i = 0; i < this.positions.length - 1; i++) {
@@ -264,6 +272,7 @@ export default function buildDraggableArea({ triggerAddFunc = () => { }, listenA
                         let cur = this.state.tags.get(index);
                         // 将当前拖拽元素删除, 返回剩余的元素(这里的splice和原生方法不一样)
                         let tags = this.state.tags.splice(index, 1);
+
                         // 如果序号在前面,则将拖拽元素放到前面
                         if ((index < i || isHead) && !isTail) {
                             tags = tags.splice(i, 0, cur);
@@ -278,33 +287,33 @@ export default function buildDraggableArea({ triggerAddFunc = () => { }, listenA
                         // 没有重新排列tags之前的位置
                         const prevBaseTop = this.tagEles[cur.id].offsetTop;
                         const prevBaseLeft = this.tagEles[cur.id].offsetLeft;
-                        console.log(tags.toJS());
 
                         // 重新计算定位父元素
-                        // this.setState({ tags }, () => {
-                        //     let curBaseTop;
-                        //     let curBaseLeft;
-                        //     tags.forEach((item, i) => {
-                        //         const tag = this.tagEles[item.id];
-                        //         if (i === index) {
-                        //             // 重新排列tags之后的位置
-                        //             curBaseLeft = tag.offsetLeft;
-                        //             curBaseTop = tag.offsetTop;
-                        //         }
-                        //         this.positions.push({
-                        //             id: item.id,
-                        //             top: tag.offsetTop,
-                        //             left: tag.offsetLeft,
-                        //             bottom: tag.offsetTop + tag.offsetHeight,
-                        //             right: tag.offsetLeft + tag.offsetWidth,
-                        //             width: tag.offsetWidth,
-                        //             height: tag.offsetHeight,
-                        //         });
-                        //     });
-                        //     // 重新计算拖拽元素相对于定位父元素位置 = 当前相对于拖拽父元素定位位置 - (重新排列之后的位置 - 重新排列之前的位置)
-                        //     elmnt.style.left = `${dragLeft - (curBaseLeft - prevBaseLeft)}px`;
-                        //     elmnt.style.top = `${dragTop - (curBaseTop - prevBaseTop)}px`;
-                        // });
+                        this.setState({ tags }, () => {
+                            let curBaseTop;
+                            let curBaseLeft;
+                            tags.forEach((item, i) => {
+                                const tag = this.tagEles[item.id];
+                                if (i === index) {
+                                    // 重新排列tags之后的位置
+                                    curBaseLeft = tag.offsetLeft;
+                                    curBaseTop = tag.offsetTop;
+                                }
+                                this.positions.push({
+                                    id: item.id,
+                                    top: tag.offsetTop,
+                                    left: tag.offsetLeft,
+                                    bottom: tag.offsetTop + tag.offsetHeight,
+                                    right: tag.offsetLeft + tag.offsetWidth,
+                                    width: tag.offsetWidth,
+                                    height: tag.offsetHeight,
+                                });
+                            });
+                            // 重新计算拖拽元素相对于定位父元素位置 = 当前相对于拖拽父元素定位位置 - (重新排列之后的位置 - 重新排列之前的位置)
+                            elmnt.style.left = `${dragLeft - (curBaseLeft - prevBaseLeft)}px`;
+                            elmnt.style.top = `${dragTop - (curBaseTop - prevBaseTop)}px`;
+                            console.log(dragLeft)
+                        });
                         break;
                     }
                 }
