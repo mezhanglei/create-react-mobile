@@ -49,3 +49,7 @@ window.addEventListener('error', function (e) {
         // 上报 【资源错误】事件
     }
 }, true);
+
+window.addEventListener('beforeunload', function () {
+    // 上报【离开页面】事件
+}, true);

@@ -34,46 +34,6 @@ export function loginOut() {
     window.location.href = '/#/login';
 }
 
-// 隐藏手机号中间的四位数并返回结果
-export function hideTelephone(phone) {
-    phone = "" + phone;
-    let reg = /(\d{3})\d{4}(\d{4})/;
-    return phone.replace(reg, "$1****$2");
-}
-
-// 调用此函数，关掉键盘，并回到页面顶部，以解决iOS 12中键盘收起后页面底部会有一部分空白的问题
-export function resetPageInIOS() {
-    if ("scrollIntoView" in document.activeElement) {
-        document.activeElement.blur();
-    }
-    document.body.scrollTop = 0;
-    document.documentElement.scrollTop = 0;
-}
-
-// 禁止页面滚动默认行为（移动端）
-export function bodyScroll(event) {
-    event.preventDefault();
-}
-
-// 禁止页面滚动，解决弹框出现时 IOS 上滚动穿透的问题, passive：false用来提升移动端性能优化，作用不调用preventDefault()，从而避免延迟
-export function forbidBodyScroll() {
-    document
-        .getElementsByTagName("body")[0]
-        .addEventListener("touchmove", bodyScroll, { passive: false });
-}
-
-// 解除禁止滚动，解决弹框出现时 IOS 上滚动穿透的问题
-export function allowBodyScroll() {
-    document
-        .getElementsByTagName("body")[0]
-        .removeEventListener("touchmove", bodyScroll);
-}
-
-// react将字符串转化为html
-export function showhtml(htmlString) {
-    return <div dangerouslySetInnerHTML={{ __html: htmlString }}></div>;
-}
-
 
 /**
  * 1.判断iOS和Android
@@ -89,7 +49,7 @@ export function downLoadApp() {
         // 苹果app应用商店, iOS不支持iframe打开APP, 使用window.location.href
         window.location.href = '应用商店地址';
     } else if (isAndroid()) {
-        if (isInWeChat() || isQQ()) {
+        if (isInWeChat()) {
             // 引导用户在浏览器中打开
             return;
         }

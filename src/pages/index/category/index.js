@@ -25,6 +25,14 @@ export default class Main extends Component {
             ]
         };
     }
+
+    componentDidMount() {
+
+    }
+
+    componentWillUnmount() {
+
+    }
     render() {
         return (
             <>
