@@ -1,6 +1,7 @@
 import React, { Component, useState } from 'react';
 import { DraggableArea, DraggableAreasGroup } from "@/components/draggable";
 import styles from './index.less';
+import DragResize from "@/components/drag-layout"
 
 const group = new DraggableAreasGroup();
 const DraggableArea1 = group.addArea(111);
@@ -41,9 +42,11 @@ export default class Main extends Component {
                         tags={initialTags}
                         withHotspot={true}
                         render={({ tag, index }) => (
-                            <div className={styles["tag"]}>
-                                {tag.content}
-                            </div>
+                            <DragResize>
+                                <div className={styles["tag"]}>
+                                    {tag.content}
+                                </div>
+                            </DragResize>
                         )}
                     // onChange={tags => console.log(tags)}
                     />

@@ -7,6 +7,7 @@ import React, { Component } from 'react';
  *       <DragResize>
  *          被包裹
  *       </DragResize>
+ * 参数: minWidth minHeight: 缩小的最小宽高
  */
 class DragResize extends Component {
     constructor(props) {
@@ -15,17 +16,20 @@ class DragResize extends Component {
 
     componentDidMount() {
         // false事件冒泡(从里到外依次触发)，true事件捕获（从外到里依次触发）
-        document.addEventListener('mousedown', this.doDown, false);
+        this.draggableDom && this.draggableDom.addEventListener('mousedown', this.doDown, false);
         document.addEventListener('mousemove', this.doMove, false);
-        document.addEventListener('mouseup', this.doUp, false);
-        document.addEventListener('dragover', this.doOver, false);
     }
 
     componentWillUnmount() {
-        document.removeEventListener('mousedown', this.doDown);
+        this.removeEvent();
         document.removeEventListener('mousemove', this.doMove);
-        document.removeEventListener('mouseup', this.doUp);
+    }
+
+    // 移除事件
+    removeEvent = () => {
+        this.draggableDom && this.draggableDom.removeEventListener('mousedown', this.doDown);
         document.removeEventListener('dragover', this.doOver);
+        document.removeEventListener('mouseup', this.doUp);
     }
 
     // 获取事件触发点在目标盒子内的位置 = 触发点可视化区域位置 - 盒子边框可视化区域位置
@@ -55,11 +59,14 @@ class DragResize extends Component {
 
     // 鼠标点击事件
     doDown = (e) => {
-        e.preventDefault();
         const element = this.draggableDom;
         // 如果点击的是其他区域则不做操作
         const positions = this.getPositions(e, element);
         if (positions == '') return;
+
+        e.stopPropagation();
+        // e.nativeEvent.stopImmediatePropagation();
+        e.preventDefault();
         // 是否可以拖拽
         this.isDraggable = true;
         // 存储拖拽前的信息
@@ -70,10 +77,14 @@ class DragResize extends Component {
             origWidth: element.offsetWidth,
             origHeight: element.offsetHeight
         });
+        document.addEventListener('dragover', this.doOver, false);
+        document.addEventListener('mouseup', this.doUp, false);
     };
 
     doUp = () => {
         this.isDraggable = false;
+        this.removeEvent();
+        this.draggableDom && this.draggableDom.addEventListener('mousedown', this.doDown, false);
     };
 
     doOver = () => {
@@ -82,6 +93,7 @@ class DragResize extends Component {
 
     // 鼠标移动事件
     doMove = (e) => {
+        // e.stopPropagation();
         e.preventDefault();
         this.setMouseStyle(e, this.draggableDom);
         this.dragChange(e, this.draggableDom);
@@ -109,8 +121,8 @@ class DragResize extends Component {
         // 初始位置
         const { positions, origClientX, origClientY, origWidth, origHeight } = this.state;
         // 最小宽度和最小高度
-        const minWidth = 80;
-        const minHeight = 80;
+        const minWidth = this.props.minWidth || 0;
+        const minHeight = this.props.minHeight || 0;
         // 计算规则：根据当前方向匹配对应的计算公式
         const rules = [{
             positions: 'e', // 方向

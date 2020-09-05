@@ -1,5 +1,5 @@
 import React from 'react';
-// immutable一般用于不可变对象, 不会被其他地方的对象改变
+// immutable一般用于不可变对象, 不会被其他地方的对象改变(ie存在兼容问题)
 import { List } from 'immutable';
 
 import styles from './style.less';
