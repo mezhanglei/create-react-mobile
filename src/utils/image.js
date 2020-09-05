@@ -1,21 +1,16 @@
 import { dataURLtoFile, binaryToDataURL } from "./file";
 /**
-* canvas压缩图片, 返回file类型二进制文件流
+* canvas压缩图片, 返回promise, 可以得到dataURL类型数据
 * @param {参数obj} param 
 * @param {文件二进制流} param.file 必传
-* @param {目标压缩大小} param.targetSize 不传初始赋值-1
 * @param {输出图片宽度} param.width 不传初始赋值-1
 * @param {输出图片名称} param.fileName 不传初始赋值new Date().toString()时间字符串
 * @param {压缩图片程度} param.quality 不传初始赋值0.92。值范围0~1
-* @param {回调函数} param.succ 必传
 */
 export function pressImg(param) {
-    //如果没有回调函数就不执行
-    if (param && param.succ) {
+    return new Promise((resolve, reject) => {
         //如果file没定义返回null
-        if (param.file == undefined) return param.succ(null);
-        //给参数附初始值
-        param.targetSize = param.hasOwnProperty("targetSize") ? param.targetSize : -1;
+        if (param.file == undefined) return resolve(null);
         param.width = param.hasOwnProperty("width") ? param.width : -1;
         param.fileName = param.hasOwnProperty("fileName") ? param.fileName : new Date().toString();
         param.quality = param.hasOwnProperty("quality") ? param.quality : 0.92;
@@ -23,12 +18,7 @@ export function pressImg(param) {
         const fileType = param.file.type;
         if (fileType.indexOf("image") == -1) {
             console.error('请选择图片文件');
-            return param.succ(null);
-        }
-        // 如果当前size比目标size小，直接输出
-        const size = param.file.size;
-        if (param.targetSize > size) {
-            return param.succ(param.file);
+            return resolve(null);
         }
         // 读取file文件,得到的结果为base64位
         binaryToDataURL(param.file, function (base64) {
@@ -52,18 +42,9 @@ export function pressImg(param) {
                     context.drawImage(image, 0, 0, canvas.width, canvas.height);
                     //压缩图片，获取到新的base64 dataUrl
                     const newImageData = canvas.toDataURL(fileType, param.quality);
-                    //将base64转化成file流以便获取size
-                    const resultFile = dataURLtoFile(newImageData, param.fileName);
-                    //判断如果targetSize有限制且压缩后的图片大小比目标大小大，就弹出错误
-                    if (param.targetSize != -1 && param.targetSize < resultFile.size) {
-                        console.error("图片上传尺寸太大，请手动压缩后重新上传^_^");
-                        param.succ(null);
-                    } else {
-                        //返回文件流
-                        param.succ(resultFile);
-                    }
+                    resolve({ data: newImageData });
                 };
             }
         });
-    }
+    })
 }

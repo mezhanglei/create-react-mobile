@@ -72,10 +72,10 @@ class DragResize extends Component {
         // 存储拖拽前的信息
         this.setState({
             positions: positions,
-            origClientX: e.clientX,
-            origClientY: e.clientY,
-            origWidth: element.offsetWidth,
-            origHeight: element.offsetHeight
+            preEventX: e.clientX,
+            preEventY: e.clientY,
+            preWidth: element.offsetWidth,
+            preHeight: element.offsetHeight
         });
         document.addEventListener('dragover', this.doOver, false);
         document.addEventListener('mouseup', this.doUp, false);
@@ -119,7 +119,7 @@ class DragResize extends Component {
             return;
         }
         // 初始位置
-        const { positions, origClientX, origClientY, origWidth, origHeight } = this.state;
+        const { positions, preEventX, preEventY, preWidth, preHeight } = this.state;
         // 最小宽度和最小高度
         const minWidth = this.props.minWidth || 0;
         const minHeight = this.props.minHeight || 0;
@@ -127,19 +127,19 @@ class DragResize extends Component {
         const rules = [{
             positions: 'e', // 方向
             property: 'width', // 要变更的styles属性
-            value: Math.max(minWidth, origWidth + e.clientX - origClientX) //变更的数值，单位px
+            value: Math.max(minWidth, preWidth + e.clientX - preEventX) //变更的数值，单位px
         }, {
             positions: 's',
             property: 'height',
-            value: Math.max(minHeight, origHeight + e.clientY - origClientY)
+            value: Math.max(minHeight, preHeight + e.clientY - preEventY)
         }, {
             positions: 'w',
             property: 'width',
-            value: Math.max(minWidth, origWidth - e.clientX + origClientX)
+            value: Math.max(minWidth, preWidth - e.clientX + preEventX)
         }, {
             positions: 'n',
             property: 'height',
-            value: Math.max(minHeight, origHeight - e.clientY + origClientY)
+            value: Math.max(minHeight, preHeight - e.clientY + preEventY)
         }];
 
         rules.map((item) => {

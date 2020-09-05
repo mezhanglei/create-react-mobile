@@ -2,6 +2,7 @@ import React, { Component, useState } from 'react';
 import { DraggableArea, DraggableAreasGroup } from "@/components/draggable";
 import styles from './index.less';
 import DragResize from "@/components/drag-layout"
+import ClipPictrue from "@/components/clip-pictrue"
 
 const group = new DraggableAreasGroup();
 const DraggableArea1 = group.addArea(111);
@@ -76,6 +77,9 @@ export default class Main extends Component {
                         )}
                         onChange={rightTags => this.setState({ rightTags })}
                     />
+                </div>
+                <div>
+                    <ClipPictrue />
                 </div>
             </>
         );

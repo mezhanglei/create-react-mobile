@@ -17,10 +17,10 @@ export function Dpoint(url, data = {}) {
             data = data || "";
             // 销毁img
             cpImg.onerror = function (err) {
-                imgObject = null;
+                cpImg = null;
             };
             cpImg.onload = function (err) {
-                imgObject = null;
+                cpImg = null;
             };
             // 标签发送请求
             cpImg.src = setUrlQuery({ ...data }, url);
