@@ -3,6 +3,9 @@ import styles from './index.less';
 import { pressImg } from '@/utils/image';
 const isMobile = (typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1);
 
+/**
+ * 上传截图组件(简易版)
+ */
 export default class extends React.Component {
     constructor(props) {
         super(props);
