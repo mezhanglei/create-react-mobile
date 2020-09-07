@@ -3,9 +3,8 @@ import React from 'react';
 import { List } from 'immutable';
 
 import styles from './style.less';
+import { isTouch } from "@/utils/reg";
 
-
-const isMobile = (typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1);
 // 拖拽时的样式类
 const dragClassName = 'move';
 // 不可拖拽时的样式类
@@ -74,8 +73,8 @@ export default function buildDraggableArea({ triggerAddFunc = () => { }, listenA
         getEventPosition = (e) => {
             e = e || window.event;
             return {
-                x: isMobile ? e.touches[0].clientX : e.clientX,
-                y: isMobile ? e.touches[0].clientY : e.clientY
+                x: isTouch() ? e.touches[0].clientX : e.clientX,
+                y: isTouch() ? e.touches[0].clientY : e.clientY
             };
         }
 
@@ -151,7 +150,7 @@ export default function buildDraggableArea({ triggerAddFunc = () => { }, listenA
 
             // 拖拽过程中
             const elementDrag = (e) => {
-                if (isMobile) this.container.style.overflowY = 'visible';
+                if (isTouch()) this.container.style.overflowY = 'visible';
                 // 阻止默认行为
                 e.type === 'touchmove' && e.preventDefault();
 
@@ -308,7 +307,7 @@ export default function buildDraggableArea({ triggerAddFunc = () => { }, listenA
 
             // 拖拽结束后
             const closeDragElement = (e) => {
-                if (isMobile) this.container.style.overflowY = 'auto';
+                if (isTouch()) this.container.style.overflowY = 'auto';
 
                 document.removeEventListener("mouseup", closeDragElement, false);
                 document.removeEventListener("mousemove", elementDrag, false);
@@ -549,11 +548,11 @@ export default function buildDraggableArea({ triggerAddFunc = () => { }, listenA
                 <div
                     ref={r => this.container = r}
                     className={`${styles['DraggableTags']} ${className || ''}`}
-                    style={isMobile ? { overflowY: 'auto', ...style } : style}
+                    style={isTouch() ? { overflowY: 'auto', ...style } : style}
                 >
                     {
                         // 高度设置超出是为了防止拖拽时滚动
-                        isMobile ? (<div style={{ height: '101%' }}>{tags}</div>) : tags
+                        isTouch() ? (<div style={{ height: '101%' }}>{tags}</div>) : tags
                     }
                 </div>
             );

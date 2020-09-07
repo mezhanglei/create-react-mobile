@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './index.less';
 import { pressImg } from '@/utils/image';
-const isMobile = (typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1);
+import { isTouch } from "@/utils/reg";
 
 /**
  * 上传截图组件(简易版)
@@ -34,8 +34,8 @@ export default class extends React.Component {
     getEventPosition = (e) => {
         e = e || window.event;
         return {
-            x: isMobile ? e.touches[0].clientX : e.clientX,
-            y: isMobile ? e.touches[0].clientY : e.clientY
+            x: isTouch() ? e.touches[0].clientX : e.clientX,
+            y: isTouch() ? e.touches[0].clientY : e.clientY
         };
     }
 

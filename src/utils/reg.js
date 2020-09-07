@@ -127,3 +127,12 @@ export function isJSON(str) {
         }
     }
 }
+
+// 判断是否为触摸屏设备
+export function isTouch() {
+    if ("ontouchstart" in window || "ontouchstart" in document) {
+        return true
+    } else {
+        return false
+    }
+}

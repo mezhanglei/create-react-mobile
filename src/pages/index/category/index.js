@@ -79,7 +79,10 @@ export default class Main extends Component {
                     />
                 </div>
                 <div>
-                    <ClipPictrue />
+
+                    <DragResize>
+                        <ClipPictrue />
+                    </DragResize>
                 </div>
             </>
         );
