@@ -135,7 +135,6 @@ export default function buildDraggableArea({ triggerAddFunc = () => { }, listenA
                 elmnt.style.zIndex = preInfo.zIndex;
                 const dragParent = this.getDragElement(elmnt);
                 if (dragParent) dragParent.style.zIndex = preInfo.zIndex;
-
                 // 拖拽结束
                 document.addEventListener("mouseup", closeDragElement, false);
                 // 拖拽过程中
@@ -317,7 +316,8 @@ export default function buildDraggableArea({ triggerAddFunc = () => { }, listenA
 
                 const dragParent = this.getDragElement(elmnt);
                 if (dragParent) dragParent.style.zIndex = 1;
-
+                // 重置
+                window.dragMouseDown = false;
                 let eRect = elmnt.getBoundingClientRect();
                 // 最外层的盒子的可视位置
                 const areaPosition = this.container.getBoundingClientRect();
@@ -325,7 +325,7 @@ export default function buildDraggableArea({ triggerAddFunc = () => { }, listenA
                 let x = eRect.left + eRect.width / 2;
                 let y = eRect.top + eRect.height / 2;
                 if (x < areaPosition.left || x > areaPosition.right || y < areaPosition.top || y > areaPosition.bottom) {
-                    // 存在接收的目标
+                    // 存在接收的目标，则表示tag被拖到另个容器内部
                     const result = triggerAddFunc(elmnt.getBoundingClientRect(), this.state.tags.get(index), e);
                     if (result && result.isIn) {
                         this.positions.splice(index, 1);
@@ -341,8 +341,6 @@ export default function buildDraggableArea({ triggerAddFunc = () => { }, listenA
                         return;
                     }
                 }
-                // 重置
-                window.dragMouseDown = false;
                 elmnt.style.top = 0;
                 elmnt.style.left = 0;
                 elmnt.style.zIndex = 1;

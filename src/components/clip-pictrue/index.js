@@ -11,7 +11,7 @@ export default class extends React.Component {
         super(props);
         this.state = {
 
-        }
+        };
     };
 
     static defaultProps = {
@@ -112,8 +112,12 @@ export default class extends React.Component {
         let imgH = this.completeImg.height;
         if (imgW > imgH) {
             this.completeImg.width = this.props.imgWidth;
+            // 注意图片宽高低于裁剪框，裁剪会失效
+            this.completeImg.style.minHeight = this.props.clipHeight + 'px';
         } else {
             this.completeImg.height = this.props.imgHeight;
+            // 注意图片宽高低于裁剪框，裁剪会失效
+            this.completeImg.style.minWidth = this.props.clipWidth + 'px';
         }
     }
 
@@ -131,7 +135,6 @@ export default class extends React.Component {
             console.error("图片上传尺寸太大，请手动压缩后重新上传^_^");
             resolve(null);
         }
-        that.initImg();
         // 显示弹窗
         that.setState({
             modalVisible: true
@@ -140,6 +143,7 @@ export default class extends React.Component {
         that.completeImg.src = dataURL;
         // 当图片加载完成初始化canvas和背景图片
         that.completeImg.onload = () => {
+            that.initImg();
             // 实例化一个canvas画布和img
             let ctx = that.canvasImg.getContext("2d");
             let img = new Image();
@@ -164,7 +168,6 @@ export default class extends React.Component {
                 clipLeft = imgW / 2 - len / 2;
                 clipTop = imgH / 2 - len / 2;
             }
-
             // 初始化裁剪区域及canvas
             that.setState({
                 ctx,
@@ -177,7 +180,7 @@ export default class extends React.Component {
                 canvasWidth,
                 canvasHeight
             });
-        }
+        };
     };
 
     // 点击确定时最终要裁切的canvas图片
@@ -228,7 +231,7 @@ export default class extends React.Component {
             left: clipLeft + 'px',
             top: clipTop + 'px',
             background: `url(${dataURL}) -${clipLeft}px -${clipTop}px / ${imgW}px`
-        }
+        };
 
         return (
             <div style={{ display: modalVisible ? 'block' : 'none' }} className={styles["pictrue-clip-modal"]}>
