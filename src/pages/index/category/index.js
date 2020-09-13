@@ -3,6 +3,7 @@ import { DraggableArea, DraggableAreasGroup } from "@/components/draggable";
 import styles from './index.less';
 import DragResize from "@/components/drag-layout";
 import ClipPictrue from "@/components/clip-pictrue";
+import CaptchaImg from "@/components/captcha-img/index";
 
 const group = new DraggableAreasGroup();
 const DraggableArea1 = group.addArea(111);
@@ -83,6 +84,7 @@ export default class Main extends Component {
                         <ClipPictrue />
                     </DragResize>
                 </div>
+                <CaptchaImg />
             </>
         );
     }
