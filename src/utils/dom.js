@@ -1,5 +1,4 @@
 import { isDom } from "./type";
-import { func } from "prop-types";
 /**
  * 返回目标元素相对于定位父元素的位置和定位父元素
  * @param {*} ele 元素

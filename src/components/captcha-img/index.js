@@ -1,6 +1,6 @@
 import styles from './index.less';
 import React from "react";
-import isArray from "@/utils/type";
+import { isArray } from "@/utils/type";
 
 /**
  * 拖拽图形验证码
@@ -114,9 +114,6 @@ class CaptchaImg extends React.Component {
         const that = this;
         eventinfo.sliderLeft = parseFloat(getComputedStyle(sliderBtn, null).getPropertyValue('left'));
         eventinfo.clipleft = parseFloat(getComputedStyle(clipcanvas, null).getPropertyValue('left'));
-        // this.setState({
-        //     eventinfo
-        // });
 
         const reset = function () {
             const boxClassName = that.captchaBox.className;
@@ -127,9 +124,6 @@ class CaptchaImg extends React.Component {
                 clipcanvas.style.left = "20px";
                 eventinfo.sliderLeft = 10;
                 eventinfo.clipleft = 20;
-                // that.setState({
-                //     eventinfo
-                // })
             }, 500);
 
             setTimeout(function () {
@@ -140,15 +134,11 @@ class CaptchaImg extends React.Component {
 
         const moveStart = function (e) {
             eventinfo.flag = true;
-            console.log(eventinfo.flag)
             if (e.touches) {
                 eventinfo.preEventX = e.touches[0].clientX;
             } else {
                 eventinfo.preEventX = e.clientX;
             }
-            // that.setState({
-            //     eventinfo
-            // })
         }
 
         const move = function (e) {
@@ -183,17 +173,7 @@ class CaptchaImg extends React.Component {
                     reset();
                     that.props.onError && that.props.onError();
                 }
-                // that.setState({
-                //     eventinfo
-                // })
             }
-        }
-
-        const removeEvent = function () {
-            sliderBtn.removeEventListener("touchstart", moveStart);
-            sliderBtn.removeEventListener("mousedown", moveStart);
-            document.removeEventListener("touchmove", move);
-            document.removeEventListener("mousemove", move);
         }
 
         sliderBtn.addEventListener("touchstart", moveStart, false);
@@ -207,7 +187,7 @@ class CaptchaImg extends React.Component {
     initData = () => {
         // 实例化img,并最终渲染到canvas画布上进行操作
         const img = new Image();
-        const imgUrl = this.props.imgUrl ? this.props.imgUrl : [this.props.imgUrl];
+        const imgUrl = isArray(this.props.imgUrl) ? this.props.imgUrl : [this.props.imgUrl];
         const urlIndex = Math.floor(Math.random() * imgUrl.length);
         img.src = imgUrl[urlIndex];
         const that = this;
@@ -235,7 +215,7 @@ class CaptchaImg extends React.Component {
             // 只有源图像内的目标图像部分会被显示，源图像透明
             sctx.globalCompositeOperation = 'destination-in';
 
-            // // 创建裁剪区域(源图像)
+            // 创建裁剪区域(源图像)
             const destCanvas = that.createCanvas(that.props.cw, that.props.ch);
             that.fillClip(destCanvas, 0, 0, 1);
             sctx.drawImage(destCanvas, clipX, clipY);
