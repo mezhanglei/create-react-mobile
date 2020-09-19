@@ -87,7 +87,7 @@ export default class Main extends Component {
                     </DragResize>
                 </div>
                 <CaptchaImg />
-                <Button>
+                <Button type="primary">
                     时间
                 </Button>
             </>
