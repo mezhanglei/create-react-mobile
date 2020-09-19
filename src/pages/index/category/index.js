@@ -4,6 +4,8 @@ import styles from './index.less';
 import DragResize from "@/components/drag-layout";
 import ClipPictrue from "@/components/clip-pictrue";
 import CaptchaImg from "@/components/captcha-img/index";
+import Toast from "@/components/toast/version1/index";
+import Button from "@/components/button/index";
 
 const group = new DraggableAreasGroup();
 const DraggableArea1 = group.addArea(111);
@@ -30,7 +32,7 @@ export default class Main extends Component {
     }
 
     componentDidMount() {
-
+        Toast.success("消息");
     }
 
     componentWillUnmount() {
@@ -85,6 +87,9 @@ export default class Main extends Component {
                     </DragResize>
                 </div>
                 <CaptchaImg />
+                <Button>
+                    时间
+                </Button>
             </>
         );
     }

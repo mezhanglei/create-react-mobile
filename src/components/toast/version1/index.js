@@ -43,6 +43,6 @@ export default {
 
 /**
  * Toast提示(版本1,推荐版本)
- * 1. 先引入 import Toast from "@/component/toast/version1/index"
+ * 1. 先引入 import Toast from "@/components/toast/version1/index"
  * 2. Toast.success("消息") 调用该方法就可以了
  */

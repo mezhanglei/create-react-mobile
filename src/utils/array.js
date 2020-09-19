@@ -2,10 +2,13 @@
 // 数组的一些方法
 import { isObject, isArray, isEmpty } from "./type";
 
+// 简单深拷贝
+const simpleClone = function (val) { return JSON.parse(JSON.stringify(val)); };
+
 /**
- * 数组排序，支持对象数组和常规简单数组(数据量在万以内采取这种)
+ * 数组排序(数据量在万以内采取这种) 数组元素支持Object和简单类型
  * @param {Array} data 数组
- * @param {String} attr 属性名，可选, 对象数组需指定根据哪个属性排序
+ * @param {String} attr 属性名，可选 数组元素为Object时设置
  * @param {bool} asc // 表示升序或降序，默认true升序
  */
 export function sortByAttr(data, attr, asc = true) {
@@ -24,9 +27,9 @@ export function sortByAttr(data, attr, asc = true) {
 }
 
 /**
- * 冒泡排序(从小到大),支持对象数组和普通简单数组
+ * 冒泡排序(从小到大), 数组元素支持Object和简单数据类型
  * @param {Array} arr
- * @param {String} attr 属性名，可选, 对象数组需指定根据哪个属性排序
+ * @param {String} attr 属性名，可选, 数组元素为Object时设置
  */
 export function popSort(arr, attr) {
     if (arr == null) return arr;
@@ -52,9 +55,9 @@ export function popSort(arr, attr) {
 }
 
 /**
- * 快速排序(从小到大)，支持对象数组和普通简单数组(数据量大采取这种)
+ * 快速排序(从小到大) (数据量大采取这种) 数组元素支持Object和简单数据类型
  * @param {Array} arr
- * @param {String} attr 属性名，可选，对象数组需指定根据哪个属性排序
+ * @param {String} attr 属性名，可选，数组元素为Object时设置
  */
 export const quickSort = function (arr, attr) {
     if (arr.length <= 1) {//如果数组长度小于等于1无需判断直接返回即可 
@@ -107,6 +110,23 @@ export function singleToMultiple(array, num) {
 }
 
 /**
+ * 嵌套数组展开(嵌套字段为children)
+ * @param {*} list 多维数组
+ * @param {*} res 返回的一维数组
+ */
+export function flatten(list = [], res = []) {
+
+    list.forEach((item) => {
+        res.push(item);
+        if (item.children instanceof Array && item.children?.length) {
+            flatten(item.children, res);
+            delete item.children;
+        }
+    });
+    return res;
+}
+
+/**
  * 根据数组中的某个字段值，相同的嵌套在一起，不同的分开
  * @param {Array} array
  * @param {String} dependName 用来区分的字段名
@@ -149,9 +169,9 @@ export function arrGroupByAtrr(array, { dependName = 'id', childName = 'children
 }
 
 /**
- * 数组去重(支持数组元素为对象的情况)
+ * 数组去重 数组元素支持Object和简单数据类型
  * @param {Array} arr 数组
- * @param {String} attr 可选，当数组元素为对象时需要指定attr属性名
+ * @param {String} attr 属性名 可选，数组元素为Object时设置
  */
 export function unique(arr, attr) {
     const result = [];
@@ -248,10 +268,10 @@ export function longCommonPrefix(strs) {
 };
 
 /**
- * 使用indexof方法实现模糊查询
+ * 使用indexof方法实现模糊查询  数组元素支持Object和简单数据类型
  * @param  {Array}  list     数组
  * @param  {String} keyWord  查询的关键词
- * @param {String} attr 可选，当数组元素为对象时需要指定attr属性名
+ * @param {String} attr 可选，当数组元素为Object时需要指定attr属性名
  * @return {Array}           查询的结果
  */
 export function indexOfQuery(list, keyWord, attr) {
@@ -272,10 +292,10 @@ export function indexOfQuery(list, keyWord, attr) {
 }
 
 /**
- * 使用spilt方法实现模糊查询
+ * 使用spilt方法实现模糊查询 数组元素支持Object和简单数据类型
  * @param  {Array}  list     进行查询的数组
  * @param  {String} keyWord  查询的关键词
- * @param {String} attr 可选，当数组元素为对象时需要指定attr属性名
+ * @param {String} attr 可选，当数组元素为Object时需要指定attr属性名
  * @return {Array}           查询的结果
  */
 export function splitQuery(list, keyWord = "", attr) {
@@ -296,10 +316,10 @@ export function splitQuery(list, keyWord = "", attr) {
 }
 
 /**
- * 使用test方法实现模糊查询(推荐，可以给正则添加i规则来决定是否区分大小写)
+ * 使用test方法实现模糊查询(推荐，可以给正则添加i规则来决定是否区分大小写) 数组元素支持Object和简单数据类型
  * @param  {Array}  list     原数组
  * @param  {String} keyWord  查询的关键词
- * @param {String} attr 可选，当数组元素为对象时需要指定attr属性名
+ * @param {String} attr 可选，当数组元素为Object时需要指定attr属性名
  * @return {Array}           查询的结果
  */
 export function regQuery(list, keyWord = "", attr) {
@@ -322,7 +342,7 @@ export function regQuery(list, keyWord = "", attr) {
 }
 
 /**
- * 嵌套数组中根据key值查询父元素并返回
+ * 嵌套数组中根据key值查询父元素并返回(嵌套字段为children)
  * @param {*} key 查询的字段名key
  * @param {*} value 查询的字段值value
  * @param {*} tree 嵌套数组
