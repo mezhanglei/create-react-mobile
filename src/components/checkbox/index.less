@@ -1,0 +1,115 @@
+.mine-checkbox-wrapper {
+    font-variant: tabular-nums;
+    font-feature-settings: "tnum"; //减除字体或数字动画产生的抖动
+    display: inline-block;
+    line-height: unset;
+    cursor: pointer;
+
+    .check-box {
+        vertical-align: middle;
+
+        &+span {
+            padding-right: 8px;
+            padding-left: 8px;
+        }
+
+        input[type="checkbox"] {
+            display: none;
+        }
+
+        .check-icon {
+            display: inline-block;
+            position: relative;
+            width: 16px;
+            height: 16px;
+            border: 1px solid #d9d9d9;
+            border-radius: 2px;
+            cursor: pointer;
+
+            &:hover {
+                border-color: #1890ff;
+            }
+
+            &-checked {
+                background-color: #1890ff;
+
+                &:after {
+                    content: '';
+                    position: absolute;
+                    display: inline-block;
+                    border: 2px solid #fff;
+                    left: 50%;
+                    top: 41%;
+                    width: 39%;
+                    height: 70%;
+                    border-top: 0;
+                    border-left: 0;
+                    transform: translate(-50%, -50%) rotate(45deg);
+                }
+            }
+
+            &-indeterminate:after {
+                content: '';
+                position: absolute;
+                display: inline-block;
+                top: 50%;
+                left: 50%;
+                width: 8px;
+                height: 8px;
+                background-color: #1890ff;
+                transform: translate(-50%, -50%);
+            }
+        }
+    }
+
+    &-checked {
+        .check-box {
+            .check-icon {
+                background-color: #1890ff;
+
+                &:hover {
+                    border-color: #1890ff;
+                }
+
+                &:after {
+                    content: '';
+                    position: absolute;
+                    display: inline-block;
+                    border: 2px solid #fff;
+                    left: 50%;
+                    top: 41%;
+                    width: 39%;
+                    height: 70%;
+                    border-top: 0;
+                    border-left: 0;
+                    transform: translate(-50%, -50%) rotate(45deg);
+                }
+            }
+        }
+    }
+
+    // disabled放到最后
+    &-disabled {
+        cursor: not-allowed;
+
+        .check-box {
+            .check-icon {
+                cursor: not-allowed;
+                background-color: #f5f5f5;
+                border: 1px solid #d9d9d9;
+
+                &:hover {
+                    border: 1px solid #d9d9d9;
+                }
+
+                &-checked:after {
+                    border-color: rgba(0, 0, 0, 0.25);
+                }
+
+                &-indeterminate:after {
+                    background-color: rgba(0, 0, 0, 0.25);
+                }
+            }
+        }
+    }
+}
