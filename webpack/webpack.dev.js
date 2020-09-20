@@ -34,19 +34,6 @@ const useEslintLoader = {
     }
 };
 
-// // px2rem-loader的配置
-// const pxToRemLoader = {
-//     // 需放到less-loader前面
-//     loader: "px2rem-loader",
-//     options: {
-//         // 1rem等于多少px
-//         remUnit: 37.5,
-//         // 小数点位数
-//         remPrecision: 8
-//     },
-// };
-
-
 // === webpack的plugins扩展 === //
 
 // stylelint的plugin配置
@@ -177,7 +164,6 @@ module.exports = {
                 use: [
                     "style-loader",
                     "css-loader",
-                    // pxToRemLoader,
                     {
                         loader: "less-loader",
                         options: {
@@ -213,7 +199,6 @@ module.exports = {
                             localsConvention: 'camelCase'
                         } //css modules
                     },
-                    // pxToRemLoader,
                     "less-loader"
                 ],
             },
@@ -222,7 +207,6 @@ module.exports = {
             // 	use: [
             // 		"style-loader",
             // 		"css-loader",
-            // 		pxToRemLoader,
             // 		"sass-loader",
             // 	],
             // },

@@ -354,8 +354,8 @@ export function getParent(key, value, tree) {
         if (node.children) {
             if (node.children.some((item) => item[key] === value)) {
                 parent = node[key];
-            } else if (getParent(value, node.children)) {
-                parent = getParent(value, node.children);
+            } else if (getParent(key, value, node.children)) {
+                parent = getParent(key, value, node.children);
             }
         }
     }

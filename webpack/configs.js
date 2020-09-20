@@ -53,8 +53,6 @@ const baseConfig = {
 
 // script引入的公共js文件
 const commonJs = [
-    // 屏幕适配手机(目前采取vw布局，不需要此文件了)
-    // publicPath + 'static/flexible/index.js',
     // 预编译文件
     // publicPath + 'static/dll/base_dll.js'
 ];
