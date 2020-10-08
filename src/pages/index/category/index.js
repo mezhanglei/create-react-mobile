@@ -6,6 +6,8 @@ import ClipPictrue from "@/components/clip-pictrue";
 import CaptchaImg from "@/components/captcha-img/index";
 import Toast from "@/components/toast/version1/index";
 import Button from "@/components/button/index";
+import Draggable from "@/components/react-draggable/Draggable";
+import VirtualList, { ItemStyle } from '@/components/virtual-list/index.tsx';
 
 const group = new DraggableAreasGroup();
 const DraggableArea1 = group.addArea(111);
@@ -38,6 +40,15 @@ export default class Main extends Component {
     componentWillUnmount() {
 
     }
+
+    renderItem = ({ style, index }) => {
+        return (
+            <div className="Row" style={style} key={index}>
+                Row #{index}
+            </div>
+        );
+    };
+
     render() {
         return (
             <>
@@ -87,9 +98,26 @@ export default class Main extends Component {
                     </DragResize>
                 </div>
                 <CaptchaImg />
-                <Button type="primary">
-                    时间
-                </Button>
+                <Draggable
+                    axis="x"
+                    handle=".handle"
+                    defaultPosition={{ x: 10, y: 0 }}
+                    position={null}
+                    // grid={[100, 25]}
+                    scale={1}
+                >
+                    <Button className="handle" type="primary">
+                        时间
+                    </Button>
+                </Draggable>
+                <VirtualList
+                    width="auto"
+                    height={400}
+                    itemCount={1000}
+                    renderItem={this.renderItem}
+                    itemSize={50}
+                    className="VirtualList"
+                />
             </>
         );
     }
