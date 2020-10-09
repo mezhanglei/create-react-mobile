@@ -146,28 +146,31 @@ class DragResize extends Component {
         const minHeight = this.props.minHeight || 0;
         const x = this.getEventPosition(e).x;
         const y = this.getEventPosition(e).y;
-        // 计算规则：根据当前方向匹配对应的计算公式
-        const rules = [{
-            positions: 'e', // 方向
-            property: 'width', // 要变更的styles属性
-            value: Math.max(minWidth, preWidth + x - preEventX) //变更的数值，单位px
-        }, {
-            positions: 's',
-            property: 'height',
-            value: Math.max(minHeight, preHeight + y - preEventY)
-        }, {
-            positions: 'w',
-            property: 'width',
-            value: Math.max(minWidth, preWidth - x + preEventX)
-        }, {
-            positions: 'n',
-            property: 'height',
-            value: Math.max(minHeight, preHeight - y + preEventY)
-        }];
+        // 计算对应的style属性
+        const rules = {
+            e: {
+                width: Math.max(minWidth, preWidth + x - preEventX) + 'px'
+            },
+            s: {
+                height: Math.max(minHeight, preHeight + y - preEventY) + 'px'
+            },
+            w: {
+                width: Math.max(minWidth, preWidth - x + preEventX) + 'px'
+            },
+            n: {
+                height: Math.max(minHeight, preHeight - y + preEventY) + 'px'
+            }
+        };
 
-        rules.map((item) => {
-            if (positions.indexOf(item.positions) > -1) {
-                element.style[item.property] = item.value + 'px';
+        Object.keys(rules).map(item => {
+            if (positions.indexOf(item) > -1) {
+                const setStyle = rules[item];
+                // 遍历当前样式赋值
+                Object.keys(setStyle).map(property => {
+                    if (property) {
+                        element.style[property] = setStyle[property];
+                    }
+                });
             }
         });
     }

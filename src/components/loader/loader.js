@@ -14,8 +14,8 @@ class Loader extends React.Component {
         height: 3
     }
 
-    // 初始化加载条
-    init() {
+    // 重置
+    reset() {
         this.content.style.transform = `translate3d(${-100}%,0,0)`;
         this.box.style.opacity = '1';
         clearInterval(this.steps);
@@ -23,7 +23,7 @@ class Loader extends React.Component {
 
     // 开始加载
     start() {
-        this.init();
+        this.reset();
         let that = this;
         let step = 1;
         that.steps = setInterval(() => {
@@ -37,7 +37,7 @@ class Loader extends React.Component {
 
     // 结束加载
     end() {
-        this.init();
+        this.reset();
         let that = this;
         clearInterval(that.steps);
         that.content.style.transform = `translate3d(${-100 + 100}%,0,0)`;
@@ -50,6 +50,14 @@ class Loader extends React.Component {
     }
 
     render() {
+        // 通过createPortal可以将组件挂载到父组件以外的任意节点
+        return ReactDOM.createPortal(
+            this.renderLoader(),
+            document.body,
+        );
+    }
+
+    renderLoader() {
         const { height, bgColor } = this.props;
         return (
             <div ref={node => this.box = node} className={styles["loader-fixed"]} style={{ height: height + 'px' }}>
@@ -59,38 +67,30 @@ class Loader extends React.Component {
     }
 }
 
-
-// 静态方法
-Loader.showInstance = function (props) {
+export default function showInstance(props) {
     let div = document.createElement('div');
     document.body.appendChild(div);
 
-    // 实例化容器并利用闭包存储
-    const instance = ReactDOM.render(<Loader {...props} />, div);
-    return {
-        init() {
-            if (instance) {
-                instance.init();
-            }
+    let instance = ReactDOM.render(<Loader {...props} />, div);
 
-        },
-        start() {
-            if (instance) {
-                instance.start();
-            }
-        },
-        end() {
-            if (instance) {
-                instance.end();
-            }
-        },
-        destory() {
-            // 销毁指定容器(DOM)的所有react节点
-            ReactDOM.unmountComponentAtNode(div);
-            // 从dom树移除节点
-            document.body.removeChild(div);
+    // 开始
+    const start = () => {
+        instance && instance.start();
+    };
+
+    // 结束
+    const end = () => {
+        instance && instance.end();
+    };
+
+    // 销毁
+    const destroy = () => {
+        // 销毁节点并移除插入节点
+        const unmountResult = ReactDOM.unmountComponentAtNode(div);
+        if (unmountResult && div.parentNode) {
+            div.parentNode.removeChild(div);
         }
     };
-};
 
-export default Loader;
+    return { start, end, destroy };
+}

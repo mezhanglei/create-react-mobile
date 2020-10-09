@@ -1,8 +1,8 @@
 import { isDom } from "./type";
 /**
- * 返回目标元素相对于定位父元素的位置和定位父元素
+ * 返回目标元素相对于定位父元素的位置
  * @param {*} ele 元素
- * @param {*} target 指定的定位父元素，默认为空表示最外层父元素
+ * @param {*} target 指定的定位父元素
  */
 export function getElementXY(ele, target = null) {
     let pos = [ele.offsetLeft, ele.offsetTop];
@@ -21,11 +21,32 @@ export function getElementXY(ele, target = null) {
                 parentNode = parentNode.offsetParent;
             }
         }
-    } else {
-        parentNode = null;
     }
-    return { pos, parentNode };
+    return pos;
 }
+
+/**
+ * 判断根元素是不是包含目标元素
+ * @param {*} root 根元素
+ * @param {*} child 目标元素
+ */
+export function isContains(root, child) {
+    let node = child;
+    while (node) {
+        if (node === root) {
+            return true;
+        }
+        node = node.parentNode;
+    }
+    return false;
+};
+
+// 获取页面的卷曲滚动高度(兼容写法)
+export function getPageScroll() {
+    const x = document.documentElement.scrollLeft || window.pageXOffset || document.body.scrollLeft;
+    const y = document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop;
+    return { x, y };
+};
 
 /**
  * 判断目标元素内部是否可以滚动

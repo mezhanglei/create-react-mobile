@@ -91,7 +91,7 @@ export function dateFormat(time, fmt = 'YYYY-MM-DD') {
  * 目标时间转为时间间隔
  * @param {*} time 时间字符串/对象/时间戳
  * @param {String | Array} unitType  指定要展示的单位
- *                                   1. 字符串类型：指定单位单位，不论值大小
+ *                                   1. 字符串类型：指定单位单位
  *                                   2. 数组类型：指定一串单位，按数组顺序，数组前面且值大于1的优先展示
  */
 export function getDateDiff(time, unitType) {

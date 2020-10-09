@@ -1,7 +1,6 @@
 
 import React from 'react';
 import styles from './column.less';
-import moment from 'moment';
 
 /**
  * 步骤条组件(纵向)

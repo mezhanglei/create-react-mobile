@@ -5,6 +5,7 @@
 import { myStorage, mySession } from "@/utils/cache.js";
 import { TOKEN, USER_INFO } from "@/constants/account/index";
 import { isIOS, isAndroid, isInWeChat, isQQ } from "@/utils/reg.js";
+import { LOGIN_PATH } from "@/constants/common_link";
 
 // 清空账户信息
 export function clearUserInfo() {
@@ -31,7 +32,7 @@ export function isLogin() {
 export function loginOut() {
     // 清除用户信息
     ClearUserInfo();
-    window.location.href = '/#/login';
+    window.location.href = LOGIN_PATH;
 }
 
 

@@ -2,12 +2,11 @@ import React, { Component, useState } from 'react';
 import { DraggableArea, DraggableAreasGroup } from "@/components/draggable";
 import styles from './index.less';
 import DragResize from "@/components/drag-layout";
-import ClipPictrue from "@/components/clip-pictrue";
 import CaptchaImg from "@/components/captcha-img/index";
-import Toast from "@/components/toast/version1/index";
+import Toast from "@/components/toast/index";
 import Button from "@/components/button/index";
 import Draggable from "@/components/react-draggable/Draggable";
-import VirtualList, { ItemStyle } from '@/components/virtual-list/index.tsx';
+import VirtualList from '@/components/virtual-list/index';
 
 const group = new DraggableAreasGroup();
 const DraggableArea1 = group.addArea(111);
@@ -92,11 +91,6 @@ export default class Main extends Component {
                         onChange={rightTags => this.setState({ rightTags })}
                     />
                 </div>
-                <div>
-                    <DragResize>
-                        <ClipPictrue />
-                    </DragResize>
-                </div>
                 <CaptchaImg />
                 <Draggable
                     axis="x"
@@ -113,7 +107,7 @@ export default class Main extends Component {
                 <VirtualList
                     width="auto"
                     height={400}
-                    itemCount={1000}
+                    itemCount={10}
                     renderItem={this.renderItem}
                     itemSize={50}
                     className="VirtualList"

@@ -1,44 +1,44 @@
 // @flow
 const prefixes = ['Moz', 'Webkit', 'O', 'ms'];
 export function getPrefix(prop = 'transform') {
-  // Checking specifically for 'window.document' is for pseudo-browser server-side
-  // environments that define 'window' as the global context.
-  // E.g. React-rails (see https://github.com/reactjs/react-rails/pull/84)
-  if (typeof window === 'undefined' || typeof window.document === 'undefined') return '';
+    // Checking specifically for 'window.document' is for pseudo-browser server-side
+    // environments that define 'window' as the global context.
+    // E.g. React-rails (see https://github.com/reactjs/react-rails/pull/84)
+    if (typeof window === 'undefined' || typeof window.document === 'undefined') return '';
 
-  const style = window.document.documentElement.style;
+    const style = window.document.documentElement.style;
 
-  if (prop in style) return '';
+    if (prop in style) return '';
 
-  for (let i = 0; i < prefixes.length; i++) {
-    if (browserPrefixToKey(prop, prefixes[i]) in style) return prefixes[i];
-  }
+    for (let i = 0; i < prefixes.length; i++) {
+        if (browserPrefixToKey(prop, prefixes[i]) in style) return prefixes[i];
+    }
 
-  return '';
+    return '';
 }
 
 export function browserPrefixToKey(prop, prefix) {
-  return prefix ? `${prefix}${kebabToTitleCase(prop)}` : prop;
+    return prefix ? `${prefix}${kebabToTitleCase(prop)}` : prop;
 }
 
 export function browserPrefixToStyle(prop, prefix) {
-  return prefix ? `-${prefix.toLowerCase()}-${prop}` : prop;
+    return prefix ? `-${prefix.toLowerCase()}-${prop}` : prop;
 }
 
 function kebabToTitleCase(str) {
-  let out = '';
-  let shouldCapitalize = true;
-  for (let i = 0; i < str.length; i++) {
-    if (shouldCapitalize) {
-      out += str[i].toUpperCase();
-      shouldCapitalize = false;
-    } else if (str[i] === '-') {
-      shouldCapitalize = true;
-    } else {
-      out += str[i];
+    let out = '';
+    let shouldCapitalize = true;
+    for (let i = 0; i < str.length; i++) {
+        if (shouldCapitalize) {
+            out += str[i].toUpperCase();
+            shouldCapitalize = false;
+        } else if (str[i] === '-') {
+            shouldCapitalize = true;
+        } else {
+            out += str[i];
+        }
     }
-  }
-  return out;
+    return out;
 }
 
 // Default export is the prefix itself, like 'Moz', 'Webkit', etc

@@ -1,8 +1,8 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { ToastsStore } from "./utils";
 import { DarkColors, LightColors } from "./DefaultColors";
-import less from "./ToastsContainer.less";
+import styles from "./ToastsContainer.less";
+import classNames from 'classnames';
 
 // toast的位置
 const ToastsPosition = {
@@ -10,12 +10,13 @@ const ToastsPosition = {
     BOTTOM_LEFT: "bottom_left",
     BOTTOM_RIGHT: "bottom_right",
     TOP_CENTER: "top_center",
+    MIDDLE_CENTER: "middle_center",
     TOP_LEFT: "top_left",
     TOP_RIGHT: "top_right",
 };
 
-// toast组件
-export class ToastsContainer extends React.Component {
+// toast容器组件
+class ToastsContainer extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -24,27 +25,23 @@ export class ToastsContainer extends React.Component {
             // toast池
             toasts: []
         };
-
-        this.storeSubscriptionId = -1;
-        this.timeoutArray = [];
+        this.deleteList = [];
     }
 
     static defaultProps = {
-        position: ToastsPosition.TOP_CENTER,
-        store: ToastsStore,
+        prefixCls: "mine-toast",
+        position: ToastsPosition.MIDDLE_CENTER,
         timer: 3000,
         lightBackground: false,
         className: ""
     }
 
     componentDidMount() {
-        // 监听添加事件获取到toast数据，外部触发事件传递数据
-        this.storeSubscriptionId = this.props.store.watch((data) => this.AddToast(data));
         this.getPosition();
     }
 
     componentWillUnmount() {
-        this.props.store.unwatch(this.storeSubscriptionId);
+        this.clearTime();
     }
 
     // 根据传入的position参数决定位置
@@ -63,6 +60,11 @@ export class ToastsContainer extends React.Component {
                 styles.top = 10;
                 styles.left = "50%";
                 styles.transform = "translateX(-50%)";
+                break;
+            case ToastsPosition.MIDDLE_CENTER:
+                styles.top = '50%';
+                styles.left = "50%";
+                styles.transform = "translateX(-50%) translateY(-50%)";
                 break;
             case ToastsPosition.BOTTOM_LEFT:
                 styles.bottom = 10;
@@ -86,20 +88,20 @@ export class ToastsContainer extends React.Component {
     }
 
     // 添加toast事件
-    AddToast = async (data) => {
+    AddToast = async () => {
         await this.clear();
         // 添加一个toast
-        const toast = { ...data, id: Math.random() };
+        const toast = { ...this.props, id: Math.random() };
         this.setState({ toasts: [toast].concat(this.state.toasts) });
         // 一段时间后删除该toast
-        this.timeoutArray.push(setTimeout(() => {
+        this.deleteList.push(setTimeout(() => {
             this.setState({ toasts: this.state.toasts.filter((t) => t.id !== toast.id) });
-        }, data.timer || 3000));
+        }, this.props.timer));
     }
 
     // 清空定时器
     clearTime = () => {
-        this.timeoutArray.forEach(clearTimeout);
+        this.deleteList.forEach(clearTimeout);
     }
 
     // 清空Toast事件
@@ -117,15 +119,28 @@ export class ToastsContainer extends React.Component {
         );
     }
 
+    getToastCls = (toast) => {
+        const baseCls = `${this.props.prefixCls}-child`;
+        const toastClass = classNames(styles[baseCls], toast.className, {
+            [styles[`${baseCls}-${toast.status}`]]: toast.status
+        });
+        return toastClass;
+    }
+
     _renderContainer() {
+        const { className, prefixCls } = this.props;
+
         const style = this.props.lightBackground ? LightColors : DarkColors;
+
+        const groupClass = classNames(styles[prefixCls], className);
+
         return (
-            <div style={this.state.styles} className={less["toasts-container"] + " " + (this.props.className || "")}>
+            <div style={this.state.styles} className={groupClass}>
                 {
                     this.state.toasts.map((toast) => {
                         return (
                             <div key={toast.id}
-                                className={less["toast"] + " " + less["toast-" + toast.status] + " " + toast.classNames}
+                                className={this.getToastCls(toast)}
                                 style={style[toast.status]}>
                                 {toast.message}
                             </div>
@@ -135,4 +150,33 @@ export class ToastsContainer extends React.Component {
             </div>
         );
     }
+}
+
+export default function showInstance(props) {
+    let div = document.createElement('div');
+    document.body.appendChild(div);
+
+    // 实例化容器并利用闭包存储
+    const instance = ReactDOM.render(<ToastsContainer {...props} />, div);
+
+    // 展示
+    const show = () => {
+        instance && instance.AddToast();
+    };
+
+    // 清空
+    const clear = () => {
+        instance && instance.clear();
+    };
+
+    // 销毁
+    const destroy = () => {
+        // 销毁节点并移除插入节点
+        const unmountResult = ReactDOM.unmountComponentAtNode(div);
+        if (unmountResult && div.parentNode) {
+            div.parentNode.removeChild(div);
+        }
+    };
+
+    return { show, clear, destroy };
 };

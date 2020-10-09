@@ -35,12 +35,12 @@ npm run csslint 检查css规范
          2. 尽量不要写行内样式
 css作用域: 1. 启用css modules后, 类名会被添加上hash字符串, 使用方式: 先import styles from "less文件", 然后styles.类名在代码中使用类
            2. 对于代码中的普通class类名, 可以通过:global {} 包裹,在里面书写类名来修改样式
-           3. 调用动画的类名, 需要在样式文件中的类名后面加:local,来保证动画类名hash化,不然调用不会成功，例如 .animation :local {animation: 动画名 all 1s }
+           3. 在:global{} 调用动画类, 需要在样式文件中的类名后面加:local, 使动画类名hash化,不然调用不会成功，例如 .animation :local {animation: 动画名 all 1s }
 ```
 ### 组件开发规则
 ```
 1. 如果是功能组件之间的数据通讯尽量采用组件传值, 如果是多个页面组件之间建议选择redux
-2. 通用功能模块尽量解耦封装成组件（高阶组件，自定义组件，hook组件）使用。
+2. 建议部分页面实现页面拆分成组件以组合的方式开发，可复用和需求更新控制
 ```
 ### image和background背景等静态资源引入规则
 ```
@@ -73,7 +73,7 @@ css作用域: 1. 启用css modules后, 类名会被添加上hash字符串, 使�
     |   |   |-- color.less
     |   |   |-- index.less
     |   |   |-- theme.less
-    |   |-- components // ui组件库的自定义样式
+    |   |-- components // ui组件库的自定义样式(自定义组件和开源ui库)
     |   |   |-- am-tab.less
     |   |   |-- index.less
     |   |-- pages  // 全局页面使用的布局样式

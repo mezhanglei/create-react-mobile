@@ -1,21 +1,28 @@
 import styles from './resize-image.less';
-import { useRef, useEffect } from "react";
+import React, { useEffect } from "react";
 import objectFitImages from "object-fit-images";
+import classNames from "classnames";
 
 /**
  * 自动裁剪解决显示变形的图片组件(必须要设置宽高)
  * 
  * src: 显示图片路径
  * defaultSrc: 默认显示图片路径
+ * 其余参数
  * @param {*} props 
  */
-const ResizeImage = ({ src, defaultSrc, ...rest }) => {
+const ResizeImage = (props) => {
 
-    const imgRef = useRef();
+    const {
+        src,
+        defaultSrc,
+        width,
+        height,
+        className,
+        ...rest
+    } = props;
 
-    if (!props.width || !props.height) {
-        console.error('please set width and height for img');
-    }
+    const imgRef = ref || React.createRef();
 
     // 图片出错时
     const imgErrorFun = (e) => {
@@ -29,7 +36,9 @@ const ResizeImage = ({ src, defaultSrc, ...rest }) => {
         objectFitImages(imgRef);
     });
 
-    return <img className={styles['img']} ref={imgRef} onError={e => imgErrorFun(e)} src={imgSrc || defaultSrc} {...rest} />;
+    const imgClass = classNames(styles['resize-img'], className);
+
+    return <img className={imgClass} ref={imgRef} onError={e => imgErrorFun(e)} src={src || defaultSrc} {...rest} />;
 };
 
 export default ResizeImage;

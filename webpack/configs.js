@@ -68,7 +68,7 @@ const globalDefine = {
         // mock数据环境
         MOCK: process.env.MOCK,
         // 资源引用的公共路径字符串
-        PUBLIC_PATH: JSON.stringify(publicPath),
+        PUBLIC_PATH: JSON.stringify(publicPath || '/'),
     }
 };
 
