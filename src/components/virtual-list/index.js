@@ -49,11 +49,11 @@ export default class VirtualList extends React.PureComponent {
         height: PropTypes.oneOfType([PropTypes.number, PropTypes.string]) // 列表区域高
             .isRequired,
         itemCount: PropTypes.number.isRequired, // 懒加载的最大条数
-        itemSize: PropTypes.oneOfType([
+        itemSize: PropTypes.oneOfType([ // 列表元素在scrollDirection方向上的尺寸大小
             PropTypes.number,
             PropTypes.array,
             PropTypes.func,
-        ]).isRequired, // 列表元素在scrollDirection方向上的尺寸大小
+        ]).isRequired,
         onScroll: PropTypes.func,
         onItemsRendered: PropTypes.func,
         overscanCount: PropTypes.number,

@@ -56,6 +56,7 @@ const Button = (props) => {
     return (
         <button
             {...rest}
+            disabled={disabled}
             type={htmlType}
             className={classes}
             onClick={handleClick}

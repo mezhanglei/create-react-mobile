@@ -23,7 +23,7 @@ class Draggable extends React.Component {
         scale: 1
     };
 
-
+    // 此生命周期注意保存一个旧值用来比较nextProps，并且不要有副作用
     static getDerivedStateFromProps({ position }, { prevPropsPosition }) {
         if (
             position &&
