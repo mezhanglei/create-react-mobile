@@ -210,6 +210,78 @@ export default class VirtualList extends React.PureComponent {
         this.sizeAndPositionManager.resetItem(startIndex);
     }
 
+    handleScroll = (event) => {
+        const { onScroll } = this.props;
+        const offset = this.getNodeOffset();
+
+        if (
+            offset < 0 ||
+            this.state.offset === offset ||
+            event.target !== this.rootNode
+        ) {
+            return;
+        }
+
+        this.setState({
+            offset,
+            scrollChangeReason: SCROLL_CHANGE_REASON.OBSERVED,
+        });
+
+        if (typeof onScroll === 'function') {
+            onScroll(offset, event);
+        }
+    };
+
+    getNodeOffset() {
+        const { scrollDirection = DIRECTION.VERTICAL } = this.props;
+
+        return this.rootNode[scrollProp[scrollDirection]];
+    }
+
+    getEstimatedItemSize(props = this.props) {
+        return (
+            props.estimatedItemSize ||
+            (typeof props.itemSize === 'number' && props.itemSize) ||
+            50
+        );
+    }
+
+    getSize(index, itemSize) {
+        if (typeof itemSize === 'function') {
+            return itemSize(index);
+        }
+
+        return Array.isArray(itemSize) ? itemSize[index] : itemSize;
+    }
+
+    getStyle(index, sticky) {
+        const style = this.styleCache[index];
+
+        if (style) {
+            return style;
+        }
+
+        const { scrollDirection = DIRECTION.VERTICAL } = this.props;
+        const {
+            size,
+            offset,
+        } = this.sizeAndPositionManager.getSizeAndPositionForIndex(index);
+
+        return (this.styleCache[index] = sticky
+            ? {
+                ...STYLE_STICKY_ITEM,
+                [sizeProp[scrollDirection]]: size,
+                [marginProp[scrollDirection]]: offset,
+                [oppositeMarginProp[scrollDirection]]: -(offset + size),
+                zIndex: 1,
+            }
+            : {
+                ...STYLE_ITEM,
+                [sizeProp[scrollDirection]]: size,
+                [positionProp[scrollDirection]]: offset,
+            });
+    }
+
     render() {
         const {
             estimatedItemSize,
@@ -284,77 +356,5 @@ export default class VirtualList extends React.PureComponent {
                 <div style={innerStyle}>{items}</div>
             </div>
         );
-    }
-
-    handleScroll = (event) => {
-        const { onScroll } = this.props;
-        const offset = this.getNodeOffset();
-
-        if (
-            offset < 0 ||
-            this.state.offset === offset ||
-            event.target !== this.rootNode
-        ) {
-            return;
-        }
-
-        this.setState({
-            offset,
-            scrollChangeReason: SCROLL_CHANGE_REASON.OBSERVED,
-        });
-
-        if (typeof onScroll === 'function') {
-            onScroll(offset, event);
-        }
-    };
-
-    getNodeOffset() {
-        const { scrollDirection = DIRECTION.VERTICAL } = this.props;
-
-        return this.rootNode[scrollProp[scrollDirection]];
-    }
-
-    getEstimatedItemSize(props = this.props) {
-        return (
-            props.estimatedItemSize ||
-            (typeof props.itemSize === 'number' && props.itemSize) ||
-            50
-        );
-    }
-
-    getSize(index, itemSize) {
-        if (typeof itemSize === 'function') {
-            return itemSize(index);
-        }
-
-        return Array.isArray(itemSize) ? itemSize[index] : itemSize;
-    }
-
-    getStyle(index, sticky) {
-        const style = this.styleCache[index];
-
-        if (style) {
-            return style;
-        }
-
-        const { scrollDirection = DIRECTION.VERTICAL } = this.props;
-        const {
-            size,
-            offset,
-        } = this.sizeAndPositionManager.getSizeAndPositionForIndex(index);
-
-        return (this.styleCache[index] = sticky
-            ? {
-                ...STYLE_STICKY_ITEM,
-                [sizeProp[scrollDirection]]: size,
-                [marginProp[scrollDirection]]: offset,
-                [oppositeMarginProp[scrollDirection]]: -(offset + size),
-                zIndex: 1,
-            }
-            : {
-                ...STYLE_ITEM,
-                [sizeProp[scrollDirection]]: size,
-                [positionProp[scrollDirection]]: offset,
-            });
     }
 }

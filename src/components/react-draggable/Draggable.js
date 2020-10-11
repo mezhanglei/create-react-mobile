@@ -149,7 +149,7 @@ class Draggable extends React.Component {
             slackY: 0
         };
 
-        // 如果是受控组件,则需要重置位置为最近一次的position
+        // 如果是受控组件,则需要更新state
         const controlled = Boolean(this.props.position);
         if (controlled) {
             const { x, y } = this.props.position;
