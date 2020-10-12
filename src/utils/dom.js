@@ -42,9 +42,11 @@ export function isContains(root, child) {
 };
 
 // 获取页面的卷曲滚动高度(兼容写法)
-export function getPageScroll() {
-    const x = document.documentElement.scrollLeft || window.pageXOffset || document.body.scrollLeft;
-    const y = document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop;
+export function getPageScroll(el) {
+    const doc = el.ownerDocument; // 节点所在document对象
+    const win = doc.defaultView; // 包含document的window对象
+    const x = doc.documentElement.scrollLeft || win.pageXOffset || doc.body.scrollLeft;
+    const y = doc.documentElement.scrollTop || win.pageYOffset || doc.body.scrollTop;
     return { x, y };
 };
 
