@@ -5,7 +5,6 @@ import DragResize from "@/components/drag-layout";
 import CaptchaImg from "@/components/captcha-img/index";
 import Toast from "@/components/toast/index";
 import Button from "@/components/button/index";
-import Draggable from "@/components/react-draggable/Draggable";
 import VirtualList from '@/components/virtual-list/index';
 
 const group = new DraggableAreasGroup();
@@ -92,18 +91,6 @@ export default class Main extends Component {
                     />
                 </div>
                 <CaptchaImg />
-                <Draggable
-                    axis="x"
-                    handle=".handle"
-                    defaultPosition={{ x: 10, y: 0 }}
-                    position={null}
-                    // grid={[100, 25]}
-                    scale={1}
-                >
-                    <Button className="handle" type="primary">
-                        时间
-                    </Button>
-                </Draggable>
                 <VirtualList
                     width="auto"
                     height={400}
