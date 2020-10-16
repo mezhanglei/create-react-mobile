@@ -160,7 +160,6 @@ module.exports = {
             },
             {
                 test: /\.less$/,
-                exclude: [configs.srcPath],
                 use: [
                     "style-loader",
                     "css-loader",
@@ -183,8 +182,7 @@ module.exports = {
                 ]
             },
             {
-                test: /\.less$/,
-                include: [configs.srcPath],
+                test: /\.less\.module$/,
                 use: [
                     "style-loader",
                     {

@@ -1,5 +1,5 @@
 
-import styles from "./top.less";
+import "./top.less";
 
 
 /**
@@ -85,8 +85,8 @@ export default class ToTop extends React.Component {
         const { isShow } = this.state;
         return (
             isShow &&
-            <div className={styles["page-component-up-top"]} onClick={this.returnTop}>
-                <img className={styles["top_icon"]} src={require("static/images/top.png")} />
+            <div className="page-component-up-top" onClick={this.returnTop}>
+                <img className="top_icon" src={require("static/images/top.png")} />
             </div>
         );
     }

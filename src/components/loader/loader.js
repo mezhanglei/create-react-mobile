@@ -1,5 +1,5 @@
 
-import styles from "./loader.less";
+import "./loader.less";
 
 class Loader extends React.Component {
     constructor(props) {
@@ -60,8 +60,8 @@ class Loader extends React.Component {
     renderLoader() {
         const { height, bgColor } = this.props;
         return (
-            <div ref={node => this.box = node} className={styles["loader-fixed"]} style={{ height: height + 'px' }}>
-                <span ref={node => this.content = node} className={styles["steps"]} style={{ backgroundColor: bgColor }}></span>
+            <div ref={node => this.box = node} className="loader-fixed" style={{ height: height + 'px' }}>
+                <span ref={node => this.content = node} className="steps" style={{ backgroundColor: bgColor }}></span>
             </div>
         );
     }

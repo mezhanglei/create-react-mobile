@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { DarkColors, LightColors } from "./DefaultColors";
-import styles from "./ToastsContainer.less";
+import "./ToastsContainer.less";
 import classNames from 'classnames';
 
 // toast的位置
@@ -121,8 +121,8 @@ class ToastsContainer extends React.Component {
 
     getToastCls = (toast) => {
         const baseCls = `${this.props.prefixCls}-child`;
-        const toastClass = classNames(styles[baseCls], toast.className, {
-            [styles[`${baseCls}-${toast.status}`]]: toast.status
+        const toastClass = classNames(baseCls, toast.className, {
+            [`${baseCls}-${toast.status}`]: toast.status
         });
         return toastClass;
     }
@@ -132,7 +132,7 @@ class ToastsContainer extends React.Component {
 
         const style = this.props.lightBackground ? LightColors : DarkColors;
 
-        const groupClass = classNames(styles[prefixCls], className);
+        const groupClass = classNames(prefixCls, className);
 
         return (
             <div style={this.state.styles} className={groupClass}>

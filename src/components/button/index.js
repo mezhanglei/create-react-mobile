@@ -3,7 +3,7 @@
 import React, { Component } from 'react';
 import { useEffect, useState } from "react";
 import { isString } from "@/utils/type";
-import styles from "./index.less";
+import "./index.less";
 import classNames from "classnames";
 
 /**
@@ -28,11 +28,11 @@ const Button = (props) => {
         ...rest
     } = props;
 
-    const classes = classNames(styles[prefixCls], className, {
-        [styles[`${prefixCls}-${type}`]]: type,
-        [styles[`${prefixCls}-${shape}`]]: shape,
-        [styles[`${prefixCls}-dangerous`]]: !!danger,
-        [styles[`${prefixCls}-${size}`]]: size
+    const classes = classNames(prefixCls, className, {
+        [`${prefixCls}-${type}`]: type,
+        [`${prefixCls}-${shape}`]: shape,
+        [`${prefixCls}-dangerous`]: !!danger,
+        [`${prefixCls}-${size}`]: size
     });
 
     const insertSpace = (child) => {

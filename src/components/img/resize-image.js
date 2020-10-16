@@ -1,4 +1,4 @@
-import styles from './resize-image.less';
+import './resize-image.less';
 import React, { useEffect } from "react";
 import objectFitImages from "object-fit-images";
 import classNames from "classnames";
@@ -15,6 +15,7 @@ const ResizeImage = (props) => {
 
     const {
         src,
+        prefixCls = "mine-resize-img",
         defaultSrc,
         width,
         height,
@@ -36,7 +37,7 @@ const ResizeImage = (props) => {
         objectFitImages(imgRef);
     });
 
-    const imgClass = classNames(styles['resize-img'], className);
+    const imgClass = classNames(prefixCls, className);
 
     return <img className={imgClass} ref={imgRef} onError={e => imgErrorFun(e)} src={src || defaultSrc} {...rest} />;
 };

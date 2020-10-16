@@ -32,7 +32,7 @@ const baseConfig = {
     assetsPath: '../',
     // 引用入口配置,在项目中可以直接以键开头代替绝对路径引入
     resolve: {
-        extensions: [".ts", "tsx", ".js", ".json"],
+        extensions: [".ts", ".tsx", ".js", "jsx", ".json", ".less", ".less.module"],
         alias: {
             "@": `${srcPath}`,
             "src": `${srcPath}`,

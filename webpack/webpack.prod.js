@@ -140,7 +140,6 @@ const webpackConfig = {
             },
             {
                 test: /\.less$/,
-                exclude: [configs.srcPath],
                 use: [
                     // "style-loader",
                     {
@@ -170,8 +169,7 @@ const webpackConfig = {
                 ]
             },
             {
-                test: /\.less$/,
-                include: [configs.srcPath],
+                test: /\.less\.module$/,
                 use: [
                     {
                         loader: MiniCssExtractPlugin.loader,

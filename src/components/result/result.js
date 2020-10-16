@@ -1,4 +1,4 @@
-import styles from './result.less';
+import './result.less';
 import React from "react";
 import { isEmpty } from "@/utils/type";
 
@@ -26,12 +26,12 @@ export default class extends React.Component {
     render() {
         const { imgUrl, title, text, width, height } = this.props;
         return (
-            <div style={{ width: width, height: height }} className={styles['page-result']}>
-                <div className={styles["content"]}>
-                    <div className={styles['page-image']} style={{ backgroundImage: `url(${imgUrl})` }}>
+            <div style={{ width: width, height: height }} className='page-result'>
+                <div className="content">
+                    <div className='page-image' style={{ backgroundImage: `url(${imgUrl})` }}>
                     </div>
-                    {!isEmpty(title) && <div className={styles['main-title']}>{title}</div>}
-                    {!isEmpty(text) && <div className={styles['second-text']}>{text}</div>}
+                    {!isEmpty(title) && <div className='main-title'>{title}</div>}
+                    {!isEmpty(text) && <div className='second-text'>{text}</div>}
                 </div>
             </div>
         );

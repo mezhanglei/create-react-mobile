@@ -1,6 +1,6 @@
 import React, { Component, useState } from 'react';
 import { DraggableArea, DraggableAreasGroup } from "@/components/draggable";
-import styles from './index.less';
+import styles from './index.less.module';
 import DragResize from "@/components/drag-layout";
 import CaptchaImg from "@/components/captcha-img/index";
 import Toast from "@/components/toast/index";

@@ -1,6 +1,6 @@
 import Loadable from "react-loadable";
 
-// 懒加载
+// 路由懒加载
 export default function loadable(configs) {
     return Loadable({
         loading({ isLoading, error }) {

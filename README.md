@@ -29,18 +29,16 @@ npm run csslint 检查css规范
 3. 支持typescript开发
 ```
 
-### css使用CSS modules来控制变量污染问题
+### css样式(两种解析方式)
 ```
-书写规则：1. css嵌套最好不要超过四层
-         2. 尽量不要写行内样式
-css作用域: 1. 启用css modules后, 类名会被添加上hash字符串, 使用方式: 先import styles from "less文件", 然后styles.类名在代码中使用类
-           2. 对于代码中的普通class类名, 可以通过:global {} 包裹,在里面书写类名来修改样式
-           3. 在:global{} 调用动画类, 需要在样式文件中的类名后面加:local, 使动画类名hash化,不然调用不会成功，例如 .animation :local {animation: 动画名 all 1s }
-```
-### 组件开发规则
-```
-1. 如果是功能组件之间的数据通讯尽量采用组件传值, 如果是多个页面组件之间建议选择redux
-2. 建议部分页面实现页面拆分成组件以组合的方式开发，可复用和需求更新控制
+建议：1. css嵌套最好不要超过四层
+      2. 尽量不要写行内样式
+解析方式(自行选择)：
+1： .less后缀的文件则是普通的样式文件，有变量污染的可能
+2： .less.module后缀的样式文件会开启css module作用域, 可以避免变量污染
+    css作用域: 1. 启用css modules后, 类名会被添加上hash字符串, 使用方式: 先import styles from "less文件", 然后styles.类名在代码中使用类
+              2. 对于代码中的普通class类名, 可以通过:global {} 包裹,在里面书写类名来修改样式
+              3. 动画类名hash化，需要在样式文件中的类名后面加:local 例如 .animation :local {animation: 动画名 all 1s }
 ```
 ### image和background背景等静态资源引入规则
 ```

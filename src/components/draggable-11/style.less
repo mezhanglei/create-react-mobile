@@ -1,0 +1,39 @@
+.DraggableTags {
+    position: relative;
+    height: 100%;
+
+    &::after {
+        content: '';
+        display: block;
+        clear: both;
+    }
+
+    &-tag {
+        display: inline-block;
+        position: relative;
+        color: transparent;
+        -webkit-touch-callout: none;
+        // 文本不被选中
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+
+        &-drag {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1;
+        }
+    }
+}
+
+.move {
+    cursor: move;
+}
+
+.default {
+    cursor: not-allowed;
+}

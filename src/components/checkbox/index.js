@@ -2,7 +2,7 @@
 
 import React, { Component } from 'react';
 import { useEffect, useState } from "react";
-import styles from "./index.less";
+import "./index.less";
 import classNames from "classnames";
 
 /**
@@ -68,14 +68,14 @@ const CheckBox = (props) => {
         onChange && onChange(e.target.checked);
     };
 
-    const classString = classNames(styles[prefixCls], className, {
-        [styles[`${prefixCls}-checked`]]: !indeterminate && checked,
-        [styles[`${prefixCls}-disabled`]]: disabled
+    const classString = classNames(prefixCls, className, {
+        [`${prefixCls}-checked`]: !indeterminate && checked,
+        [`${prefixCls}-disabled`]: disabled
     });
 
-    const iconClass = classNames(styles['check-icon'], {
-        [styles[`check-icon-checked`]]: !indeterminate && checked,
-        [styles[`check-icon-indeterminate`]]: indeterminate
+    const iconClass = classNames('check-icon', {
+        [`check-icon-checked`]: !indeterminate && checked,
+        [`check-icon-indeterminate`]: indeterminate
     });
 
     return (
@@ -83,7 +83,7 @@ const CheckBox = (props) => {
             {...rest}
             className={classString}
         >
-            <span className={styles['check-box']}>
+            <span className='check-box'>
                 <input ref={checkboxRef} onChange={toggleOption} type="checkbox" />
                 <span className={iconClass}></span>
             </span>

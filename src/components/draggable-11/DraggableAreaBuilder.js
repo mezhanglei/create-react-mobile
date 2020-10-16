@@ -1,7 +1,6 @@
 import React from 'react';
 // immutable一般用于不可变对象, 不会被其他地方的对象改变(ie存在兼容问题)
 import { List } from 'immutable';
-
 import './style.less';
 import { isTouch } from "@/utils/reg";
 
@@ -135,6 +134,7 @@ export default function buildDraggableArea({ triggerAddFunc = () => { }, listenA
                 elmnt.style.zIndex = preInfo.zIndex;
                 const dragParent = this.getDragElement(elmnt);
                 if (dragParent) dragParent.style.zIndex = preInfo.zIndex;
+
                 // 拖拽结束
                 document.addEventListener("mouseup", closeDragElement, false);
                 // 拖拽过程中
@@ -316,8 +316,7 @@ export default function buildDraggableArea({ triggerAddFunc = () => { }, listenA
 
                 const dragParent = this.getDragElement(elmnt);
                 if (dragParent) dragParent.style.zIndex = 1;
-                // 重置
-                window.dragMouseDown = false;
+
                 let eRect = elmnt.getBoundingClientRect();
                 // 最外层的盒子的可视位置
                 const areaPosition = this.container.getBoundingClientRect();
@@ -325,7 +324,7 @@ export default function buildDraggableArea({ triggerAddFunc = () => { }, listenA
                 let x = eRect.left + eRect.width / 2;
                 let y = eRect.top + eRect.height / 2;
                 if (x < areaPosition.left || x > areaPosition.right || y < areaPosition.top || y > areaPosition.bottom) {
-                    // 存在接收的目标，则表示tag被拖到另个容器内部
+                    // 存在接收的目标
                     const result = triggerAddFunc(elmnt.getBoundingClientRect(), this.state.tags.get(index), e);
                     if (result && result.isIn) {
                         this.positions.splice(index, 1);
@@ -341,6 +340,8 @@ export default function buildDraggableArea({ triggerAddFunc = () => { }, listenA
                         return;
                     }
                 }
+                // 重置
+                window.dragMouseDown = false;
                 elmnt.style.top = 0;
                 elmnt.style.left = 0;
                 elmnt.style.zIndex = 1;
@@ -525,7 +526,7 @@ export default function buildDraggableArea({ triggerAddFunc = () => { }, listenA
             const tags = this.state.tags.toJS().map((tag, index) => (
                 <div
                     key={tag.id}
-                    className={`DraggableTags-tag ${(tag.undraggable || forbidDrag) ? excludedInDragClassName : dragClassName}`}
+                    className={`'DraggableTags-tag' ${(tag.undraggable || forbidDrag) ? excludedInDragClassName : dragClassName}`}
                     ref={(target) => {
                         this.tagEles[tag.id] = target;
                     }}

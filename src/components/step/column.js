@@ -1,6 +1,6 @@
 
 import React from 'react';
-import styles from './column.less';
+import './column.less';
 
 /**
  * 步骤条组件(纵向)
@@ -113,7 +113,7 @@ export default class MySteps extends React.Component {
         const currentColor = stop ? lowColor : (currentIndex >= index ? leftColor : lowColor);
         return (
             <React.Fragment>
-                {<div style={{ color: currentColor }} className={styles['left-part']}>{leftContent}</div>}
+                {<div style={{ color: currentColor }} className='left-part'>{leftContent}</div>}
             </React.Fragment>
         );
     }
@@ -134,7 +134,7 @@ export default class MySteps extends React.Component {
         const currentColor = stop ? lowColor : (currentIndex >= index ? rightColor : lowColor);
         return (
             <React.Fragment>
-                {<div style={{ color: currentColor }} className={styles['right-content']}>{rightContent}</div>}
+                {<div style={{ color: currentColor }} className='right-content'>{rightContent}</div>}
             </React.Fragment>
         );
     }
@@ -155,8 +155,8 @@ export default class MySteps extends React.Component {
         const currentColor = stop ? lowColor : (currentIndex >= index ? middleColor : lowColor);
         return (
             <React.Fragment>
-                {middle && <div style={{ color: currentColor }} className={styles['step-middle-part']}>{middle}</div>}
-                {!middle && <div style={{ background: currentColor, color: currentColor }} className={currentIndex >= index ? styles['big-circle'] : styles['small-circle']}></div>}
+                {middle && <div style={{ color: currentColor }} className='step-middle-part'>{middle}</div>}
+                {!middle && <div style={{ background: currentColor, color: currentColor }} className={currentIndex >= index ? 'big-circle' : 'small-circle'}></div>}
             </React.Fragment>
         );
     }
@@ -174,7 +174,7 @@ export default class MySteps extends React.Component {
         const currentColor = stop ? lowColor : (currentIndex > index ? lineColor : (currentIndex == index ? (statusData.nextLineColor || lowColor) : lowColor));
         return (
             <React.Fragment>
-                {<div style={{ borderColor: currentColor, minHeight: length ? length : 100 }} className={currentIndex > index ? styles['line-solid'] : (currentIndex === index && statusData.nextDashed ? styles['line-dashed'] : styles['line-solid'])}></div>}
+                {<div style={{ borderColor: currentColor, minHeight: length ? length : 100 }} className={currentIndex > index ? 'line-solid' : (currentIndex === index && statusData.nextDashed ? 'line-dashed' : 'line-solid')}></div>}
             </React.Fragment>
         );
     }
@@ -183,10 +183,10 @@ export default class MySteps extends React.Component {
     renderMain = (item, index) => {
         const { data = [], length } = this.props;
         return (
-            <div key={index} className={length == 'flex' ? `${styles['step-item']} ${styles['flex-item']}` : styles['step-item']}>
-                <div className={styles['left-content']}>
+            <div key={index} className={length == 'flex' ? 'step-item flex-item' : 'step-item'}>
+                <div className='left-content'>
                     {this.leftElement(item, index)}
-                    <div className={styles['step-middle']}>
+                    <div className='step-middle'>
                         {this.middleDefine(item, index)}
                         {index < data.length - 1 && this.lineElement(item, index)}
                     </div>
@@ -197,11 +197,10 @@ export default class MySteps extends React.Component {
     }
 
     render() {
-        const { data } = this.props;
+        const { data, prefixCls } = this.props;
+
         return (
-            <div className={
-                styles['step-box']}
-            >
+            <div className={`step-box-column`}>
                 {
                     data.map((item, index) => {
                         return this.renderMain(item, index);

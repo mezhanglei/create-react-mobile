@@ -1,4 +1,4 @@
-import styles from './index.less';
+import './index.less';
 import React from "react";
 import { isArray } from "@/utils/type";
 
@@ -76,7 +76,7 @@ class CaptchaImg extends React.Component {
         const clipw = subw * 5 + 0.5;
         const cliph = subh * 5 + 0.5;
 
-        ctx.beginPath()
+        ctx.beginPath();
         ctx.moveTo(clipX, clipY);
         ctx.lineTo(clipX + clipw, clipY);
         ctx.lineTo(clipX + clipw, clipY + parseInt(cliph / 2) - radius);
@@ -117,7 +117,7 @@ class CaptchaImg extends React.Component {
 
         const reset = function () {
             const boxClassName = that.captchaBox.className;
-            that.captchaBox.className += ` ${styles['shake']}`;
+            that.captchaBox.className += ' shake';
 
             setTimeout(function () {
                 sliderBtn.style.left = "10px";
@@ -130,7 +130,7 @@ class CaptchaImg extends React.Component {
                 result.className = resultClass;
                 that.captchaBox.className = boxClassName;
             }, 1500);
-        }
+        };
 
         const moveStart = function (e) {
             eventinfo.flag = true;
@@ -139,7 +139,7 @@ class CaptchaImg extends React.Component {
             } else {
                 eventinfo.preEventX = e.clientX;
             }
-        }
+        };
 
         const move = function (e) {
             let disX;
@@ -155,7 +155,7 @@ class CaptchaImg extends React.Component {
                 if (e.preventDefault) e.preventDefault();
                 return false;
             }
-        }
+        };
 
         const moveEnd = function (e) {
             if (eventinfo.flag) {
@@ -165,23 +165,23 @@ class CaptchaImg extends React.Component {
 
                 if (Math.abs(clipX - eventinfo.sliderLeft) <= that.props.precision) {
                     result.innerHTML = '验证通过';
-                    result.className = resultClass + ` ${styles['success']}`;
+                    result.className = resultClass + ' success';
                     that.props.onSuccess && that.props.onSuccess();
                 } else {
                     result.innerHTML = '拖动滑块将悬浮图像正确拼合';
-                    result.className = resultClass + ` ${styles['fail']}`;
+                    result.className = resultClass + ' fail';
                     reset();
                     that.props.onError && that.props.onError();
                 }
             }
-        }
+        };
 
         sliderBtn.addEventListener("touchstart", moveStart, false);
         sliderBtn.addEventListener("mousedown", moveStart, false);
         document.addEventListener("touchmove", move, false);
         document.addEventListener("mousemove", move, false);
-        document.addEventListener('touchend', moveEnd, false)
-        document.addEventListener('mouseup', moveEnd, false)
+        document.addEventListener('touchend', moveEnd, false);
+        document.addEventListener('mouseup', moveEnd, false);
     }
 
     initData = () => {
@@ -200,7 +200,7 @@ class CaptchaImg extends React.Component {
             const startPoint = that.getClipPoint(w, h);
             if (!startPoint) {
                 console.error("can not get the start point");
-                return
+                return;
             }
 
             // 绘画并填充裁剪区域
@@ -226,25 +226,25 @@ class CaptchaImg extends React.Component {
             that.clipCanvas.style.top = clipY + 'px';
             // 事件监听
             that.eventInit(clipX);
-        }
+        };
     }
 
     render() {
         return (
-            <div ref={node => this.captchaBox = node} className={styles['captcha-box']} style={{ width: this.props.width + 'px' }}>
-                <div className={styles['canvas-box']}>
-                    <canvas ref={node => this.imgCanvas = node} id="canvas" width={this.props.width} height={this.props.height} className={styles['captcha-bg']}></canvas>
-                    <div id="captcha-result" ref={node => this.result = node} className={styles['captcha-result']}></div>
+            <div ref={node => this.captchaBox = node} className='captcha-box' style={{ width: this.props.width + 'px' }}>
+                <div className='canvas-box'>
+                    <canvas ref={node => this.imgCanvas = node} id="canvas" width={this.props.width} height={this.props.height} className='captcha-bg'></canvas>
+                    <div id="captcha-result" ref={node => this.result = node} className='captcha-result'></div>
                 </div>
-                <div className={styles['captcha-dragbar']}>
-                    <div className={styles['drag-track']}></div>
-                    <div id="drag-slider" ref={node => this.sliderBtn = node} className={styles['drag-slider']}></div>
-                    <div className={styles['drag-btn']}>
-                        <i id="drag-btn-close" className={styles['close']} />
-                        <i id="drag-btn-refresh" className={styles['refresh']} />
+                <div className='captcha-dragbar'>
+                    <div className='drag-track'></div>
+                    <div id="drag-slider" ref={node => this.sliderBtn = node} className='drag-slider'></div>
+                    <div className='drag-btn'>
+                        <i id="drag-btn-close" className='close' />
+                        <i id="drag-btn-refresh" className='refresh' />
                     </div>
                 </div>
-                <canvas ref={node => this.clipCanvas = node} id="captcha-clipcanvas" className={styles['captcha-clipcanvas']} />
+                <canvas ref={node => this.clipCanvas = node} id="captcha-clipcanvas" className='captcha-clipcanvas' />
             </div>
         );
     }
