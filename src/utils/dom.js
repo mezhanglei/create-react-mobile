@@ -31,14 +31,18 @@ export function getElementXY(ele, target = null) {
  * @param {*} child 目标元素
  */
 export function isContains(root, child) {
-    let node = child;
-    while (node) {
-        if (node === root) {
-            return true;
-        }
-        node = node.parentNode;
+    // let node = child;
+    // while (node) {
+    //     if (node === root) {
+    //         return true;
+    //     }
+    //     node = node.parentNode;
+    // }
+    // return false;
+    if (!root) {
+        return false;
     }
-    return false;
+    return root.contains(child);
 };
 
 // 获取页面的卷曲滚动高度(兼容写法)
@@ -48,6 +52,18 @@ export function getPageScroll(el) {
     const x = doc.documentElement.scrollLeft || win.pageXOffset || doc.body.scrollLeft;
     const y = doc.documentElement.scrollTop || win.pageYOffset || doc.body.scrollTop;
     return { x, y };
+};
+
+// 获取元素的相对于页面的位置
+export function getPositionInPage(el) {
+    const rect = el.getBoundingClientRect();
+    const pos = {
+        x: rect.left,
+        y: rect.top
+    };
+    pos.x += getPageScroll(el).x;
+    pos.y += getPageScroll(el).y;
+    return pos;
 };
 
 /**
@@ -68,4 +84,29 @@ export function eleCanScroll(ele) {
         top && (ele.scrollTop = 0);
         return top > 0;
     }
+}
+
+// 判断页面是否有滚动条
+export function isBodyOverflowing() {
+    return (
+        document.body.scrollHeight >
+        (window.innerHeight || document.documentElement.clientHeight) &&
+        window.innerWidth > document.body.offsetWidth
+    );
+}
+
+// 给节点设置目标样式
+export function setStyle(style = {}, el = document.body) {
+    Object.keys(style).forEach(key => {
+        el.style[key] = style[key];
+    });
+}
+
+// 是否可以使用dom
+export function canUseDom() {
+    return !!(
+        typeof window !== 'undefined' &&
+        window.document &&
+        window.document.createElement
+    );
 }

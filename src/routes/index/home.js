@@ -10,5 +10,8 @@ export const HomeRoutes = [
     {
         path: "/home",
         component: TabNav(Home)
-    }
+    }, {
+        path: "/home/info/:id",
+        component: HomeInfo
+    },
 ];

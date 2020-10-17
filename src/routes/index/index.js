@@ -2,7 +2,7 @@ import React from "react";
 // import { HashRouter as Router, Route, Switch, Prompt } from "react-router-dom";
 import { BrowserRouter as Router, Route, Switch, Prompt } from "react-router-dom";
 import { Toast } from "antd-mobile";
-import { HomeRoutes, Home, HomeInfo } from "./home";
+import { HomeRoutes, Home } from "./home";
 import { CategoryRoutes } from "./category";
 import { CartRoutes } from "./cart";
 import { PersonalRoutes } from "./personal";
@@ -28,10 +28,6 @@ const routes = [
         component: TabNav(Home),
         // 路由为/时必须设置exact为true
         exact: true
-    },
-    {
-        path: "/home/info/:id",
-        component: HomeInfo
     },
     ...HomeRoutes,
     ...CategoryRoutes,

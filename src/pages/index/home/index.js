@@ -3,11 +3,8 @@ import styles from "./index.less";
 import { Button } from "antd-mobile";
 import http from "@/http/request.js";
 import { connect } from "react-redux";
-import SendVerifyCode from "@/components/sendCode/sendcode";
-import Loaders from "@/components/loader/index";
 import { isNumber, isString, isUndefined } from "@/utils/type";
 import { getDateDiff } from "@/utils/date/format";
-import DragResize from "@/components/drag-layout"
 
 class Home extends React.Component {
     constructor(props) {
@@ -57,9 +54,7 @@ class Home extends React.Component {
         const { current, arr } = this.state;
         return (
             <div>
-                <DragResize>
-                    <div points="woshihaoren" className={styles["home"]}>首页{getDateDiff('2020-8-25 23:20:22')}</div>
-                </DragResize>
+                <div points="woshihaoren" className={styles["home"]}>首页{getDateDiff('2020-8-25 23:20:22')}</div>
                 <div event-name="handle-point" onClick={this.show}>当前：{current}</div>
                 {
                     arr.map((item, index) => {

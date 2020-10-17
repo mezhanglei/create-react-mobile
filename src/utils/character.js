@@ -1,4 +1,4 @@
-//===基础字符串或数字等文本的处理===//
+//===基础字符串或数字的处理===//
 import { isObject, isNumber } from "./type";
 
 //保留n位小数并格式化输出字符串类型的数据
@@ -111,4 +111,3 @@ export function hideTelephone(phone) {
     let reg = /(\d{3})\d{4}(\d{4})/;
     return phone.replace(reg, "$1****$2");
 }
-
