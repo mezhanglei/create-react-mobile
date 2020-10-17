@@ -66,15 +66,10 @@ npm run csslint 检查css规范
     |-- tsconfig.json // ts配置
     |-- less         // 全局的基础css配置文件夹, 全局样式写在这里
     |   |-- index.less
-    |   |-- base   // 基础配置(颜色及自定义类名,标签)
-    |   |   |-- base.less
-    |   |   |-- color.less
-    |   |   |-- index.less
-    |   |   |-- theme.less
-    |   |-- components // ui组件库的自定义样式(自定义组件和开源ui库)
-    |   |   |-- am-tab.less
-    |   |   |-- index.less
-    |   |-- pages  // 全局页面使用的布局样式
+    |   |-- base   // 基础原子标签样式和公共基础类
+    |   |-- components // ui组件库的自定义样式(自定义组件和开源ui组件)
+    |   |-- constants // 公共的less常量
+    |   |-- pages  // 页面业务相关的公共类
     |       |-- index.less
     |-- src
     |   |-- api // 接口文件夹, 一个子文件代表一个功能模块

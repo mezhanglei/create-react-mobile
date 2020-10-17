@@ -160,7 +160,7 @@ const webpackConfig = {
                                 // 引入antd 主题颜色覆盖文件
                                 hack: `true; @import "${path.join(
                                     configs.root,
-                                    "less/base/theme.less"
+                                    "less/constants/theme.less"
                                 )}";`,
                             },
                             javascriptEnabled: true,

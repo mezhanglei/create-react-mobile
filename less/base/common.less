@@ -1,0 +1,78 @@
+// 公共基础类
+
+/* 清除浮动 */
+.clearfix::after {
+    content: ".";
+    height: 0;
+    clear: both;
+    visibility: hidden;
+    display: block;
+}
+
+.clearfix {
+    *zoom: 1;
+}
+
+/* 设置浮动，减少浮动带来的 bug */
+.fl,
+.fr {
+    display: inline;
+}
+
+.fl {
+    float: left;
+}
+
+.fr {
+    float: right;
+}
+
+/* 单行省略 */
+.one-txt-cut {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+/*双行溢出 只适用于webkit内核的浏览器*/
+.two-txt-cut {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    /*设定最多显示行数*/
+    -webkit-box-orient: vertical;
+}
+
+/*三行溢出 只适用于webkit内核的浏览器*/
+.three-txt-cut {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    /*设定最多显示行数*/
+    -webkit-box-orient: vertical;
+}
+
+/* 使用pre标签解析html字符串时解析换行符 */
+pre {
+    white-space: pre-line;
+    margin: 0;
+    padding: 0;
+}
+
+// 滑动条的样式
+.scroll-bar {
+    &::-webkit-scrollbar-track-piece {
+        background: #d3dce6;
+    }
+
+    &::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: #99a9bf;
+        border-radius: 20px;
+    }
+}
