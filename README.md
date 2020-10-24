@@ -90,7 +90,7 @@ npm run csslint 检查css规范
     |   |-- routes // 路由所在文件夹，其下的子文件夹名为各个多页入口的名
     |   |   |-- index // 目前只有一个单页index
     |   |-- store    // redux仓库
-    |   |-- utils   // 全局要使用的js算法
+    |   |-- utils   // js工具方法
     |-- static     // 打包时要拷贝的静态资源, 需要在webpack/configs文件中配置引用路径后才能生效
     |-- webpack   // webpack配置文件夹
         |-- configs.js  // 自定义配置
