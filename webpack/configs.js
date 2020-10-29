@@ -22,7 +22,7 @@ const outputPath = path.join(root, "dist");
 // 预编译文件输出目录
 const dllOutputPath = path.join(staticPath, 'dll');
 // 单/多页面的入口所在目录
-const pagesRoot = path.join(srcPath, 'pages');
+const htmlPages = path.join(srcPath, 'pages');
 // 资源访问的公共绝对路径(格式如: /publicPath/)
 const publicPath = '/';
 
@@ -87,7 +87,7 @@ const entries = (function () {
     // 遍历路径数组用正则匹配页面所在的文件名
     pages.map((item) => {
         // 页面所在目录名作为入口的键
-        obj[item.name] = [path.join(pagesRoot, 'index.js'), path.join(pagesRoot, item.name, 'index.js')];
+        obj[item.name] = [path.join(htmlPages, 'index.js'), path.join(htmlPages, item.name, 'index.js')];
     });
     return obj;
 })();
@@ -101,7 +101,7 @@ const htmlConfigs = (function () {
             // 指定输出的html文档
             filename: `${item.name}.html`,
             // html模板所在的位置，默认支持html和ejs模板语法，处理文件后缀为html的模板会与html-loader冲突
-            template: path.join(pagesRoot, 'index.html'),
+            template: path.join(htmlPages, 'index.html'),
             // 不能与template共存，也可以指定html字符串
             // templateContent: string|function,
             // 默认script一次性引用所有的chunk(chunk的name)
@@ -201,7 +201,7 @@ module.exports = {
     staticPath,
     outputPath,
     dllOutputPath,
-    pagesRoot,
+    htmlPages,
     publicPath,
     ...baseConfig,
     ...devConfig,
