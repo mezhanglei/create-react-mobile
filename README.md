@@ -35,7 +35,7 @@ npm run csslint 检查css规范
       2. 尽量不要写行内样式
 解析方式(自行选择)：
 1： .less后缀的文件则是普通的样式文件，有变量污染的可能
-2： .less.module后缀的样式文件会开启css module作用域, 可以避免变量污染
+2： .module.less后缀的样式文件会开启css module作用域, 可以避免变量污染
     css作用域: 1. 启用css modules后, 类名会被添加上hash字符串, 使用方式: 先import styles from "less文件", 然后styles.类名在代码中使用类
               2. 对于代码中的普通class类名, 可以通过:global {} 包裹,在里面书写类名来修改样式
               3. 动画类名hash化，需要在样式文件中的类名后面加:local 例如 .animation :local {animation: 动画名 all 1s }
@@ -73,9 +73,9 @@ npm run csslint 检查css规范
     |       |-- index.less
     |-- src
     |   |-- api // 接口文件夹, 一个子文件代表一个功能模块
-    |   |-- common // 公共的业务代码都放在这里(公共的接口,公共的业务文件,兼容处理等等放在这里)
     |   |-- components // 全局要使用的组件必须要放在这里
     |   |-- constants // 项目所有的常量必须全部放在这里, 一个子文件代表一个功能模块，禁止在别处定义常量,分散不宜管理
+    |   |-- core // 项目相关的公共的业务代码都放在这里(公共的接口,公共的业务文件,兼容处理等等放在这里)
     |   |-- http      // 请求配置文件
     |   |   |-- config.js
     |   |   |-- jsonpRequest.js

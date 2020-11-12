@@ -1,5 +1,5 @@
 import React, { Component, useState } from 'react';
-import styles from './index.less.module';
+import styles from './index.module.less';
 
 
 

@@ -2,7 +2,7 @@ import { Toast } from "antd-mobile";
 import { getUrlQuery } from "@/utils/url";
 import { WECHAT_TOKEN } from "@/constants/account/index";
 import { myStorage } from "@/utils/cache.js";
-import { handleRedirect } from "@/common/wx";
+import { handleRedirect } from "@/core/wx";
 
 /**
  * 微信授权回调页面（中转页）

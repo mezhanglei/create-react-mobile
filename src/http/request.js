@@ -2,7 +2,7 @@ import axios from "axios";
 import { STATUS_ERROR, CODE_ERROR } from "./config";
 import { Toast } from "antd-mobile";
 import { myStorage } from "@/utils/cache.js";
-import { loginOut, getToken } from "@/common/common.js";
+import { loginOut, getToken } from "@/core/common.js";
 import { trimParams } from "@/utils/character.js";
 import Loader from "@/components/loader/index";
 
@@ -60,27 +60,6 @@ const headers = {
     Authorization: getToken()
 };
 
-/**
- * @param {Object} config axios的config
- * 处理请求,最终返回一个新的config配置
- */
-function handleConfig(config) {
-    let data = Object.assign(defaults, config.params || config.data);
-    // 是否去掉前后空格,默认去掉
-    if (!config.noTrim) {
-        data = trimParams(data);
-    } else {
-        data = data;
-    }
-    if (config.params) {
-        config.params = Object.assign(defaults, data);
-    }
-    if (config.data) {
-        config.data = Object.assign(defaults, data);
-    }
-    return config;
-}
-
 // 请求拦截(axios自动对请求类型进行类型转换)
 http.interceptors.request.use(
     (config) => {
@@ -88,8 +67,16 @@ http.interceptors.request.use(
         Object.keys(headers).map(item => {
             config.headers[item] = headers[item];
         });
-        // 公共请求处理
-        config = handleConfig(config);
+
+        // 请求参数处理
+        if (!config.noTrim) {
+            if (config.params) {
+                config.params = Object.assign({}, trimParams(config.params), defaults);
+            } else if (config.data) {
+                config.data = Object.assign({}, trimParams(config.data), defaults);
+            }
+        }
+
         startLoading();
         return config;
     },
@@ -111,7 +98,7 @@ http.interceptors.response.use(
         const msg = response.data && response.data.message;
         const result = response.data;
         // 响应异常提示
-        if (result.code != 200) {
+        if (code != 200) {
             resultError(code, msg);
         }
         return result;

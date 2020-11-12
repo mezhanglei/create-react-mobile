@@ -1,6 +1,6 @@
 import React from "react";
-// import { HashRouter as Router, Route, Switch, Prompt } from "react-router-dom";
-import { BrowserRouter as Router, Route, Switch, Prompt } from "react-router-dom";
+import { HashRouter as Router, Route, Switch, Prompt, Redirect } from "react-router-dom";
+// import { BrowserRouter as Router, Route, Switch, Prompt, Redirect } from "react-router-dom";
 import { Toast } from "antd-mobile";
 import { HomeRoutes, Home } from "./home";
 import { CategoryRoutes } from "./category";
@@ -8,11 +8,11 @@ import { CartRoutes } from "./cart";
 import { PersonalRoutes } from "./personal";
 import NotFound from "@/components/default/not-found";
 import { DefaultRoutes } from "./default";
-import { initWX } from "@/common/wx";
+import { initWX } from "@/core/wx";
 import TabNav from "@/components/tabnav/index";
 import { myStorage } from "@/utils/cache";
-import { isLogin } from "@/common/common";
-import { LOGIN_PATH } from "@/constants/common_link";
+import { isLogin } from "@/core/common";
+import { LOGIN_ROUTE } from "@/constants/common_link";
 
 /**
  * 页面路由配置
@@ -34,22 +34,15 @@ const routes = [
     ...CartRoutes,
     ...PersonalRoutes,
     ...DefaultRoutes,
-    {
-        path: '*',
-        component: TabNav(NotFound)
-    }
+    // {
+    //     path: '*',
+    //     component: TabNav(NotFound),
+    //     auth: true
+    // }
 ];
-
-// 路由跳转历史
-let RoutesHistory = [];
-
 
 // 进入路由页面之前触发的方法
 function beforeRouter(props, item) {
-    // 路由跳转历史
-    RoutesHistory.push(item.path);
-    // //使用它
-    // console.log(newFun);
     // 微信授权
     // initWX();
 };
@@ -83,39 +76,35 @@ function getConfirmation(message, callback) {
  * 3.children: 当children的值是一个函数时，无论当前地址和path路径匹不匹配，都将会执行children对应的函数
  */
 export default function RouteComponent() {
-    // 默认为设置的publicPath
-    const basename = process.env.PUBLIC_PATH;
+    // BrowserRouter时需要设置basename
+    const basename = Router.name == "BrowserRouter" ? process.env.PUBLIC_PATH : "";
+
     return (
         <Router basename={basename} getUserConfirmation={getConfirmation}>
             <Switch>
                 {routes.map((item, index) => {
-                    return (
-                        normalRoute(item, index)
-                    );
+                    return <Route
+                        key={index}
+                        exact={item.exact}
+                        path={item.path}
+                        render={(props) => {
+                            beforeRouter(props, item);
+                            // 登录验证
+                            if (!isLogin() && item.auth) {
+                                return <Redirect to={{ pathname: LOGIN_ROUTE, state: { from: props.location } }} />;
+                            } else {
+                                return (
+                                    <React.Fragment>
+                                        <Prompt message={`是否确定离开当前路由？${location.href}`} />
+                                        <item.component {...props} data={item}></item.component>
+                                    </React.Fragment>
+                                );
+                            }
+                        }}
+                    />;
                 })}
             </Switch>
         </Router>
     );
-}
+};
 
-// 普通正常Route
-function normalRoute(item, index) {
-    return <Route
-        key={index}
-        exact={item.exact}
-        path={item.path}
-        render={(props) => {
-            beforeRouter(props, item);
-            // 登录验证
-            if (isLogin() && item.auth) {
-                return <Redirect to={{ pathname: LOGIN_PATH, state: { from: props.location } }} />;
-            }
-            return (
-                <React.Fragment>
-                    <Prompt message={`是否确定离开当前路由？${location.href}`} />
-                    <item.component {...props} data={item}></item.component>
-                </React.Fragment>
-            );
-        }}
-    />;
-}

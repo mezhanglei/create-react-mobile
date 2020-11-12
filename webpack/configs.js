@@ -23,7 +23,7 @@ const outputPath = path.join(root, "dist");
 const dllOutputPath = path.join(staticPath, 'dll');
 // 单/多页面的入口所在目录
 const htmlPages = path.join(srcPath, 'pages');
-// 资源访问的公共绝对路径(格式如: /publicPath/)
+// 资源访问的公共绝对路径, 并且访问路由会加上对应的路径字符串， 默认为/不能为空(格式如: /publicPath/)
 const publicPath = '/';
 
 // 公共配置(开发/生产均使用)
@@ -32,7 +32,7 @@ const baseConfig = {
     assetsPath: '../',
     // 引用入口配置,在项目中可以直接以键开头代替绝对路径引入
     resolve: {
-        extensions: [".ts", ".tsx", ".js", "jsx", ".json", ".less", ".less.module"],
+        extensions: [".ts", ".tsx", ".js", "jsx", ".json", ".less"],
         alias: {
             "@": `${srcPath}`,
             "src": `${srcPath}`,

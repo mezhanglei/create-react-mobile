@@ -160,6 +160,7 @@ module.exports = {
             },
             {
                 test: /\.less$/,
+                exclude: /\.module\.less$/,
                 use: [
                     "style-loader",
                     "css-loader",
@@ -182,7 +183,7 @@ module.exports = {
                 ]
             },
             {
-                test: /\.less\.module$/,
+                test: /\.module\.less$/,
                 use: [
                     "style-loader",
                     {
