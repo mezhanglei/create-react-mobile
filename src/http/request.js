@@ -50,23 +50,15 @@ function resultError(code, msg) {
     code && Toast.info(CODE_ERROR[code] || msg);
 }
 
-// 公共的请求参数
-const defaults = {
-    // t: new Date().getTime()
-};
-
-// 公共的headers
-const headers = {
-    Authorization: getToken()
-};
-
 // 请求拦截(axios自动对请求类型进行类型转换)
 http.interceptors.request.use(
     (config) => {
+        // 公共的请求参数
+        const defaults = {
+            // t: new Date().getTime()
+        };
         // 公共headers
-        Object.keys(headers).map(item => {
-            config.headers[item] = headers[item];
-        });
+        config.headers["Authorization"] = getToken();
 
         // 请求参数处理
         if (!config.noTrim) {
