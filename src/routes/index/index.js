@@ -12,7 +12,7 @@ import { initWX } from "@/core/wx";
 import TabNav from "@/components/tabnav/index";
 import { myStorage } from "@/utils/cache";
 import { isLogin } from "@/core/common";
-import { LOGIN_ROUTE } from "@/constants/common_link";
+import { LOGIN_ROUTE } from "@/constants/account/index";
 
 /**
  * 页面路由配置

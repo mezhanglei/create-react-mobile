@@ -42,13 +42,13 @@ export function cacheProxy(fn, cache) {
  * 使用： 1. 实例化一个对象: const fn = debounce(函数)
  *        2. 执行fn()
  */
-export function debounce(fn) {
+export function debounce(fn, time = 500) {
     let timeout = null;
     return function () {
         if (timeout !== null) clearTimeout(timeout);
         timeout = setTimeout(() => {
             fn.apply(this, arguments);
-        }, 500);
+        }, time);
     };
 };
 
@@ -58,14 +58,14 @@ export function debounce(fn) {
  * 使用: 1. 实例化一个对象: const fn = throttle(函数)
  *       2. 执行fn()
  */
-export function throttle(fn) {
+export function throttle(fn, time = 500) {
     let timer = null;
     return function () {
         if (!timer) {
             timer = setTimeout(function () {
                 fn.apply(this, arguments);
                 timer = null;
-            }, 500);
+            }, time);
         }
     };
 };

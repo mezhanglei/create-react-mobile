@@ -361,3 +361,13 @@ export function getParent(key, value, tree) {
     }
     return parent;
 };
+
+/**
+ * 判断两个数组是否具有数量和内容相同的元素
+ * @param {*} arr1 
+ * @param {*} arr2 
+ */
+export function isAllMatch(arr1 = [], arr2 = []) {
+    let noMatched = arr1.some(item => (arr2.indexOf(item) < 0));
+    return !noMatched;
+}

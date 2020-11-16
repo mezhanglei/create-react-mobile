@@ -45,24 +45,84 @@ export function isContains(root, child) {
     return root.contains(child);
 };
 
-// 获取页面的卷曲滚动高度(兼容写法)
-export function getPageScroll(el) {
-    const doc = el.ownerDocument; // 节点所在document对象
-    const win = doc.defaultView; // 包含document的window对象
-    const x = doc.documentElement.scrollLeft || win.pageXOffset || doc.body.scrollLeft;
-    const y = doc.documentElement.scrollTop || win.pageYOffset || doc.body.scrollTop;
-    return { x, y };
+// 获取页面或元素的卷曲滚动(兼容写法)
+export function getScroll(el = (document.body || document.documentElement)) {
+    if (!isDom(el)) {
+        return;
+    }
+    if (el === document.body || el === document.documentElement) {
+        const doc = el.ownerDocument; // 节点所在document对象
+        const win = doc.defaultView; // 包含document的window对象
+        const x = doc.documentElement.scrollLeft || win.pageXOffset || doc.body.scrollLeft;
+        const y = doc.documentElement.scrollTop || win.pageYOffset || doc.body.scrollTop;
+        return { x, y };
+    } else {
+        const x = el.scrollLeft;
+        const y = el.scrollTop;
+        return { x, y };
+    }
 };
 
-// 获取元素的相对于页面的位置
+// 获取页面或元素的可视宽高(兼容写法, 不包括工具栏和滚动条)
+export function getClient(el = (document.body || document.documentElement)) {
+    if (!isDom(el)) {
+        return;
+    }
+    if (el === document.body || el === document.documentElement) {
+        const x = el.clientWidth || window.screen.availWidth;
+        const y = el.clientHeight || window.screen.availHeight;
+        return { x, y };
+    } else {
+        const x = el.clientWidth;
+        const y = el.clientHeight;
+        return { x, y };
+    }
+};
+
+// 获取元素或事件对象的相对于页面的真实位置 = 滚动高度 + 可视位置
 export function getPositionInPage(el) {
-    const rect = el.getBoundingClientRect();
-    const pos = {
-        x: rect.left,
-        y: rect.top
-    };
-    pos.x += getPageScroll(el).x;
-    pos.y += getPageScroll(el).y;
+
+    let pos = {};
+    if (el instanceof MouseEvent) {
+        pos = {
+            x: el.clientX + getScroll().x,
+            y: el.clientY + getScroll().y
+        };
+    } else if (el instanceof TouchEvent) {
+        pos = {
+            x: el.touches[0].clientX + getScroll().x,
+            y: el.touches[0].clientY + getScroll().y
+        };
+    } else if (isDom(el)) {
+        pos = {
+            x: el.getBoundingClientRect().left + getScroll().x,
+            y: el.getBoundingClientRect().top + getScroll().y
+        };
+    }
+
+    return pos;
+};
+
+// 获取元素或事件对象的相对于父元素的真实位置 = 可视位置 - 父元素的可视位置 + 父元素的卷曲滚动距离
+export function getPositionInParent(el, parent) {
+    let pos = {};
+    if (el instanceof MouseEvent) {
+        pos = {
+            x: el.clientX - parent.getBoundingClientRect().left + getScroll(parent).x,
+            y: el.clientY - parent.getBoundingClientRect().top + getScroll(parent).y
+        };
+    } else if (el instanceof TouchEvent) {
+        pos = {
+            x: el.touches[0].clientX - parent.getBoundingClientRect().left + getScroll(parent).x,
+            y: el.touches[0].clientY - parent.getBoundingClientRect().top + getScroll(parent).y
+        };
+    } else if (isDom(el)) {
+        pos = {
+            x: el.getBoundingClientRect().left - parent.getBoundingClientRect().left + getScroll(parent).x,
+            y: el.getBoundingClientRect().top - parent.getBoundingClientRect().top + getScroll(parent).y
+        };
+    }
+
     return pos;
 };
 
@@ -108,15 +168,6 @@ export function eleCanScroll(ele) {
     }
 }
 
-// 判断页面是否有滚动条
-export function isBodyOverflowing() {
-    return (
-        document.body.scrollHeight >
-        (window.innerHeight || document.documentElement.clientHeight) &&
-        window.innerWidth > document.body.offsetWidth
-    );
-}
-
 // 是否可以使用dom
 export function canUseDom() {
     return !!(
@@ -124,4 +175,33 @@ export function canUseDom() {
         window.document &&
         window.document.createElement
     );
+}
+
+// 添加事件监听
+export function addEvent(el, event, handler, inputOptions) {
+    if (!el) return;
+    // captrue: true事件捕获 once: true只调用一次,然后销毁 passive: true不调用preventDefault
+    const options = { capture: false, once: false, passive: false, ...inputOptions };
+    if (el.addEventListener) {
+        el.addEventListener(event, handler, options);
+    } else if (el.attachEvent) {
+        el.attachEvent('on' + event, handler);
+    } else {
+        // $FlowIgnore: Doesn't think elements are indexable
+        el['on' + event] = handler;
+    }
+}
+
+// 移除事件监听
+export function removeEvent(el, event, handler, inputOptions) {
+    if (!el) return;
+    const options = { capture: false, once: false, passive: false, ...inputOptions };
+    if (el.removeEventListener) {
+        el.removeEventListener(event, handler, options);
+    } else if (el.detachEvent) {
+        el.detachEvent('on' + event, handler);
+    } else {
+        // $FlowIgnore: Doesn't think elements are indexable
+        el['on' + event] = null;
+    }
 }
