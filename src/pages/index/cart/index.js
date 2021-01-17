@@ -1,4 +1,8 @@
 import React, { Component, useState } from 'react';
-export default function Cart() {
-  return (<div>购物车</div>)
+import "./index.less";
+export default function Cart(props) {
+    const onBack = () => {
+        props.history.goBack();
+    };
+    return (<div className="cart-box" onClick={onBack}>购物车</div>);
 }

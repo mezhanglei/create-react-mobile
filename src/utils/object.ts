@@ -1,5 +1,5 @@
 
-import { isObject, isArray } from "type.js";
+import { isObject, isArray } from "./type";
 /**
  * 完全深拷贝
  * @param {*} copyObj 目标对象或数组
@@ -12,8 +12,8 @@ import { isObject, isArray } from "type.js";
  * 6.如果对象中存在循环引用的情况也无法正确实现深拷贝
  * 所以上述情况下是不适合使用JSON.parse(JSON.stringify())这种方式实现深拷贝的，但除了上述情况，建议使用JSON.parse(JSON.stringify())
  */
-export function deepClone(copyObj) {
-    let obj;
+export function deepClone(copyObj: any) {
+    let obj: any;
     if (isArray(copyObj)) {
         obj = [];
     } else if (isObject(copyObj)) {
@@ -35,7 +35,10 @@ export function deepClone(copyObj) {
 }
 
 // 判断两个对象(包括数组)是否相等
-export function isObjectEqual(a, b) {
+export function isObjectEqual(a: any, b: any) {
+    if(!(typeof a == 'object' && typeof b === 'object')) {
+        return a === b;
+    };
     let aProps = Object.getOwnPropertyNames(a);
     let bProps = Object.getOwnPropertyNames(b);
     if (aProps.length != bProps.length) {
@@ -46,7 +49,7 @@ export function isObjectEqual(a, b) {
         let propA = a[propName];
         let propB = b[propName];
         if ((typeof (propA) === 'object')) {
-            if (!this.isObjectEqual(propA, propB)) {
+            if (!isObjectEqual(propA, propB)) {
                 return false;
             }
         } else if (propA !== propB) {
@@ -60,9 +63,8 @@ export function isObjectEqual(a, b) {
  * 递归将对象/嵌套对象的数据转化为formdata格式数据
  * @param {Object} obj 传入的对象数据
  * @param {FormData} formData 是否传入已有的formData数据
- * @param {*} namespace 
  */
-export function objectToFormData(obj, formData) {
+export function objectToFormData(obj: any, formData: FormData) {
     const fd = (formData instanceof FormData) ? formData : new FormData();
     let formKey;
     for (let property in obj) {

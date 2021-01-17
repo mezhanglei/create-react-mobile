@@ -111,3 +111,9 @@ export function hideTelephone(phone) {
     let reg = /(\d{3})\d{4}(\d{4})/;
     return phone.replace(reg, "$1****$2");
 }
+
+// 过滤富文本中的标签和空格，提取文本
+export function richTextFilter(str) {
+    // return str.replace(/<img [^>]*src=['"]([^'"]+)[^>]*>/g, '').replace(/&nbsp;/ig, '');
+    return (str.replace(/<[^<>]+>/g, '').replace(/&nbsp;/ig, ''));
+}

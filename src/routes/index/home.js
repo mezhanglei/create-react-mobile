@@ -9,9 +9,7 @@ export const HomeInfo = loadable({ loader: () => import(/* webpackChunkName: "ho
 export const HomeRoutes = [
     {
         path: "/home",
-        component: TabNav(Home)
-    }, {
-        path: "/home/info/:id",
-        component: HomeInfo
-    },
+        component: TabNav(Home),
+        exact: true
+    }
 ];

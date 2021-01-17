@@ -5,8 +5,8 @@
  * 使用方式: 1:先实例化一个对象 const newFn = getSingle(fn)
  *          2: 执行函数 newFn()
  */
-export function getSingle(fn) {
-    let instance = null;
+export function getSingle(fn: any): any {
+    let instance: any = null;
     return function () {
         if (!instance) {
             instance = fn.apply(this, arguments);
@@ -23,16 +23,16 @@ export function getSingle(fn) {
  * 使用方法: 1: 实例化一个对象: const fn = cacheProxy(需要递归调用的函数)
  *           2: 执行递归函数:  fn()
  */
-export function cacheProxy(fn, cache) {
+export function cacheProxy(fn: any, cache: {}): any {
     cache = cache || {};
 
-    return function (arg) {
+    return function (arg: any) {
         //如果缓存数据中没有这个参数对应的值
         if (!cache.hasOwnProperty(arg)) {
-            cache[arg] = fn(arg);
+            (cache as any)[arg] = fn(arg);
         }
         //缓存递归执行结果
-        return cache[arg];
+        return (cache as any)[arg];
     };
 };
 
@@ -42,8 +42,8 @@ export function cacheProxy(fn, cache) {
  * 使用： 1. 实例化一个对象: const fn = debounce(函数)
  *        2. 执行fn()
  */
-export function debounce(fn, time = 500) {
-    let timeout = null;
+export function debounce(fn: any, time: number = 500): any {
+    let timeout: any = null;
     return function () {
         if (timeout !== null) clearTimeout(timeout);
         timeout = setTimeout(() => {
@@ -58,8 +58,8 @@ export function debounce(fn, time = 500) {
  * 使用: 1. 实例化一个对象: const fn = throttle(函数)
  *       2. 执行fn()
  */
-export function throttle(fn, time = 500) {
-    let timer = null;
+export function throttle(fn: any, time: number = 500): any {
+    let timer: any = null;
     return function () {
         if (!timer) {
             timer = setTimeout(function () {
@@ -69,3 +69,16 @@ export function throttle(fn, time = 500) {
         }
     };
 };
+
+/**
+ * 生成GUID(全局唯一标识符32位，UUID的一种)
+ * 其中4表示UUID生成算法版本
+ */
+export const getGUID = () => {
+    let str = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'
+    return str.replace(/[xy]/g, function (c) {
+        var r = Math.random() * 16 | 0,
+            v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+}

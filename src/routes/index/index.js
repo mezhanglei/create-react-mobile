@@ -13,6 +13,7 @@ import TabNav from "@/components/tabnav/index";
 import { myStorage } from "@/utils/cache";
 import { isLogin } from "@/core/common";
 import { LOGIN_ROUTE } from "@/constants/account/index";
+import TransitionRoute from "@/routes/index/transitionRoute/index";
 
 /**
  * 页面路由配置
@@ -23,16 +24,16 @@ import { LOGIN_ROUTE } from "@/constants/account/index";
  *  exact: 默认false， 为true时表示严格匹配，只有访问的路由和目标完全相等时才会被渲染
  */
 const routes = [
-    {
-        path: "/",
-        component: TabNav(Home),
-        // 路由为/时必须设置exact为true
-        exact: true
-    },
+    // {
+    //     path: "/",
+    //     component: TabNav(Home),
+    //     // 路由为/时必须设置exact为true
+    //     exact: true
+    // },
     ...HomeRoutes,
     ...CategoryRoutes,
-    ...CartRoutes,
-    ...PersonalRoutes,
+    // ...CartRoutes,
+    // ...PersonalRoutes,
     ...DefaultRoutes,
     // {
     //     path: '*',
@@ -72,7 +73,7 @@ function getConfirmation(message, callback) {
  * 4.children:node 要渲染的子元素。
  * Route的参数(可传函数或组件, 值为函数时都会接受所有由route传入的所有参数):
  * 1.component: 使用React.createElement创建组件, 每次更新和渲染都会重新创建新组件, 卸载旧组件, 挂载新组件
- * 2.render: 当路由的路径匹配时调用(推荐).
+ * 2.render: 当路由的路径匹配时渲染对应的组件(推荐).
  * 3.children: 当children的值是一个函数时，无论当前地址和path路径匹不匹配，都将会执行children对应的函数
  */
 export default function RouteComponent() {
@@ -85,7 +86,7 @@ export default function RouteComponent() {
                 {routes.map((item, index) => {
                     return <Route
                         key={index}
-                        exact={item.exact}
+                        exact
                         path={item.path}
                         render={(props) => {
                             beforeRouter(props, item);
@@ -104,6 +105,7 @@ export default function RouteComponent() {
                     />;
                 })}
             </Switch>
+            <TransitionRoute />
         </Router>
     );
 };

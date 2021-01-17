@@ -1,30 +1,10 @@
-import React, { Component, useState, useEffect } from 'react';
-import { delUrlQuery } from "@/utils/url";
+import React, { Component, useState } from 'react';
+import "./index.less";
 
-class HomeInfo extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-
-    componentDidMount() {
-        console.log(delUrlQuery('name'));
-        setTimeout(() => {
-            this.setState({
-                title: this.props.match.params.id
-            });
-        }, 2000);
-    }
-
-    render() {
-        const { title } = this.state;
-        return (
-            <div>
-                {title}
-            </div>
-        );
-    }
+const HomeInfo = (props) => {
+    const onBack = () => {
+        props.history.goBack();
+    };
+    return (<div className="info-box" onClick={onBack}>详情</div>);
 };
-
-export default HomeInfo;
+export default React.memo(HomeInfo);

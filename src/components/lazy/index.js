@@ -6,7 +6,7 @@ export default function loadable(configs) {
         loading({ isLoading, error }) {
             // 加载过程中
             if (isLoading) {
-                return <div></div>;
+                return <div>页面已更新，请刷新重试</div>;
                 // 加载错误
             } else if (error) {
                 console.log(error);

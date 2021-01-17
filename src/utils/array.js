@@ -342,32 +342,134 @@ export function regQuery(list, keyWord = "", attr) {
 }
 
 /**
- * 嵌套数组中根据key值查询父元素并返回(嵌套字段为children)
- * @param {*} key 查询的字段名key
- * @param {*} value 查询的字段值value
- * @param {*} tree 嵌套数组
- */
-export function getParent(key, value, tree) {
-    let parent;
-    for (let i = 0; i < tree.length; i++) {
-        const node = tree[i];
-        if (node.children) {
-            if (node.children.some((item) => item[key] === value)) {
-                parent = node[key];
-            } else if (getParent(key, value, node.children)) {
-                parent = getParent(key, value, node.children);
-            }
-        }
-    }
-    return parent;
-};
-
-/**
- * 判断两个数组是否具有数量和内容相同的元素
+ * 判断两个数组是否具有数量和内容相同的元素(忽略顺序)
  * @param {*} arr1 
  * @param {*} arr2 
  */
 export function isAllMatch(arr1 = [], arr2 = []) {
     let noMatched = arr1.some(item => (arr2.indexOf(item) < 0));
     return !noMatched;
+}
+
+/**
+ * 深度优先遍历非递归(先进后出的栈结构，有回溯行为，速度慢些)
+ * @param {*} node 结点
+ */
+export function deepTraversal(node) {
+    // 存储节点
+    let cache = [];
+    if (node != null) {
+        // 记录栈
+        let stack = [];
+        stack.push(node);
+        while (stack.length !== 0) {
+            // 删除栈
+            let item = stack.pop();
+            cache.push(item);
+            // 添加栈
+            if (item.children) {
+                let child = item.children;
+                for (let i = child.length - 1; i >= 0; i--)
+                    stack.push(child[i]);
+            }
+        }
+    }
+    return cache;
+}
+
+/**
+ * 广度优先遍历树非递归（先进先出的队列结构，无回溯行为，但是需要内存空间，速度相对快）
+ * @param {*} node 根节点
+ */
+export function breadthFirstSearch(node) {
+    // 存储节点
+    let cache = [];
+    if (node != null) {
+        let queue = [];
+        queue.unshift(node);
+        while (queue.length != 0) {
+            let item = queue.shift();
+            cache.push(item);
+            const children = item.children;
+            for (var i = 0; i < children.length; i++)
+                queue.push(children[i]);
+        }
+    }
+    return cache;
+}
+
+/**
+ * 返回目标节点的叶子节点(广度优先)
+ * @param {*} node 根节点
+ * @param {*} childrenKey 标识孩子的字段名
+ */
+export function findLeaves(node, key = 'id', childrenKey = 'children') {
+    // 存储节点
+    let cache = [];
+    if (node != null) {
+        let queue = [];
+        queue.unshift(node);
+        while (queue.length != 0) {
+            let item = queue.shift();
+            if (item && !(item[childrenKey]?.length > 0)) {
+                if (item[key]) {
+                    cache = cache.concat([item[key]]);
+                }
+            }
+            for (var i = 0; i < item[childrenKey]?.length; i++)
+                queue.push(item[childrenKey][i]);
+        }
+    }
+    return cache;
+}
+
+/**
+ * 树列表中根据key值返回对应的节点(嵌套字段为children)
+ * @param {*} key 查询的字段名key
+ * @param {*} tree 树列表
+ */
+export function getNode(key, value, tree = []) {
+    let ele;
+    for (let i = 0; i < tree.length; i++) {
+        const node = tree[i];
+        if (node[key] === value) {
+            ele = node;
+        } else if (node?.children?.length) {
+            ele = getNode(key, value, node?.children);
+        }
+    }
+    return ele;
+};
+
+
+/**
+ * 根据id返回对应的节点路径，并赋值对应节点路径信息
+ * @param {*} key 要查询的key
+ * @param {*} value 要查询的key的值
+ * @param {*} tree 树列表
+ * @param {*} path 变量
+ * @param {*} res 变量
+ */
+export function findPath(key, value, tree = [], path = [], res) {
+    for (let i = 0; i < tree?.length; i++) {
+        const node = tree[i];
+        if (node) {
+            const current = [node[key]];
+            if (path?.length) {
+                node.path = path?.concat(current);
+            } else {
+                node.path = current;
+            }
+
+            if (node?.children?.length) {
+                // 下个节点返回的路径信息
+                res = findPath(key, value, node?.children, node.path);
+            }
+            if (node[key] == value) {
+                // 目标节点返回的路径信息
+                res = node.path;
+            }
+        }
+    }
+    return res;
 }

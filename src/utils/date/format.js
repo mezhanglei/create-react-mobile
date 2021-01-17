@@ -88,60 +88,44 @@ export function dateFormat(time, fmt = 'YYYY-MM-DD') {
 }
 
 /**
- * 目标时间转为时间间隔
- * @param {*} time 时间字符串/对象/时间戳
- * @param {String | Array} unitType  指定要展示的单位
- *                                   1. 字符串类型：指定单位单位
- *                                   2. 数组类型：指定一串单位，按数组顺序，数组前面且值大于1的优先展示
+ * 将时间字符串按照一定规则格式化
+ * 小于1小时内，则显示相对时间，即 “X分钟前”（例 1分钟前）
+ * 大于一小时，则显示绝对时间，即详细时间（例：19:48）
+ * 昨天和前天，则显示相对时间（例：昨天 19:48、前天 19:48）
+ * 若是3天前，则显示绝对时间，即详细日期+时间（例：04-01 19:48）；
+ * 若是非当年，则显示带年份的绝对时间，即详细日期+时间（例：2019-04-01 19:48）
+ * @param {*} time 
  */
-export function getDateDiff(time, unitType) {
+export function getDateFormat(time) {
     if (!getNewDate(time)) {
         return "";
     }
     const oldDate = getNewDate(time);
     const newDate = new Date();
-    // 毫秒差距
+    // 毫秒差距（绝对差距）
     const diffMs = newDate.getTime() - oldDate.getTime();
-    // 年的差距
+    // 年的差距（绝对差距）
     const diffYear = newDate.getFullYear() - oldDate.getFullYear();
-    // 月的差距
+    // 月的差距(绝对差距)
     const diffMonth = diffYear * 12 + newDate.getMonth() - oldDate.getMonth();
-    // 天数的差距
-    const diffDay = diffMs / (1000 * 60 * 60 * 24);
-    // 同年月下的日期差距
+    // 日期差距(年或月下的日期差距，非绝对差距)
     const diffDate = newDate.getDate() - oldDate.getDate();
-    if (diffMs < 0) { return; }
+
     if (diffMs < 1000) { return "刚刚"; }
 
-    // 没有指定单位则取默认顺序
-    unitType = unitType || ['d-', 'dd', 'hh', 'mm', 'ss'];
-    // 计算规则
-    const opt = {
-        'YYYY': { value: diffYear, label: '年前' },
-        'MM': { value: diffMonth, label: '月前' },
-        'ww': { value: diffMs / (1000 * 60 * 60 * 24 * 7), label: '周前' },
-        'dd': { value: diffDay, label: '天前' },
-        'd-': { value: (diffDay < 2 && diffDate == 1) ? 1 : 0, label: '昨天' },
-        'hh': { value: diffMs / (1000 * 60 * 60), label: '小时前' },
-        'mm': { value: diffMs / (1000 * 60), label: '分钟前' },
-        'ss': { value: diffMs / 1000, label: '秒前' }
-    };
-
-    // 返回的结果
-    let result = time;
-    if (isString(unitType)) {
-        // 返回指定单位的
-        if (opt[unitType]) {
-            result = Math.floor(opt[unitType].value) + opt[unitType].label;
-        }
-    } else if (isArray(unitType)) {
-        // 遍历所有单位，值大于1的优先展示, 终止循环
-        unitType.some(item => {
-            if (opt[item] && opt[item].value >= 1) {
-                result = Math.floor(opt[item].value) + opt[item].label;
-                return true;
-            }
-        });
+    if (diffYear >= 1) {
+        return dateFormat(time, "YYYY-MM-DD hh:mm");
+    } else if ((diffMonth < 1 && diffDate >= 3) || diffMonth >= 1) {
+        return dateFormat(time, "MM-DD hh:mm");
+    } else if ((diffMonth < 1 && diffDate == 2)) {
+        return "前天" + dateFormat(time, "hh:mm");
+    } else if ((diffMonth < 1 && diffDate == 1)) {
+        return "昨天" + dateFormat(time, "hh:mm");
+    } else if (diffMs / (1000 * 60 * 60) >= 1) {
+        return dateFormat(time, "hh:mm");
+    } else if (diffMs / (1000 * 60) >= 1) {
+        return Math.floor(diffMs / (1000 * 60)) + "分钟前";
+    } else {
+        return "刚刚";
     }
-    return result;
 }
