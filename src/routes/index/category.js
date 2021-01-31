@@ -3,7 +3,7 @@
 import TabNav from "@/components/tabnav/index";
 import loadable from "@/components/lazy";
 
-const Category = loadable({ loader: () => import(/* webpackChunkName: "category" */ '@/pages/index/category/index.js') });
+const Category = loadable({ loader: () => import(/* webpackChunkName: "category" */ '@/pages/index/category/index') });
 
 export const CategoryRoutes = [
     {

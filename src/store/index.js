@@ -11,7 +11,7 @@ import { createStore, applyMiddleware, combineReducers } from 'redux';
 // import logger from 'redux-logger';
 // 异步分发action中间件
 import thunk from 'redux-thunk';
-import { userReducer } from './reducers/user.js';
+import { userReducer } from './reducers/user';
 // 多个reducer合并, 每个reducer都代表一个模块, 访问state中的值需要去要访问对应模块下面的state
 const RootReducer = combineReducers({
     userReducer

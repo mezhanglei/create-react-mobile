@@ -1,9 +1,9 @@
 import axios from "axios";
 import { STATUS_ERROR, CODE_ERROR } from "./config";
 import { Toast } from "antd-mobile";
-import { myStorage } from "@/utils/cache.js";
-import { loginOut, getToken } from "@/core/common.js";
-import { trimParams } from "@/utils/character.js";
+import { myStorage } from "@/utils/cache";
+import { loginOut, getToken } from "@/core/common";
+import { trimParams } from "@/utils/character";
 import Loader from "@/components/loader/index";
 import { myBrowser } from "@/utils/brower";
 

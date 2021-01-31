@@ -24,16 +24,16 @@ import TransitionRoute from "@/routes/index/transitionRoute/index";
  *  exact: 默认false， 为true时表示严格匹配，只有访问的路由和目标完全相等时才会被渲染
  */
 const routes = [
-    // {
-    //     path: "/",
-    //     component: TabNav(Home),
-    //     // 路由为/时必须设置exact为true
-    //     exact: true
-    // },
+    {
+        path: "/",
+        component: TabNav(Home),
+        // 路由为/时必须设置exact为true
+        exact: true
+    },
     ...HomeRoutes,
     ...CategoryRoutes,
-    // ...CartRoutes,
-    // ...PersonalRoutes,
+    ...CartRoutes,
+    ...PersonalRoutes,
     ...DefaultRoutes,
     // {
     //     path: '*',
@@ -46,19 +46,6 @@ const routes = [
 function beforeRouter(props, item) {
     // 微信授权
     // initWX();
-};
-
-
-/**
- * 离开当前路由页面之前触发的方法(需要实例化路由拦截组件Prompt)
- * @param {*} message Prompt组件的提示信息
- * @param {*} callback 控制当前路由跳转或者不跳转
- */
-function getConfirmation(message, callback) {
-    // alert(message);
-    callback(true);
-    // callback(true) 表示离开当前路由
-    // callback(false) 表示留在当前路由
 };
 
 /**
@@ -81,7 +68,7 @@ export default function RouteComponent() {
     const basename = Router.name == "BrowserRouter" ? process.env.PUBLIC_PATH : "";
 
     return (
-        <Router basename={basename} getUserConfirmation={getConfirmation}>
+        <Router basename={basename}>
             <Switch>
                 {routes.map((item, index) => {
                     return <Route
@@ -96,7 +83,6 @@ export default function RouteComponent() {
                             } else {
                                 return (
                                     <React.Fragment>
-                                        <Prompt message={`是否确定离开当前路由？${location.href}`} />
                                         <item.component {...props} data={item}></item.component>
                                     </React.Fragment>
                                 );

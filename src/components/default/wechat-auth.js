@@ -1,7 +1,7 @@
 import { Toast } from "antd-mobile";
 import { getUrlQuery } from "@/utils/url";
 import { WECHAT_TOKEN } from "@/constants/account/index";
-import { myStorage } from "@/utils/cache.js";
+import { myStorage } from "@/utils/cache";
 import { handleRedirect } from "@/core/wx";
 
 /**

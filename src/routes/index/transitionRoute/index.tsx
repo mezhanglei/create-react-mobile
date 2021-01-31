@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 
 import {
     Route,
@@ -9,28 +9,42 @@ import {
 import './index.less';
 import { RouterConfig } from './RouteConfig';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
+import { Location, State } from "history";
 
-const DEFAULT_TRANSITION_CONFIG = {
+/**
+ * 过渡动画切换路由组件，注意切换的两个路由组件必须有同一个父元素
+ */
+export interface RouteConfigInterface {
+    path: string;
+    component: any;
+    animationConfig?: {
+        enter: string;
+        exit: string;
+    };
+    [propName: string]: any;
+}
+
+const DEFAULT_SCENE_CONFIG = {
     enter: 'from-right', // 新增时动画类名片段
     exit: 'to-exit' // 卸载时动画类名片段
 };
 
-const getTransitionConfig = location => {
+const getAnimationConfig = (location: Location<State>) => {
     const matchedRoute = RouterConfig.find(config => new RegExp(`^${config.path}$`).test(location.pathname));
-    return (matchedRoute && matchedRoute.transitionConfig) || DEFAULT_TRANSITION_CONFIG;
+    return (matchedRoute && matchedRoute.animationConfig) || DEFAULT_SCENE_CONFIG;
 };
 
-let oldLocation = null;
+let oldLocation: Location<State> | null = null;
 const Routes = withRouter(({ location, history }) => {
 
-    // 转场动画应该都是采用当前页面的transitionConfig，所以：
-    // push操作时，用新location匹配的路由的transitionConfig
-    // pop操作时，用旧location匹配的路由的transitionConfig
+    // 转场动画应该都是采用当前页面的animationConfig，所以：
+    // push操作时，用新location匹配的路由的animationConfig
+    // pop操作时，用旧location匹配的路由的animationConfig
     let classNames = '';
     if (history.action === 'PUSH') {
-        classNames = 'forward-' + getTransitionConfig(location).enter;
+        classNames = 'forward-' + getAnimationConfig(location).enter;
     } else if (history.action === 'POP' && oldLocation) {
-        classNames = 'back-' + getTransitionConfig(oldLocation).exit;
+        classNames = 'back-' + getAnimationConfig(oldLocation).exit;
     }
 
     // 更新旧location
@@ -44,11 +58,11 @@ const Routes = withRouter(({ location, history }) => {
             <CSSTransition
                 // in={ } // 切换开关
                 // classNames="" // 动画片段
-                timeout={1100} // 延时
+                timeout={500} // 延时
                 key={location.pathname}
             >
                 <Switch location={location}>
-                    {RouterConfig.map((config, index) => (
+                    {RouterConfig.map((config: RouteConfigInterface, index: number) => (
                         <Route exact key={index} {...config} />
                     ))}
                 </Switch>

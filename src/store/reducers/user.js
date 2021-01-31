@@ -6,7 +6,7 @@
  * }
  */
 
-import { loginOut } from '@/core/common.js';
+import { loginOut } from '@/core/common';
 import { USER_INFO } from "@/constants/account/index";
 // 用来持久化数据的方法
 import { mySession, myStorage } from "@/utils/cache";

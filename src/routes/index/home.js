@@ -2,8 +2,8 @@
 import TabNav from "@/components/tabnav/index";
 import loadable from "@/components/lazy";
 
-export const Home = loadable({ loader: () => import(/* webpackChunkName: "home" */ '@/pages/index/home/index.js') });
-export const HomeInfo = loadable({ loader: () => import(/* webpackChunkName: "home" */ '@/pages/index/home/info.js') });
+export const Home = loadable({ loader: () => import(/* webpackChunkName: "home" */ '@/pages/index/home/index') });
+export const HomeInfo = loadable({ loader: () => import(/* webpackChunkName: "home" */ '@/pages/index/home/info') });
 
 // 首页
 export const HomeRoutes = [
