@@ -87,7 +87,7 @@ const entries = (function () {
     // 遍历路径数组用正则匹配页面所在的文件名
     pages.map((item) => {
         // 页面所在目录名作为入口的键
-        obj[item.name] = [path.join(htmlPages, 'index.js'), path.join(htmlPages, item.name, 'index.js')];
+        obj[item.name] = [path.join(htmlPages, 'index'), path.join(htmlPages, item.name, 'index')];
     });
     return obj;
 })();
@@ -155,9 +155,9 @@ const devConfig = {
     // 是否使用stylelint true表示使用
     useStylelint: true,
     // eslint的配置文件路径
-    eslintPath: path.join(root, "./.stylelintrc.js"),
+    eslintPath: path.join(root, "./.stylelintrc.{js,ts}"),
     // stylelint的配置文件
-    stylelintPath: path.join(root, "./.stylelintrc.js"),
+    stylelintPath: path.join(root, "./.stylelintrc.{js,ts}"),
     // stylint的检查根目录
     checkStyleRoot: srcPath,
     // stylelint的检查匹配路径
@@ -177,7 +177,7 @@ const prodConfig = {
     // 如果启用css-treeshaking则设置目标文件
     treeShakingCssPath: globAll.sync([
         // 入口文件
-        path.join(root, "src/**/*.js"),
+        path.join(root, "src/**/*.{js,ts}"),
         // less文件
         path.join(root, "src/**/*.less")
     ]),

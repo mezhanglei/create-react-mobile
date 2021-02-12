@@ -14,7 +14,7 @@ import objectFitImages from 'object-fit-images';
 // 实例化一个节流类，自定义属性event-name="throttle"的标签上的click事件将被进行节流操作
 const event = new DefineEvent({
     eventName: "throttle",
-    eventFn: function (e) {
+    eventFn: function (e: MouseEvent | TouchEvent) {
         if (!this.timer) {
             this.timer = setTimeout(() => {
                 e.cancelBubble = false;

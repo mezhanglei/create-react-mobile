@@ -1,5 +1,5 @@
 import { getUrlQuery } from "@/utils/url";
-import { isInWeChat, isCompanyChat } from "@/utils/reg";
+import { isInWeChat, isCompanyChat } from "@/utils/verify";
 import { myStorage } from "@/utils/cache";
 import { WECHAT_TOKEN } from "@/constants/account/index";
 import { isEmpty } from "@/utils/type";

@@ -6,9 +6,6 @@ import store from "@/store/index";
 
 // 引入全局样式
 import "less/index.less";
-// 处理点击移动端事件
-import FastClick from "fastclick";
-FastClick.attach(document.body);
 ReactDOM.render(
     <Provider store={store}>
         <App />

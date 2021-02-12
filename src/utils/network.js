@@ -1,4 +1,4 @@
-// navigator.onLine可以获取初始状态。
+// navigator.onLine可以获取网络初始状态。
 // 监听html文档解析完成之后触发
 window.addEventListener("DOMContentLoaded", () => { });
 // 监听下线

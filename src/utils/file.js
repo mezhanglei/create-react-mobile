@@ -1,5 +1,5 @@
 import { setUrlQuery } from "./url";
-import { isURL } from "./reg";
+import { isURL } from "./verify";
 import { isBlob, isArrayBuffer } from "./type";
 
 // === 格式转换 ===

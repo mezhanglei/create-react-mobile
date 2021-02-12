@@ -1,12 +1,12 @@
 const prefixes = ['Moz', 'Webkit', 'O', 'ms'];
 
 // style属性添加前缀转换为-分隔的形式
-export function upperCamelToStyle(prop, prefix) {
+export function upperCamelToStyle(prop: string, prefix: string) {
     return prefix ? `-${prefix.toLowerCase()}-${prop}` : prop;
 }
 
 // 将style属性转换为驼峰
-function upperCamelCase(prop, prefix) {
+function upperCamelCase(prop: string, prefix: string) {
     let out = '';
     let shouldCapitalize = true;
     for (let i = 0; i < prop.length; i++) {
@@ -22,8 +22,8 @@ function upperCamelCase(prop, prefix) {
     return prefix ? `${prefix}${out}` : prop;
 }
 
-// 返回当前可使用的带前缀的驼峰命名式样式
-export function getPrefixStyle(prop = 'transform') {
+// 返回兼容样式（带兼容前缀的驼峰）
+export function getPrefixStyle(prop: string = 'transform') {
     if (typeof window === 'undefined' || typeof window.document === 'undefined') return '';
 
     // 根元素的样式

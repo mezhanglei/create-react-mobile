@@ -1,5 +1,5 @@
 import React from "react";
-import { HashRouter as Router, Route, Switch, Prompt, Redirect } from "react-router-dom";
+import { HashRouter as Router, Route, Switch, Prompt, Redirect, RouteProps } from "react-router-dom";
 // import { BrowserRouter as Router, Route, Switch, Prompt, Redirect } from "react-router-dom";
 import { Toast } from "antd-mobile";
 import { HomeRoutes, Home } from "./home";
@@ -15,14 +15,12 @@ import { isLogin } from "@/core/common";
 import { LOGIN_ROUTE } from "@/constants/account/index";
 import TransitionRoute from "@/routes/index/transitionRoute/index";
 
-/**
- * 页面路由配置
- * 必填参数说明：
- *  1.path: 路由
- *  2.component: 组件
- * 非必填参数说明：
- *  exact: 默认false， 为true时表示严格匹配，只有访问的路由和目标完全相等时才会被渲染
- */
+export interface MyRouteProps extends RouteProps {
+    auth?: boolean; // 是否需要权限验证
+    component: any; // 组件
+}
+
+// 路由配置
 const routes = [
     {
         path: "/",
@@ -43,26 +41,12 @@ const routes = [
 ];
 
 // 进入路由页面之前触发的方法
-function beforeRouter(props, item) {
+function beforeRouter(props, item: MyRouteProps) {
     // 微信授权
     // initWX();
-};
+}
 
-/**
- * 渲染路由组件(根据需要修改)
- * Router是所有路由组件共用的底层接口组件，它是路由规则制定的最外层的容器。
-   Route路由规则匹配，并显示当前的规则对应的组件。
-   Link路由跳转的组件
- * history路由模式Router的参数
- * 1.basename  类型string, 路由访问基准
- * 2.forceRefresh:bool true则表示导航时刷新页面.
- * 3.keyLength location.key的长度, 点击同一个链接时，每次该路由下的 location.key都会改变，可以通过key的变化来刷新页面(hash不支持)。
- * 4.children:node 要渲染的子元素。
- * Route的参数(可传函数或组件, 值为函数时都会接受所有由route传入的所有参数):
- * 1.component: 使用React.createElement创建组件, 每次更新和渲染都会重新创建新组件, 卸载旧组件, 挂载新组件
- * 2.render: 当路由的路径匹配时渲染对应的组件(推荐).
- * 3.children: 当children的值是一个函数时，无论当前地址和path路径匹不匹配，都将会执行children对应的函数
- */
+// 路由组件
 export default function RouteComponent() {
     // BrowserRouter时需要设置basename
     const basename = Router.name == "BrowserRouter" ? process.env.PUBLIC_PATH : "";
@@ -70,20 +54,19 @@ export default function RouteComponent() {
     return (
         <Router basename={basename}>
             <Switch>
-                {routes.map((item, index) => {
+                {routes.map((item: MyRouteProps, index) => {
                     return <Route
                         key={index}
-                        exact
+                        exact={item.exact}
                         path={item.path}
                         render={(props) => {
                             beforeRouter(props, item);
-                            // 登录验证
                             if (!isLogin() && item.auth) {
                                 return <Redirect to={{ pathname: LOGIN_ROUTE, state: { from: props.location } }} />;
                             } else {
                                 return (
                                     <React.Fragment>
-                                        <item.component {...props} data={item}></item.component>
+                                        <item.component key={item.path} {...props}></item.component>
                                     </React.Fragment>
                                 );
                             }
@@ -94,5 +77,5 @@ export default function RouteComponent() {
             <TransitionRoute />
         </Router>
     );
-};
+}
 

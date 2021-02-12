@@ -1,5 +1,5 @@
 import { loadScript } from "@/utils/script";
-import { isInWeChat, isIOS } from "@/utils/reg";
+import { isInWeChat, isIOS } from "@/utils/verify";
 
 /**
  * 在页面加载完毕后初始化：initWxShare()

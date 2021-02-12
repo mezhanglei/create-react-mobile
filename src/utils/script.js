@@ -1,5 +1,5 @@
 /**
- * script加载资源
+ * script加载资源后回调
  * @param {*} url 资源url
  * @param {*} callback 加载完后的回调
  */
@@ -9,7 +9,6 @@ export function loadScript(url, callback) {
     script.type = 'text/javascript';
     // IE
     if (script.readyState) {
-
         script.onreadystatechange = function () {
             if (script.readyState == 'loaded' || script.readyState == 'complete') {
                 script.onreadystatechange = null;

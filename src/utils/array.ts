@@ -2,16 +2,13 @@
 // 数组的一些方法
 import { isObject, isArray, isEmpty } from "./type";
 
-// 简单深拷贝
-const simpleClone = function (val) { return JSON.parse(JSON.stringify(val)); };
-
 /**
  * 数组排序(数据量在万以内采取这种) 数组元素支持Object和简单类型
  * @param {Array} data 数组
  * @param {String} attr 属性名，可选 数组元素为Object时设置
  * @param {bool} asc // 表示升序或降序，默认true升序
  */
-export function sortByAttr(data, attr, asc = true) {
+export function sortByAttr(data: any[], attr: string, asc: boolean = true): any[] {
     let arr = data;
     arr.sort(function (a, b) {
         if (!isObject(a) && !isObject(b)) {
@@ -31,7 +28,7 @@ export function sortByAttr(data, attr, asc = true) {
  * @param {Array} arr
  * @param {String} attr 属性名，可选, 数组元素为Object时设置
  */
-export function popSort(arr, attr) {
+export function popSort(arr: any[], attr: string): any[] {
     if (arr == null) return arr;
     for (var i = 0; i < arr.length - 1; i++) {
         for (var j = 0; j < arr.length - 1 - i; j++) {
@@ -59,7 +56,7 @@ export function popSort(arr, attr) {
  * @param {Array} arr
  * @param {String} attr 属性名，可选，数组元素为Object时设置
  */
-export const quickSort = function (arr, attr) {
+export const quickSort = (arr: any[], attr: string): any[] => {
     if (arr.length <= 1) {//如果数组长度小于等于1无需判断直接返回即可 
         return arr;
     }
@@ -94,16 +91,16 @@ export const quickSort = function (arr, attr) {
 /**
  * 一维数组转化为二维数组
  * @param {Array} array 一维数组
- * @param {Number} num 组成二维数组的元素包括几个一维数组
+ * @param {Number} unit 分割单位个数
  */
-export function singleToMultiple(array, num) {
+export function singleToMultiple(array: any[], unit: number): any[] {
     // 一维数组的个数
     const len = array && array.length;
     // 分成几份
-    const totalNum = len % num == 0 ? len / num : Math.floor(len / num + 1);
+    const totalNum = len % unit == 0 ? len / unit : Math.floor(len / unit + 1);
     let res = [];
     for (let i = 0; i < totalNum; i++) {
-        let temp = array.slice(i * num, i * num + num);
+        let temp = array.slice(i * unit, i * unit + unit);
         res.push(JSON.parse(JSON.stringify(temp)));
     }
     return res;
@@ -114,7 +111,7 @@ export function singleToMultiple(array, num) {
  * @param {*} list 多维数组
  * @param {*} res 返回的一维数组
  */
-export function flatten(list = [], res = []) {
+export function flatten(list: any[] = [], res: any[] = []): any[] {
 
     list.forEach((item) => {
         res.push(item);
@@ -129,42 +126,38 @@ export function flatten(list = [], res = []) {
 /**
  * 根据数组中的某个字段值，相同的嵌套在一起，不同的分开
  * @param {Array} array
- * @param {String} dependName 用来区分的字段名
- * @param {String} childName 嵌套的子元素字段名
- * @param {Array} otherName 数组一维需要添加的字段
+ * @param {Array} object {key: 依赖字段， extra: 额外的字段，childrenName：子元素的children名}
  */
-export function arrGroupByAtrr(array, { dependName = 'id', childName = 'children', otherName = [] } = {}) {
+export function arrGroupByAtrr(array: any[], { key, extra = [], childrenName = 'children' }: any = {}) {
     // 缓存内容，用来判断是否存在这个相同的类型
-    let newObj = {};
+    const cache: any = {};
     // 最终需要的数组格式
-    let newArr = [];
-    array &&
-        array.map((item) => {
-            // 如果是一条新数据则创建一条
-            if (isEmpty(newObj[item[dependName]])) {
-                // 组合嵌套完成的对象
-                let getObj = {};
-                // 添加区分字段
-                getObj[dependName] = item[dependName];
-                // 添加嵌套的子数组字段
-                getObj[childName] = [item];
-                // 添加需要的其他字段
-                otherName.map((str) => {
-                    getObj[str] = item[str];
-                });
-                // 将嵌套好的对象添加进新数组
-                newArr.push(getObj);
-                newObj[item[dependName]] = item;
-                // 如果已经存在同类型的则添加到同类型的对象下
-            } else {
-                newArr &&
-                    newArr.map((sub) => {
-                        if (sub[dependName] === item[dependName]) {
-                            sub[childName].push(item);
-                        }
-                    });
-            }
-        });
+    const newArr: any[] = [];
+    array?.map((item) => {
+        // 如果是一条新数据则创建一条
+        if (isEmpty(cache[item[key]])) {
+            // 组合嵌套完成的对象
+            let newObject: any = {};
+            // 添加区分字段
+            newObject[key] = item[key];
+            // 添加嵌套的子数组字段
+            newObject[childrenName] = [item];
+            // 添加需要的其他字段
+            extra.map((str: string) => {
+                newObject[str] = item[str];
+            });
+            // 将嵌套好的对象添加进新数组
+            newArr.push(newObject);
+            cache[item[key]] = item;
+            // 如果已经存在同类型的则添加到同类型的对象下
+        } else {
+            newArr?.map((sub) => {
+                if (sub[key] === item[key]) {
+                    sub[childrenName].push(item);
+                }
+            });
+        }
+    });
     return newArr;
 }
 
@@ -173,9 +166,9 @@ export function arrGroupByAtrr(array, { dependName = 'id', childName = 'children
  * @param {Array} arr 数组
  * @param {String} attr 属性名 可选，数组元素为Object时设置
  */
-export function unique(arr, attr) {
+export function unique(arr: any[], attr: string): any[] {
     const result = [];
-    const tagobj = {};
+    const tagobj: any = {};
     for (let item of arr) {
         if (!isObject(item)) {
             if (isEmpty(tagobj[item]) && !isEmpty(item)) {
@@ -198,13 +191,13 @@ export function unique(arr, attr) {
  * @param {Object} attrObj 需要替换的属性名和新属性名,格式: {旧字段: 新字段, 旧字段: 新字段}
  * @param {Object} children 如果有嵌套数组则指明嵌套的属性名字符串, 默认为children字符串
  */
-export function formaterData(data, attrObj = { label: 'key' }, children = 'children') {
+export function formaterData(data: any[], attrObj: any = { label: 'key' }, children = 'children'): any[] {
     if (!isObject(attrObj)) {
         return data;
     }
-    let newArr = [];
+    let newArr: any[] = [];
     data.map((item) => {
-        let newObj = {};
+        let newObj: any = {};
         // 遍历旧属性数组更改属性名
         const keys = Object.keys(attrObj);
         keys.map((key) => {
@@ -223,12 +216,12 @@ export function formaterData(data, attrObj = { label: 'key' }, children = 'child
  * 根据数字生成指定自然数数组
  * @param {*} len 数组长度
  */
-export function createArrayByLen(len) {
+export function createArrayByLen(len: number): number[] {
     return [...new Array(len).keys()];
 }
 
 // 获取js数组中字符串的最长公共前缀
-export function longCommonPrefix(strs) {
+export function longCommonPrefix(strs: any[]): string {
     if (strs.length == 0) {
         return "";
     }
@@ -274,7 +267,7 @@ export function longCommonPrefix(strs) {
  * @param {String} attr 可选，当数组元素为Object时需要指定attr属性名
  * @return {Array}           查询的结果
  */
-export function indexOfQuery(list, keyWord, attr) {
+export function indexOfQuery(list: any, keyWord: string, attr: string): any[] {
     let newList = list;
     let arr = [];
     for (let i = 0; i < newList.length; i++) {
@@ -298,7 +291,7 @@ export function indexOfQuery(list, keyWord, attr) {
  * @param {String} attr 可选，当数组元素为Object时需要指定attr属性名
  * @return {Array}           查询的结果
  */
-export function splitQuery(list, keyWord = "", attr) {
+export function splitQuery(list: any[], keyWord: string = "", attr: string): any[] {
     let newList = list;
     let arr = [];
     for (let i = 0; i < newList.length; i++) {
@@ -322,7 +315,7 @@ export function splitQuery(list, keyWord = "", attr) {
  * @param {String} attr 可选，当数组元素为Object时需要指定attr属性名
  * @return {Array}           查询的结果
  */
-export function regQuery(list, keyWord = "", attr) {
+export function regQuery(list: any[], keyWord = "", attr: string): any[] {
     let newList = list;
     const reg = new RegExp(keyWord);
     let arr = [];
@@ -346,7 +339,7 @@ export function regQuery(list, keyWord = "", attr) {
  * @param {*} arr1 
  * @param {*} arr2 
  */
-export function isAllMatch(arr1 = [], arr2 = []) {
+export function isAllMatch(arr1: any[] = [], arr2: any[] = []): boolean {
     let noMatched = arr1.some(item => (arr2.indexOf(item) < 0));
     return !noMatched;
 }
@@ -355,7 +348,7 @@ export function isAllMatch(arr1 = [], arr2 = []) {
  * 深度优先遍历非递归(先进后出的栈结构，有回溯行为，速度慢些)
  * @param {*} node 结点
  */
-export function deepTraversal(node) {
+export function deepTraversal(node: any): any[] {
     // 存储节点
     let cache = [];
     if (node != null) {
@@ -364,7 +357,7 @@ export function deepTraversal(node) {
         stack.push(node);
         while (stack.length !== 0) {
             // 删除栈
-            let item = stack.pop();
+            let item: any = stack.pop();
             cache.push(item);
             // 添加栈
             if (item.children) {
@@ -381,14 +374,14 @@ export function deepTraversal(node) {
  * 广度优先遍历树非递归（先进先出的队列结构，无回溯行为，但是需要内存空间，速度相对快）
  * @param {*} node 根节点
  */
-export function breadthFirstSearch(node) {
+export function breadthFirstSearch(node: any): any[] {
     // 存储节点
     let cache = [];
     if (node != null) {
         let queue = [];
         queue.unshift(node);
         while (queue.length != 0) {
-            let item = queue.shift();
+            let item: any = queue.shift();
             cache.push(item);
             const children = item.children;
             for (var i = 0; i < children.length; i++)
@@ -401,37 +394,79 @@ export function breadthFirstSearch(node) {
 /**
  * 返回目标节点的叶子节点(广度优先)
  * @param {*} node 根节点
- * @param {*} childrenKey 标识孩子的字段名
+ * @param {*} key 返回的节点字段属性
+ * @param {*} childrenName 标识孩子的字段名
  */
-export function findLeaves(node, key = 'id', childrenKey = 'children') {
+export function findLeaves(node: any, key = 'id', childrenName = 'children'): any[] {
     // 存储节点
-    let cache = [];
+    let cache: any[] = [];
     if (node != null) {
         let queue = [];
         queue.unshift(node);
         while (queue.length != 0) {
             let item = queue.shift();
-            if (item && !(item[childrenKey]?.length > 0)) {
+            if (item && !(item[childrenName]?.length > 0)) {
                 if (item[key]) {
                     cache = cache.concat([item[key]]);
                 }
             }
-            for (var i = 0; i < item[childrenKey]?.length; i++)
-                queue.push(item[childrenKey][i]);
+            for (var i = 0; i < item[childrenName]?.length; i++)
+                queue.push(item[childrenName][i]);
         }
     }
     return cache;
 }
 
 /**
+ * 返回根节点中的目标节点的路径
+ * @param key 搜索的目标字段key
+ * @param value 搜索的目标字段值
+ * @param rootNode 搜索节点树的根节点
+ */
+export const findPath = (key: string, value: any, rootNode: any): any[] | undefined => {
+
+    //定义变量保存当前结果路径
+    const path: any[] = [];
+
+    try {
+        const getNodePath = (node: any) => {
+            path.push(node[key]);
+            //找到符合条件的节点，通过throw终止掉递归
+            if (node[key] == value) {
+                throw ("ok");
+            }
+            if (node?.children && node?.children?.length > 0) {
+                for (var i = 0; i < node.children.length; i++) {
+                    getNodePath(node.children[i]);
+                }
+                //当前节点的子节点遍历完依旧没找到，则删除路径中的该节点
+                path.pop();
+            } else {
+                //找到叶子节点时，删除路径当中的该叶子节点
+                path.pop();
+            }
+        };
+
+        getNodePath(rootNode);
+    } catch (res) {
+        if (res === "ok") {
+            return path;
+        } else {
+            return [];
+        }
+    }
+};
+
+/**
  * 树列表中根据key值返回对应的节点(嵌套字段为children)
- * @param {*} key 查询的字段名key
+ * @param {*} key 查询的字段名
+ * @param {*} value 查询的字段值
  * @param {*} tree 树列表
  */
-export function getNode(key, value, tree = []) {
+export function getNode(key: string, value: any, tree = []): any {
     let ele;
     for (let i = 0; i < tree.length; i++) {
-        const node = tree[i];
+        const node: any = tree[i];
         if (node[key] === value) {
             ele = node;
         } else if (node?.children?.length) {
@@ -441,35 +476,9 @@ export function getNode(key, value, tree = []) {
     return ele;
 };
 
-
-/**
- * 根据id返回对应的节点路径，并赋值对应节点路径信息
- * @param {*} key 要查询的key
- * @param {*} value 要查询的key的值
- * @param {*} tree 树列表
- * @param {*} path 变量
- * @param {*} res 变量
- */
-export function findPath(key, value, tree = [], path = [], res) {
-    for (let i = 0; i < tree?.length; i++) {
-        const node = tree[i];
-        if (node) {
-            const current = [node[key]];
-            if (path?.length) {
-                node.path = path?.concat(current);
-            } else {
-                node.path = current;
-            }
-
-            if (node?.children?.length) {
-                // 下个节点返回的路径信息
-                res = findPath(key, value, node?.children, node.path);
-            }
-            if (node[key] == value) {
-                // 目标节点返回的路径信息
-                res = node.path;
-            }
-        }
+// 根据某个过滤函数，从遍历器中寻找到复合条件的值
+export function findInArray(array: any, callback: (value: any, i?: number, array?: any) => boolean): any {
+    for (let i = 0, length = array.length; i < length; i++) {
+        if (callback.apply(callback, [array[i], i, array])) return array[i];
     }
-    return res;
 }
