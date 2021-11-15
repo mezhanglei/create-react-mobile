@@ -243,7 +243,7 @@ module.exports = {
                 // mock数据环境
                 MOCK: process.env.MOCK,
                 // 资源引用的公共路径字符串
-                PUBLIC_PATH: JSON.stringify(config.publicPath || '/'),
+                PUBLIC_PATH: JSON.stringify(configs.publicPath || '/'),
             }
         }),
         // 将目标目录里的文件直接拷贝到输出dist目录

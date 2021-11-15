@@ -282,7 +282,7 @@ const webpackConfig = {
                 // mock数据环境
                 MOCK: process.env.MOCK,
                 // 资源引用的公共路径字符串
-                PUBLIC_PATH: JSON.stringify(config.publicPath || '/'),
+                PUBLIC_PATH: JSON.stringify(configs.publicPath || '/'),
             }
         }),
         // 清理dsit目录
