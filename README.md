@@ -1,8 +1,8 @@
-# react-mobile脚手架(持续更新，喜欢可以交流点赞)
+# react-mobile脚手架
 
 ## 项目安装和依赖说明
 ```
-说明：基于webpack4.x + react16.12 + redux + react-redux + redux-thunk + ant-design-mobile等的h5开发脚手架,支持typescript
+说明：基于webpack4.x + react16.12 + redux + react-redux + dva-core + ant-design-mobile等的h5开发脚手架,支持typescript
 依赖：下载项目后在项目根目录运行命令：
       1. 设置依赖镜像源：
          如果镜像源为国内淘宝镜像https://registry.npm.taobao.org,则:
