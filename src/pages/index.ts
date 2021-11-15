@@ -9,17 +9,17 @@
 //     });
 // }
 
-import DefineEvent from "@/utils/event";
+import ClickListen from "@/utils/listen-click";
 import objectFitImages from 'object-fit-images';
-// 实例化一个节流类，自定义属性event-name="throttle"的标签上的click事件将被进行节流操作
-const event = new DefineEvent({
-    eventName: "throttle",
-    eventFn: function (e: MouseEvent | TouchEvent) {
+// 实例化一个节流类，在标签上有自定属性name的标签的click事件将被进行节流操作
+const event = new ClickListen({
+    name: "event-name=throttle",
+    callback: function (e) {
         if (!this.timer) {
             this.timer = setTimeout(() => {
                 e.cancelBubble = false;
                 this.timer = null;
-            }, 500);
+            }, 5000);
         } else {
             e.cancelBubble = true;
         }

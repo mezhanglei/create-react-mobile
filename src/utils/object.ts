@@ -1,38 +1,20 @@
 
 import { isObject, isArray } from "./type";
+
 /**
- * 完全深拷贝
- * @param {*} copyObj 目标对象或数组
- * JSON.parse(JSON.stringify(obj))的缺陷：
- * 1.如果obj里面有时间对象，转化后只能是字符串形式
- * 2.如果obj里有RegExp、Error对象，则序列化的结果将只得到空对象
- * 3.如果obj里有函数，undefined，则序列化的函数和undefined会丢失
- * 4.如果obj里有NaN、Infinity和-Infinity，则序列化的结果会变成nul
- * 5.JSON.stringify()只能序列化对象的可枚举的自有属性
- * 6.如果对象中存在循环引用的情况也无法正确实现深拷贝
- * 所以上述情况下是不适合使用JSON.parse(JSON.stringify())这种方式实现深拷贝的，但除了上述情况，建议使用JSON.parse(JSON.stringify())
+ * 深度克隆拷贝
+ * @param obj 
  */
-export function deepClone(copyObj: any) {
-    let obj: any;
-    if (isArray(copyObj)) {
-        obj = [];
-    } else if (isObject(copyObj)) {
-        obj = {};
-    } else {
-        //不再具有下一层次
-        return copyObj;
+ export const deepClone = (obj: any) => {
+    let clone = obj;
+    if (obj && typeof obj === "object") {
+        clone = new obj.constructor();
+        Object.getOwnPropertyNames(obj).forEach(
+            prop => (clone[prop] = deepClone(obj[prop]))
+        );
     }
-    if (isArray(copyObj)) {
-        for (let i = 0, len = copyObj.length; i < len; i++) {
-            obj.push(deepClone(copyObj[i]));
-        }
-    } else if (isObject(copyObj)) {
-        for (let key in copyObj) {
-            obj[key] = deepClone(copyObj[key]);
-        }
-    }
-    return obj;
-}
+    return clone;
+};
 
 // 判断两个对象(包括数组)是否相等
 export function isObjectEqual(a: any, b: any) {
@@ -80,3 +62,20 @@ export function objectToFormData(obj: any, formData: FormData) {
     }
     return fd;
 }
+
+// 过滤对象
+export function filterObject(obj: object | undefined | null, callback: (value: any, key?: string) => boolean): any {
+    if(obj === undefined || obj === null) return obj;
+    const entries = Object.entries(obj)?.filter((item) => (callback(item[1], item[0])));
+    return Object.fromEntries(entries);
+}
+
+// 根据路径获取目标对象中的值
+export function deepGet(obj: object, keys: string | string[], defaultVal?: any): any {
+    return (
+      (!Array.isArray(keys)
+        ? keys.replace(/\[/g, '.').replace(/\]/g, '').split('.')
+         : keys
+      ).reduce((o, k) => (o || {})[k], obj) || defaultVal
+    );
+  }

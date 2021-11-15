@@ -50,28 +50,6 @@ const baseConfig = {
     babelPath: path.join(root, './.babelrc')
 };
 
-
-// script引入的公共js文件
-const commonJs = [
-    // 预编译文件
-    // publicPath + 'static/dll/base_dll.js'
-];
-// link引入的公共css文件
-const commonCSS = [
-    // publicPath + `static/fonts/iconfont.css?time=${new Date().getTime()}`
-];
-
-// 项目全局自定义变量
-const globalDefine = {
-    'process.env': {
-        // NODE_ENV: process.env.NODE_ENV,
-        // mock数据环境
-        MOCK: process.env.MOCK,
-        // 资源引用的公共路径字符串
-        PUBLIC_PATH: JSON.stringify(publicPath || '/'),
-    }
-};
-
 // 页面配置信息
 const pages = [
     // name: src/pages下的页面目录名, 数组的第一个项为启动页，index目录不建议改名，其他目录可以任意命名
@@ -141,8 +119,13 @@ const htmlConfigs = (function () {
             // hash: false,
             // 错误详细信息将写入html
             // showErrors: true,
-            commonJs: commonJs,
-            commonCSS: commonCSS
+            commonJs: [
+                // 预编译文件
+                // publicPath + 'static/dll/base_dll.js'
+            ],
+            commonCSS: [
+                // publicPath + `static/fonts/iconfont.css?time=${new Date().getTime()}`
+            ]
         };
     });
     return pluginConfigs;
@@ -194,7 +177,6 @@ const dllConfig = {
 // 合并为一个对象输出
 module.exports = {
     entries,
-    globalDefine,
     htmlConfigs,
     root,
     srcPath,

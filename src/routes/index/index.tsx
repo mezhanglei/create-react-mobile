@@ -2,18 +2,14 @@ import React from "react";
 import { HashRouter as Router, Route, Switch, Prompt, Redirect, RouteProps } from "react-router-dom";
 // import { BrowserRouter as Router, Route, Switch, Prompt, Redirect } from "react-router-dom";
 import { Toast } from "antd-mobile";
-import { HomeRoutes, Home } from "./home";
-import { CategoryRoutes } from "./category";
-import { CartRoutes } from "./cart";
-import { PersonalRoutes } from "./personal";
 import NotFound from "@/components/default/not-found";
 import { DefaultRoutes } from "./default";
 import { initWX } from "@/core/wx";
-import TabNav from "@/components/tabnav/index";
 import { myStorage } from "@/utils/cache";
 import { isLogin } from "@/core/common";
 import { LOGIN_ROUTE } from "@/constants/account/index";
 import TransitionRoute from "@/routes/index/transitionRoute/index";
+import { DemoRoutes, Demo1 } from "./demo";
 
 export interface MyRouteProps extends RouteProps {
     auth?: boolean; // 是否需要权限验证
@@ -24,18 +20,15 @@ export interface MyRouteProps extends RouteProps {
 const routes = [
     {
         path: "/",
-        component: TabNav(Home),
+        component: Demo1,
         // 路由为/时必须设置exact为true
         exact: true
     },
-    ...HomeRoutes,
-    ...CategoryRoutes,
-    ...CartRoutes,
-    ...PersonalRoutes,
+    ...DemoRoutes,
     ...DefaultRoutes,
     // {
     //     path: '*',
-    //     component: TabNav(NotFound),
+    //     component: NotFound,
     //     auth: true
     // }
 ];

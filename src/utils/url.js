@@ -5,6 +5,7 @@
  */
 export function setUrlQuery(query, url = location.href) {
     if (!url) return "";
+    url = url?.lastIndexOf('&') === url?.length - 1 ? url.substring(0, url?.length - 1) : url;
     if (query) {
         let queryArr = [];
         for (const key in query) {

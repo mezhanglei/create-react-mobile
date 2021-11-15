@@ -276,7 +276,15 @@ const webpackConfig = {
         // 如果加载的模块没有使用，则不会被打包
         new webpack.ProvidePlugin(configs.providePlugin),
         // 设置项目的全局变量,String类型, 如果值是个字符串会被当成一个代码片段来使用, 如果不是,它会被转化为字符串(包括函数)
-        new webpack.DefinePlugin(configs.globalDefine),
+        new webpack.DefinePlugin({
+            'process.env': {
+                // NODE_ENV: process.env.NODE_ENV,
+                // mock数据环境
+                MOCK: process.env.MOCK,
+                // 资源引用的公共路径字符串
+                PUBLIC_PATH: JSON.stringify(config.publicPath || '/'),
+            }
+        }),
         // 清理dsit目录
         new CleanWebpackPlugin(),
         // 统计信息提示插件(比如错误或者警告会用带颜色的字体来显示,更加友好)

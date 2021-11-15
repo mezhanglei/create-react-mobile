@@ -78,8 +78,6 @@
     |   |   |   |-- row.less
     |   |   |-- sticky
     |   |   |   |-- index.js
-    |   |   |-- tabnav
-    |   |   |   |-- index.js
     |   |   |-- tost
     |   |       |-- index.js
     |   |       |-- component

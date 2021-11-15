@@ -1,6 +1,8 @@
 
 // 数组的一些方法
 import { isObject, isArray, isEmpty } from "./type";
+import produce from "immer";
+import { isObjectEqual } from "./object";
 
 /**
  * 数组排序(数据量在万以内采取这种) 数组元素支持Object和简单类型
@@ -261,86 +263,17 @@ export function longCommonPrefix(strs: any[]): string {
 };
 
 /**
- * 使用indexof方法实现模糊查询  数组元素支持Object和简单数据类型
- * @param  {Array}  list     数组
- * @param  {String} keyWord  查询的关键词
- * @param {String} attr 可选，当数组元素为Object时需要指定attr属性名
- * @return {Array}           查询的结果
- */
-export function indexOfQuery(list: any, keyWord: string, attr: string): any[] {
-    let newList = list;
-    let arr = [];
-    for (let i = 0; i < newList.length; i++) {
-        if (!isObject(newList[i])) {
-            if (newList[i]?.toString().indexOf(keyWord) > -1) {
-                arr.push(newList[i]);
-            }
-        } else {
-            if (newList[i][attr]?.toString().indexOf(keyWord) > -1) {
-                arr.push(newList[i]);
-            }
-        }
-    }
-    return arr;
-}
-
-/**
- * 使用spilt方法实现模糊查询 数组元素支持Object和简单数据类型
- * @param  {Array}  list     进行查询的数组
- * @param  {String} keyWord  查询的关键词
- * @param {String} attr 可选，当数组元素为Object时需要指定attr属性名
- * @return {Array}           查询的结果
- */
-export function splitQuery(list: any[], keyWord: string = "", attr: string): any[] {
-    let newList = list;
-    let arr = [];
-    for (let i = 0; i < newList.length; i++) {
-        if (!isObject(newList[i])) {
-            if (newList[i]?.toString().split(keyWord).length > 1) {
-                arr.push(newList[i]);
-            }
-        } else {
-            if (newList[i][attr]?.toString().split(keyWord).length > 1) {
-                arr.push(newList[i]);
-            }
-        }
-    }
-    return arr;
-}
-
-/**
- * 使用test方法实现模糊查询(推荐，可以给正则添加i规则来决定是否区分大小写) 数组元素支持Object和简单数据类型
- * @param  {Array}  list     原数组
- * @param  {String} keyWord  查询的关键词
- * @param {String} attr 可选，当数组元素为Object时需要指定attr属性名
- * @return {Array}           查询的结果
- */
-export function regQuery(list: any[], keyWord = "", attr: string): any[] {
-    let newList = list;
-    const reg = new RegExp(keyWord);
-    let arr = [];
-    for (let i = 0; i < newList.length; i++) {
-        if (!isObject(newList[i])) {
-            if (reg.test(newList[i])) {
-                arr.push(newList[i]);
-            }
-        } else {
-            if (reg.test(newList[i][attr])) {
-                arr.push(newList[i]);
-            }
-
-        }
-    }
-    return arr;
-}
-
-/**
  * 判断两个数组是否具有数量和内容相同的元素(忽略顺序)
  * @param {*} arr1 
  * @param {*} arr2 
+ * @param {*} condition 判断相等的条件
  */
-export function isAllMatch(arr1: any[] = [], arr2: any[] = []): boolean {
-    let noMatched = arr1.some(item => (arr2.indexOf(item) < 0));
+export function isArrSame(arr1: any, arr2: any, condition: (item1: any, item2: any) => boolean): boolean {
+    if (!(arr1 instanceof Array) || !(arr2 instanceof Array)) {
+        return false;
+    }
+    if (arr1?.length !== arr2?.length) return false;
+    let noMatched = arr1?.some(item1 => !arr2?.some(item2 => condition(item2, item1)));
     return !noMatched;
 }
 
@@ -477,8 +410,73 @@ export function getNode(key: string, value: any, tree = []): any {
 };
 
 // 根据某个过滤函数，从遍历器中寻找到复合条件的值
-export function findInArray(array: any, callback: (value: any, i?: number, array?: any) => boolean): any {
-    for (let i = 0, length = array.length; i < length; i++) {
+export function findInArray(array: any, callback: (value: any, i?: number, array?: any) => boolean | undefined): any {
+    for (let i = 0, length = array?.length; i < length; i++) {
         if (callback.apply(callback, [array[i], i, array])) return array[i];
     }
+}
+
+// 转化对象数组为map数据
+export const getArrMap = (arr: any[] = [], valueKey?: string, labelKey?: string) => {
+    const data = {};
+    arr.forEach((item, index) => data[valueKey ? item[valueKey] : index] = labelKey ? item[labelKey] : item);
+    return data;
+};
+
+
+// 两个元素交换位置		
+export const changeLocation = (arr: any[], index1: number, index2: number) => {
+    arr[index1] = arr.splice(index2, 1, arr[index1])[0];
+    return arr;
+}
+
+// 根据条件合并两个对象数组
+export const combinedArr = (arr1: object[], arr2: object[], condition: (next: object, cur: object, nextIndex: number, curIndex: number) => boolean) => {
+    const ret: any[] = [];
+    arr2?.reduce((combined: object[], cur, curIndex) => {
+        let target = combined?.find((next, nextIndex) => condition(next, cur, nextIndex, curIndex));
+        if (target) {
+            target = { ...target, ...cur };
+            ret?.push(target)
+        } else {
+            ret?.push(cur);
+        }
+        return combined;
+    }, arr1)
+    return ret;
+}
+
+// 更新对象数组中指定项的值
+export const updateArrItem = (arr: any[], itemData: any, condition: (item: any, index?: number) => boolean) => {
+    const newArr = produce(arr, draft => {
+        if (draft && itemData) {
+            const index = draft?.findIndex((item, index) => condition(item, index));
+            if (isObject(itemData)) {
+                Object.keys(itemData)?.map((key) => {
+                    draft[index][key] = itemData[key];
+                })
+            } else {
+                draft[index] = itemData;
+            }
+        }
+    });
+    return newArr;
+}
+
+export const arrayMove = (arr: any[], preIndex: number, nextIndex: number) => {
+    //如果当前元素在拖动目标位置的下方，先将当前元素从数组拿出，数组长度-1，我们直接给数组拖动目标位置的地方新增一个和当前元素值一样的元素，
+    //我们再把数组之前的那个拖动的元素删除掉，所以要len+1
+    const newArr = produce(arr, draft => {
+        if (preIndex > nextIndex) {
+            draft.splice(nextIndex, 0, arr[preIndex]);
+            draft.splice(preIndex + 1, 1)
+        }
+        else if (preIndex < nextIndex) {
+            //如果当前元素在拖动目标位置的上方，先将当前元素从数组拿出，数组长度-1，我们直接给数组拖动目标位置+1的地方新增一个和当前元素值一样的元素，
+            //这时，数组len不变，我们再把数组之前的那个拖动的元素删除掉，下标还是index
+            draft.splice(nextIndex + 1, 0, arr[preIndex]);
+            draft.splice(preIndex, 1)
+        }
+    })
+    return newArr;
 }

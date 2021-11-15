@@ -26,7 +26,7 @@ export function isArray(data: any) {
 }
 
 export function isDate(data: any) {
-    return getType(data) == '[object Date]';
+    return data instanceof Date;
 }
 
 export function isRegExp(data: any) {
@@ -62,7 +62,7 @@ export function isNodeList(data: any) {
 }
 
 // 判断值是否为空
-export function isEmpty(value: any) {
+export function isEmpty(value: unknown) {
     if (Array.isArray(value)
         || typeof value === 'string'
         || value instanceof String
@@ -77,7 +77,8 @@ export function isEmpty(value: any) {
     if (({}).toString.call(value) === '[object Object]') {
         return Object.keys(value).length === 0;
     }
-    return false;
+
+    return value === undefined || value === null;
 }
 
 export function isArrayBuffer(data: any) {

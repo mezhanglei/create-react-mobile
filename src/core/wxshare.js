@@ -6,10 +6,11 @@ import { isInWeChat, isIOS } from "@/utils/verify";
  * 注意: ios下当使用history，hash路由跳转时，分享的链接不为当前页面链接，window.location.href跳转的链接则不会有这个问题
  */
 export function initWxShare() {
-    loadScript("http://res.wx.qq.com/open/js/jweixin-1.4.0.js", function (data = {}) {
+    loadScript("http://res.wx.qq.com/open/js/jweixin-1.4.0.js", function () {
         if (!isInWeChat()) {
             return;
         }
+        const data = {};
         // 签名配置，不同的url需要不同的签名
         wx.config({
             debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
