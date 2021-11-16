@@ -17,7 +17,7 @@ export function endLoading() {
     Loader.end();
 }
 
-// axios取消请求（具有副作用）
+// axios取消重复请求（具有副作用）
 export function AxiosCancel() {
     // 声明一个数组用于存储每个ajax请求的取消函数和ajax标识
     let pending: CancelPending[] = [];
@@ -29,12 +29,19 @@ export function AxiosCancel() {
                 pending.push({ key: config.url + '&' + config.method, cancel: cancel });
             });
         },
-        remove: (config: CustomConfig) => {
+        cancel: (config: CustomConfig) => {
             const index = pending?.findIndex((item) => item.key === config.url + '&' + config.method)
             const pend = pending[index]
             if (pend) {
                 pend.cancel(); // 执行取消操作
                 pending.splice(index, 1); //把这条记录从数组中移除
+            }
+        },
+        remove: (config: CustomConfig) => {
+            const index = pending?.findIndex((item) => item.key === config.url + '&' + config.method)
+            const pend = pending[index]
+            if (pend) {
+                pending.splice(index, 1);
             }
         }
     }
@@ -102,7 +109,7 @@ http.interceptors.request.use(
 
         startLoading();
         if(config.unique) {
-            axiosCancel.remove(config); // 重复的请求取消掉
+            axiosCancel.cancel(config); // 重复的请求取消掉
             axiosCancel.add(config); // 添加请求
         }
         return config;
@@ -129,11 +136,8 @@ http.interceptors.response.use(
             resultError(code, msg);
         }
 
-         // 在一个ajax响应后再执行一下取消操作，把已经完成的请求从pending中移除
-        if(response.config.unique) {
-            axiosCancel.remove(response.config)
-        }
-        
+        axiosCancel.remove(response.config)
+
         return result;
     },
     (error) => {

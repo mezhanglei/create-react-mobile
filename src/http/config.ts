@@ -55,8 +55,8 @@ export interface CancelPending {
 }
 // axios config
 export interface CustomConfig extends AxiosRequestConfig {
-    noTrim?: boolean
-    unique?: boolean
+    noTrim?: boolean // 去除空格
+    unique?: boolean // 去除重复请求
 }
 
 export type ReuestInstance = { [key: string]: AxiosInstance }
