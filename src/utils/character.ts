@@ -185,26 +185,16 @@ export const DecimalToOther = (number: number, base: number) => {
     return baseString;
 };
 
-// 首字母排序
-export function pinyinSort(stringArr: string[], maxLength = 6) {
+// 拼音排序
+export interface PinyinItem {
+    text: string
+    letter: string
+    pinyin: string
+}
+export function pinyinSort(stringArr: string[], asc: boolean = true) {
 
-    // 按照指定长度补全，然后将36进制字符串转成十进制比较大小
-    const pinyinToNum = (pinyinArr: string[]) => {
-        let value = '';
-        const string = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        pinyinArr?.forEach((char) => {
-            if (char) {
-                const firstLetter = char?.[0]?.toUpperCase() || '';
-                const str = string?.indexOf(firstLetter) > -1 ? firstLetter : '';
-                value += str;
-            }
-        });
-  
-        const newValue = value.padEnd(maxLength, '0');
-        return OtherToDecimal(newValue, 36);
-    };
-
-    const dataMap = {};
+    // 字符串转化成带拼音的数组
+    const listWithPinyin = [];
     for (let i = 0; i < stringArr.length; i++) {
         const text = stringArr[i];
         const pinyinStr = Pinyin.getSpell(text, (charactor, spell) => {
@@ -212,33 +202,37 @@ export function pinyinSort(stringArr: string[], maxLength = 6) {
         });
         const pinyinArr = pinyinStr.split(',');
         const pinyin = pinyinArr.join('');
-        const key = pinyin?.[0]?.toUpperCase();
-        if (dataMap[key]) {
-            const value = dataMap[key];
-            const addValue = { text, pinyin, pinyinNum: pinyinToNum(pinyinArr) };
-            value?.push(addValue);
-            dataMap[key] = value;
-        } else {
-            dataMap[key] = [{ text, pinyin, pinyinNum: pinyinToNum(pinyinArr) }];
+        const letter = pinyin?.[0]?.toUpperCase();
+        const item = { text, letter, pinyin }
+        listWithPinyin?.push(item);
+    }
+
+    // 比较拼音之间谁的序号排在前面
+    const compare = (a: string, b: string) => {
+        const sortStr = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const maxLength = Math.max(a?.length, b?.length);
+        for (let i = 0; i < maxLength; i++) {
+            const aChar = a[i]?.toUpperCase();
+            const bChar = b[i]?.toUpperCase();
+            const aCharIndex = sortStr.indexOf(aChar)
+            const bCharIndex = sortStr.indexOf(bChar)
+
+            if (aCharIndex < bCharIndex) {
+                return true;
+            } else if (aCharIndex > bCharIndex) {
+                return false;
+            }
         }
     }
 
-    const ret = [] as { key: string, value: { text: string, pinyin: string, pinyinNum: number }[] }[];
-    const letters = '*ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
-    for (let i = 1; i < letters.length; i++) {
-        const value = dataMap[letters[i]];
-        if (value) {
-            const obj = new Object() as { key: string, value: { text: string, pinyin: string, pinyinNum: number }[] };
-            obj.key = letters[i];
-            const sortValue = value?.sort((a, b) => {
-                return (a?.pinyinNum - b?.pinyinNum);
-            });
-            obj.value = sortValue;
-            ret.push(obj);
-        }
-    }
-    return ret;
+    const sortList = listWithPinyin?.sort((a, b) => {
+        return compare(a.pinyin, b.pinyin) && asc ? -1 : 1
+    });
+
+    return sortList;
 }
+
+
 
 // 针对目标字符串，返回匹配的值替换成着重红色字体，支持关键字空格分词
 export const matchChar = (content: string, keyWords?: string) => {
