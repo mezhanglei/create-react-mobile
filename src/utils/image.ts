@@ -46,5 +46,5 @@ export function pressImg(param: PressImg): Promise<{data: string} | null> {
                 };
             }
         });
-    })
+    });
 }

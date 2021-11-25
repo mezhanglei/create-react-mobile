@@ -8,6 +8,7 @@ const globAll = require("glob-all");
 // 1. path.join('字段1','字段2'....) 使用平台特定的分隔符把所有的片段链接生成相对路径,遇到..和../时会进行相对路径计算
 // 2. path.resolve('字段1','字段2'....) 从右到左拼接路径片段,返回一个相对于当前工作目录的绝对路径,当遇到/时表示根路径,遇到../表示上一个目录, 如果还不是完整路径则自动添加当前绝对路径
 const path = require("path");
+const versionShell = require('./version.js');
 
 // 整个项目的根目录
 const root = path.join(__dirname, '..');
@@ -23,6 +24,8 @@ const outputPath = path.join(root, "dist");
 const dllOutputPath = path.join(staticPath, 'dll');
 // 单/多页面的入口所在目录
 const htmlPages = path.join(srcPath, 'pages');
+// 版本信息
+const versionInfo = versionShell.getBranchVersionInfo();
 // 资源访问的公共绝对路径, 并且访问路由会加上对应的路径字符串， 默认为/不能为空(格式如: /publicPath/)
 const publicPath = '/';
 

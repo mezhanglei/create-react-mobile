@@ -35,7 +35,7 @@ export const findSiblingsElement = (target: HTMLElement, containOwner?: boolean)
  * @param {*} ele 元素
  * @param {*} target 指定的定位父元素
  */
-export function getElementXY(ele: HTMLElement, parent: HTMLElement): { x: number, y: number } | undefined {
+export function getAbsolute(ele: HTMLElement, parent: HTMLElement): { x: number, y: number } | undefined {
 
     if (isDom(ele) || !isContains(parent, ele)) {
         return;
@@ -265,17 +265,18 @@ export function getInsidePosition(el: HTMLElement, parent: HTMLElement = documen
 } {
     let pos = null;
     if (isDom(el)) {
-        const nodeW = getOffsetWH(el)?.width || 0;
-        const nodeH = getOffsetWH(el)?.height || 0;
+        const nodeOffset = getOffsetWH(el);
+        if (!nodeOffset) return null;
+        const parentBorderWidth = parseFloat(getComputedStyle(parent)?.borderLeftWidth);
 
-        const top = getRect(el).top - getRect(parent).top;
-        const left = getRect(el).left - getRect(parent).left;
+        const top = getRect(el).top - getRect(parent).top - parentBorderWidth;
+        const left = getRect(el).left - getRect(parent).left - parentBorderWidth;
 
         return {
             left,
             top,
-            right: left + nodeW,
-            bottom: top + nodeH
+            right: left + nodeOffset?.width,
+            bottom: top + nodeOffset?.height
         }
     }
     return pos;
