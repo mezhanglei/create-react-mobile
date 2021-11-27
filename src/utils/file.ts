@@ -1,7 +1,6 @@
 import { setUrlQuery } from "./url";
 import { isBlob, isArrayBuffer } from "./type";
 import { findElement } from "./dom";
-import { saveAs } from 'file-saver';
 
 // === 格式转换 ===
 
@@ -35,79 +34,63 @@ export const FileAndMIME = {
     ".ppsm": "application/vnd.ms-powerpoint.slideshow.macroEnabled.12"
 };
 
-/**
- * base64编码的dataURL转化为Blob不可变二进制数据
- * @param {String} dataURL base64编码的dataURL字符串,格式比如 data:image/png;base64,经过base64编码的字符串
- * @result {Object} 返回值为Blob对象
- */
-export function dataURLtoBlob(dataURL: string) {
-    //获取MIME类型
-    let mime = dataURL.split(',')[0].split(':')[1].split(';')[0];
-    //对经过base64编码的数据进行解码
-    let byteString = window.atob(dataURL.split(',')[1]);
-    // 创建内存
-    let arrayBuffer = new ArrayBuffer(byteString.length);
-    // 生成内存的视图，通过TypeArray对象操作二进制
-    let typeArray = new Uint8Array(arrayBuffer);
-    // 遍历二进制数据通过typeArray对象将数据存储到arrayBuffer对象中
-    for (let i = 0; i < byteString.length; i++) {
-        typeArray[i] = byteString.charCodeAt(i);
+// base64转Arraybuffer
+export function base64ToArrayBuffer(data: string) {
+    if (!data) return;
+    const stringBase64 = data.split(',')[1];
+    // 解码
+    let byteString;
+    if (typeof window !== 'undefined') {
+        byteString = window.atob(stringBase64);
+    } else {
+        // arrayBuffer视图
+        byteString = new Buffer(stringBase64, 'base64').toString('binary');
     }
-    // 生成blob数据
-    return new Blob([typeArray], { type: mime });
+    // 生成内存的视图，通过TypeArray对象操作二进制
+    const len = byteString.length;
+    const bytes = new Uint8Array(len);
+    // 遍历二进制数据通过typeArray对象将数据存储到arrayBuffer对象中
+    for (let i = 0; i < len; i++) {
+        bytes[i] = byteString.charCodeAt(i);
+    }
+    return bytes.buffer;
+};
+
+// base64转Blob
+export function base64ToBlob(data: string) {
+    if (!data) return;
+    const arrayBuffer = base64ToArrayBuffer(data);
+    //获取MIME类型
+    const mime = data.split(',')[0].split(':')[1].split(';')[0];
+    if (arrayBuffer) {
+        return new Blob([arrayBuffer], { type: mime });
+    }
 }
 
-/**
- * base64编码的dataURL转化为file二进制类型
- * @param {String} dataURL base64编码的dataURL字符串,格式比如 data:image/png;base64,经过base64编码的字符串
- * @param {String} fileName 文件流的名称
- * @result {Object} 返回值为File对象
- */
-export function dataURLtoFile(dataURL: string, fileName: string) {
-    const newFileName = fileName;
+// base64转File
+export function base64ToFile(data: string, filename: string) {
+    if (!data) return;
+    const arrayBuffer = base64ToArrayBuffer(data);
     //获取MIME类型
-    let mime = dataURL.split(',')[0].split(':')[1].split(';')[0];
-    //对经过base64编码的数据进行解码
-    let byteString = window.atob(dataURL.split(',')[1]);
-    // 创建内存
-    let arrayBuffer = new ArrayBuffer(byteString.length);
-    // 生成内存的视图，通过TypeArray对象操作二进制
-    let typeArray = new Uint8Array(arrayBuffer);
-    // 遍历二进制数据通过typeArray对象将数据存储到arrayBuffer对象中
-    for (let i = 0; i < byteString.length; i++) {
-        typeArray[i] = byteString.charCodeAt(i);
+    const mime = data.split(',')[0].split(':')[1].split(';')[0];
+    if (arrayBuffer) {
+        return new File([arrayBuffer], filename, { type: mime });
     }
-    // 生成file数据
-    return new File([typeArray], newFileName, { type: mime });
 }
 
-/**
- * 将binary(二进制)数据转化为base64编码的DataURL字符串
- * @param {Object} data Blob类型或file类型的数据
- * @param {Function} fn 回调函数
- */
-export function binaryToDataURL(data: Blob | File, fn: (dataURL: string | null) => void) {
-    if (window.FileReader) {
-        const file = new FileReader();
-        //如果data为空返回null
-        if (data == undefined) return fn(null);
-        file.onload = function (e) {
-            fn(e.target.result);
+// blob转base64
+export function blobToBase64(data: Blob): Promise<string> {
+    return new Promise((resolve, reject) => {
+        const fileReader = new FileReader();
+        fileReader.onload = (e) => {
+            resolve(<string>e?.target?.result);
         };
-        file.readAsDataURL(data);
-    }
-}
-
-/**
- * binary(二进制数据)转file
- * @param {*} data blob或arrayBuffer数据
- */
-export function binaryToFile(data: ArrayBuffer | Blob, filename: string, contentType: string) {
-    if (!isArrayBuffer(data) && !isBlob(data)) {
-        console.error("arraybuffer or blob type is required");
-        return;
-    }
-    return new File([data], filename, { type: contentType, lastModified: Date.now() });
+        // readAsDataURL
+        fileReader.readAsDataURL(data);
+        fileReader.onerror = () => {
+            reject(new Error('blobToBase64 error'));
+        };
+    });
 }
 
 /**
@@ -117,15 +100,12 @@ export function binaryToFile(data: ArrayBuffer | Blob, filename: string, content
  * utf-8：将Unicode编码转换为可变长编码，利如传输存储
  */
 export function arraybufferToString(data: ArrayBuffer) {
-    if (!isArrayBuffer(data)) {
-        console.error("arraybuffer type is required");
-        return;
-    }
+    if (!isArrayBuffer(data)) return;
     // 从arrayBuffer中处理中文乱码
     if ('TextDecoder' in window) {
         // utf-8解码
         const enc = new TextDecoder('utf-8');
-        return enc.decode(new Uint8Array(err.data));
+        return enc.decode(new Uint8Array(data));
     } else {
         // Unicode解码
         const result = new Uint8Array(data);

@@ -1,50 +1,51 @@
-import { dataURLtoFile, binaryToDataURL } from "./file";
+import { blobToBase64 } from "./file";
+
+// 根据图片路径转化为base64
+export function imgUrlToBase64(url: string, options?: { width: number, fileType?: string, quality?: number }): Promise<string> {
+    return new Promise((resolve) => {
+        const width = options?.width;
+        const fileType = options?.fileType ?? 'image/png';
+        const quality = options?.quality ?? 0.92;
+        const image = new Image();
+        image.setAttribute('crossOrigin', 'Anonymous');
+        image.onload = function () {
+            const canvas = document.createElement('canvas');
+            const scale = image.width / image.height;
+            canvas.width = width ?? image.width;
+            canvas.height = width ? parseInt(width / scale) : image.height;
+            const context = canvas.getContext('2d');
+            context?.clearRect(0, 0, canvas.width, canvas.height);
+            context?.drawImage(image, 0, 0, canvas.width, canvas.height);
+            const result = canvas.toDataURL(fileType, quality);
+            resolve(result);
+        };
+        image.src = url;
+    });
+}
 
 export interface PressImg {
     file: File; // 文件类型的数据
     width?: number; // 宽
-    fileName?: string; // 文件名
     quality?: number; // 压缩图片程度, 默认0.92
 }
 // canvas压缩图片, 返回promise, 可以得到dataURL类型数据
-export function pressImg(param: PressImg): Promise<{data: string} | null> {
-    return new Promise((resolve, reject) => {
+export function pressImg(param: PressImg): Promise<string | null> {
+    return new Promise(async (resolve, reject) => {
+        const width = param?.width ?? -1;
+        const quality = param?.quality ?? 0.92;
+        const fileType = param?.file?.type;
+        const file = param?.file;
         //如果file没定义返回null
-        if (param.file == undefined) return resolve(null);
-        param.width = param.hasOwnProperty("width") ? param.width : -1;
-        param.fileName = param.hasOwnProperty("fileName") ? param.fileName : new Date().toString();
-        param.quality = param.hasOwnProperty("quality") ? param.quality : 0.92;
-        // 得到文件类型
-        const fileType = param.file.type;
-        if (fileType.indexOf("image") == -1) {
-            console.error('请选择图片文件');
-            return resolve(null);
+        if (!file || fileType.indexOf("image") == -1) return resolve(null);
+        try {
+            // 转为base64
+            const base64 = await blobToBase64(file);
+            // 压缩base64
+            const pressBase64 = await imgUrlToBase64(base64, { width, fileType, quality });
+            resolve(pressBase64);
+        } catch (error) {
+            reject(error);
         }
-        // 读取file文件,得到的结果为base64位
-        binaryToDataURL(param.file, function (base64: string) {
-            if (base64) {
-                let image = new Image();
-                image.src = base64;
-                image.onload = function () {
-                    // 获得原始长宽比例
-                    const scale = this.width / this.height;
-                    //创建一个canvas
-                    let canvas = document.createElement('canvas');
-                    //获取上下文
-                    let context = canvas.getContext('2d');
-                    //获取压缩后的图片宽度,如果width为-1，默认原图宽度
-                    canvas.width = param.width == -1 ? this.width : param.width;
-                    //获取压缩后的图片高度,如果width为-1，默认原图高度
-                    canvas.height = param.width == -1 ? this.height : parseInt(param.width / scale);
-                    // 清除画布
-                    context.clearRect(0, 0, canvas.width, canvas.height);
-                    //把图片绘制到canvas上面
-                    context.drawImage(image, 0, 0, canvas.width, canvas.height);
-                    //压缩图片，获取到新的base64 dataUrl
-                    const newImageData = canvas.toDataURL(fileType, param.quality);
-                    resolve({ data: newImageData });
-                };
-            }
-        });
     });
 }
+

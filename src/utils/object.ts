@@ -1,11 +1,9 @@
 
-import { isObject, isArray } from "./type";
-
 /**
  * 深度克隆拷贝
  * @param obj 
  */
- export const deepClone = (obj: any) => {
+export const deepClone = (obj: any) => {
     let clone = obj;
     if (obj && typeof obj === "object") {
         clone = new obj.constructor();
@@ -18,7 +16,7 @@ import { isObject, isArray } from "./type";
 
 // 判断两个对象(包括数组)是否相等
 export function isObjectEqual(a: any, b: any) {
-    if(!(typeof a == 'object' && typeof b === 'object')) {
+    if (!(typeof a == 'object' && typeof b === 'object')) {
         return a === b;
     };
     let aProps = Object.getOwnPropertyNames(a);
@@ -65,7 +63,7 @@ export function objectToFormData(obj: any, formData: FormData) {
 
 // 过滤对象
 export function filterObject(obj: object | undefined | null, callback: (value: any, key?: string) => boolean): any {
-    if(obj === undefined || obj === null) return obj;
+    if (obj === undefined || obj === null) return obj;
     const entries = Object.entries(obj)?.filter((item) => (callback(item[1], item[0])));
     return Object.fromEntries(entries);
 }
@@ -73,9 +71,9 @@ export function filterObject(obj: object | undefined | null, callback: (value: a
 // 根据路径获取目标对象中的值
 export function deepGet(obj: object, keys: string | string[], defaultVal?: any): any {
     return (
-      (!Array.isArray(keys)
-        ? keys.replace(/\[/g, '.').replace(/\]/g, '').split('.')
-         : keys
-      ).reduce((o, k) => (o || {})[k], obj) || defaultVal
+        (!Array.isArray(keys)
+            ? keys.replace(/\[/g, '.').replace(/\]/g, '').split('.')
+            : keys
+        ).reduce((o, k) => (o || {})[k], obj) || defaultVal
     );
-  }
+}

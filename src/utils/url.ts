@@ -3,7 +3,7 @@
  * @param {*} url 目标url， 默认当前url
  * @param {*} query 参数对象
  */
-export function setUrlQuery(query, url = location.href) {
+export function setUrlQuery(query: object, url = location.href) {
     if (!url) return "";
     url = url?.lastIndexOf('&') === url?.length - 1 ? url.substring(0, url?.length - 1) : url;
     if (query) {
@@ -27,7 +27,7 @@ export function setUrlQuery(query, url = location.href) {
  * @param {str} url 指定的url, 默认当前url
  * @param {str} name 要删除的指定的query参数名
  */
-export function delUrlQuery(name, url = location.href) {
+export function delUrlQuery(name: string, url = location.href) {
     let urlArr = url.split("?");
     if (urlArr.length > 1 && urlArr[1].indexOf(name) > -1) {
         let query = urlArr[1];
@@ -55,7 +55,7 @@ export function delUrlQuery(name, url = location.href) {
  * 根据参数名从而获取query参数的参数值
  * @param {*} name 目标参数的key
  */
-export function getUrlQuery(name, url = location.href) {
+export function getUrlQuery(name: string, url = location.href) {
     let urlArr = url.split("?");
     if (urlArr.length > 1 && urlArr[1].indexOf(name) > -1) {
         let query = urlArr[1];
@@ -70,3 +70,14 @@ export function getUrlQuery(name, url = location.href) {
         return null;
     }
 }
+
+// 获取url中的相对路径
+export function GetUrlRelativePath(url: string) {
+    const arrUrl = url.split("//");
+    const start = arrUrl[1].indexOf("/");
+    let relUrl = arrUrl[1].substring(start);
+    if (relUrl.indexOf("?") != -1) {
+        relUrl = relUrl.split("?")[0];
+    }
+    return relUrl;
+};

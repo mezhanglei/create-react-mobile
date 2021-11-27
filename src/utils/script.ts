@@ -5,16 +5,16 @@ export function loadScript(url: string) {
         script.type = 'text/javascript';
         // IE
         if (script.readyState) {
-            script.onreadystatechange = function () {
+            script.onreadystatechange = function (event) {
                 if (script.readyState == 'loaded' || script.readyState == 'complete') {
                     script.onreadystatechange = null;
-                    resolve(null);
+                    resolve(event);
                 }
             };
         } else {
             //其他浏览器
-            script.onload = function () {
-                resolve(null);
+            script.onload = function (event) {
+                resolve(event);
             };
         }
         script.src = url;
@@ -22,7 +22,7 @@ export function loadScript(url: string) {
     });
 };
 
-// 加载link
+// 加载link(加载完成各个浏览器实现不一样)
 export function loadLink(url: string) {
     const link = document.createElement("link");
     link.setAttribute("rel", "stylesheet");
@@ -68,35 +68,6 @@ export function removeAllLink() {
     for (let i = allLink.length; i >= 0; i--) {
         const element = allLink[i];
         element?.parentNode?.removeChild(element);
-    }
-}
-
-// 替换成新的js
-export function replaceScript(oldUrl: string, newUrl: string) {
-    const allScript = document.getElementsByTagName('script');
-    for (let i = allScript.length; i >= 0; i--) {
-        const elemnt = allScript[i];
-        if (elemnt?.getAttribute('src')?.indexOf(oldUrl) != -1) {
-            const newElement = document.createElement('script');
-            newElement.setAttribute("type", "text/javascript");
-            newElement.setAttribute("src", newUrl);
-            elemnt?.parentNode?.replaceChild(newElement, elemnt);
-        }
-    }
-}
-
-// 替换成新的link
-export function replaceLink(oldUrl: string, newUrl: string) {
-    const allLink = document.getElementsByTagName('link');
-    for (let i = allLink.length; i >= 0; i--) {
-        const elemnt = allLink[i];
-        if (elemnt?.getAttribute('href')?.indexOf(oldUrl) != -1) {
-            const newElement = document.createElement("link");
-            newElement.setAttribute("rel", "stylesheet");
-            newElement.setAttribute("type", "text/css");
-            newElement.setAttribute("href", newUrl);
-            elemnt?.parentNode?.replaceChild(newElement, elemnt);
-        }
     }
 }
 
