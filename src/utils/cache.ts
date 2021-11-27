@@ -3,24 +3,24 @@
  */
 const myStorage = {
     //存储
-    set(key, value) {
+    set(key: string, value: any) {
         localStorage.setItem(key, JSON.stringify(value));
         return value;
     },
     //取出数据
-    get(key) {
+    get(key: string) {
         try {
             const value = localStorage.getItem(key);
             if (value === null || value === undefined || value === "") {
                 return null;
             }
-            return JSON.parse(localStorage.getItem(key));
+            return JSON.parse(value);
         } catch (err) {
             return null;
         }
     },
     // 删除数据
-    remove(key) {
+    remove(key: string) {
         localStorage.removeItem(key);
     }
 };
@@ -30,24 +30,24 @@ const myStorage = {
  */
 const mySession = {
     //存储
-    set(key, value) {
+    set(key: string, value: any) {
         sessionStorage.setItem(key, JSON.stringify(value));
         return value;
     },
     //取出数据
-    get(key) {
+    get(key: string) {
         try {
             const value = sessionStorage.getItem(key);
             if (value === null || value === undefined || value === "") {
                 return null;
             }
-            return JSON.parse(sessionStorage.getItem(key));
+            return JSON.parse(value);
         } catch (err) {
             return null;
         }
     },
     // 删除数据
-    remove(key) {
+    remove(key: string) {
         sessionStorage.removeItem(key);
     }
 };
@@ -58,7 +58,7 @@ const mySession = {
 
 const timeStorage = {
     //存储
-    set(key, value, time) {
+    set(key: string, value: any, time?: number) {
         try {
             if (!localStorage) {
                 return null;
@@ -77,13 +77,14 @@ const timeStorage = {
         }
     },
     //取出数据
-    get(key) {
+    get(key: string) {
         try {
-            if (!localStorage || !localStorage.getItem(key)) {
+            const value = sessionStorage.getItem(key);
+            if (!value) {
                 return null;
             }
             //获取缓存数据
-            const result = JSON.parse(localStorage.getItem(key));
+            const result = JSON.parse(value);
             //目前时间的毫秒数
             const now = (new Date()).getTime();
             //如果缓存时间过期则移除数据
@@ -97,7 +98,7 @@ const timeStorage = {
             return null;
         }
     },
-    remove(key) {
+    remove(key: string) {
         localStorage.removeItem(key);
     }
 };
