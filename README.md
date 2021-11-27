@@ -3,15 +3,9 @@
 ## 项目安装和依赖说明
 ```
 说明：基于webpack4.x + react16.12 + redux + react-redux + dva-core + ant-design-mobile等的h5开发脚手架,支持typescript
-依赖：下载项目后在项目根目录运行命令：
-      1. 设置依赖镜像源：
-         如果镜像源为国内淘宝镜像https://registry.npm.taobao.org,则:
-           npm config set registry https://registry.npm.taobao.org
-           或cnpm config set registry https://registry.npm.taobao.org
-           或yarn config set registry https://registry.npm.taobao.org
-         如果镜像源为yarn官方镜像https://registry.yarnpkg.com,则:
-           yarn config set registry https://registry.yarnpkg.com
-      2. 下载所有的依赖： npm install 或 cnpm install 或yarn install
+依赖管理(注意设置合适的数据源): 
+npm i ---不更新package-lock.json(建议)
+npm install ---会创建package-lock.json
 ```
 ### 项目运行说明
 ```
@@ -36,9 +30,10 @@ npm run csslint 检查css规范
 解析方式(自行选择)：
 1： .less后缀的文件则是普通的样式文件，有变量污染的可能
 2： .module.less后缀的样式文件会开启css module作用域, 可以避免变量污染
-    css作用域: 1. 启用css modules后, 类名会被添加上hash字符串, 使用方式: 先import styles from "less文件", 然后styles.类名在代码中使用类
-              2. 对于代码中的普通class类名, 可以通过:global {} 包裹,在里面书写类名来修改样式
-              3. 动画类名hash化，需要在样式文件中的类名后面加:local 例如 .animation :local {animation: 动画名 all 1s }
+   注意:
+   (1) 引入方式: import styles from "xxx.module.less"
+   (2) 对于代码中的普通class类名, 可以通过:global {} 包裹,在里面书写类名来修改样式
+   (3) 动画类名hash化，需要在样式文件中的类名后面加:local 例如 .animation :local {animation: 动画名 all 1s }
 ```
 ### image和background背景等静态资源引入规则
 ```
