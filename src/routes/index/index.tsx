@@ -9,7 +9,7 @@ import { myStorage } from "@/utils/cache";
 import { isLogin } from "@/core/common";
 import { LOGIN_ROUTE } from "@/constants/account/index";
 import TransitionRoute from "@/routes/index/transitionRoute/index";
-import { DemoRoutes, Demo1 } from "./demo";
+import { DemoRoutes } from "./demo";
 
 export interface MyRouteProps extends RouteProps {
     auth?: boolean; // 是否需要权限验证
@@ -18,12 +18,6 @@ export interface MyRouteProps extends RouteProps {
 
 // 路由配置
 const routes = [
-    {
-        path: "/",
-        component: Demo1,
-        // 路由为/时必须设置exact为true
-        exact: true
-    },
     ...DemoRoutes,
     ...DefaultRoutes,
     // {
