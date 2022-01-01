@@ -223,43 +223,21 @@ export function createArrayByLen(len: number): number[] {
 }
 
 // 获取js数组中字符串的最长公共前缀
-export function longCommonPrefix(strs: any[]): string {
-    if (strs.length == 0) {
-        return "";
-    }
-    if (strs.length == 1) {
-        return strs[0];
-    }
-
-    // 获取最短长度
-    let minLen = -1, prefix = '', char = '';
-    strs.forEach(ele => {
-        if (minLen == -1) {
-            minLen = ele.length;
-        } else {
-            minLen = ele.length < minLen ? ele.length : minLen;
+export function longestCommonPrefix(arr: string[]) {
+    if (arr.length) {//判断数组是否为空
+        let res = ""; //记录公共前缀
+        for (let i = 0; i < arr[0].length; i++) {
+            let temp = arr[0][i];
+            // 每个字符串是否都有相同的字符
+            if (arr.every(el => {
+                return el.charAt(i) == temp;
+            })) {
+                res += temp; // 记录公共前缀
+            } else break; //如果返回false，就停止判断，说明不是前缀了
         }
-    });
-    if (minLen == 0) {
-        return "";
+        return res;
     }
-    // 判断是否为前缀
-    for (let i = 0; i < minLen; i++) {
-        char = strs[0][i];
-        // 用于标记该字符是否为前缀
-        let flag = true;
-        for (let j = 1; j < strs.length; j++) {
-            if (strs[j][i] != char) {
-                flag = false;
-            }
-        }
-        if (flag) {
-            prefix += char;
-        } else {
-            return prefix;
-        }
-    }
-    return prefix;
+    return ""; //说明是空数组
 };
 
 /**
@@ -327,10 +305,9 @@ export function breadthFirstSearch(node: any): any[] {
 /**
  * 返回目标节点的叶子节点(广度优先)
  * @param {*} node 根节点
- * @param {*} key 返回的节点字段属性
  * @param {*} childrenName 标识孩子的字段名
  */
-export function findLeaves(node: any, key = 'id', childrenName = 'children'): any[] {
+export function findLeaves(node: any, childrenName = 'children'): any[] {
     // 存储节点
     let cache: any[] = [];
     if (node != null) {
@@ -338,13 +315,12 @@ export function findLeaves(node: any, key = 'id', childrenName = 'children'): an
         queue.unshift(node);
         while (queue.length != 0) {
             let item = queue.shift();
-            if (item && !(item[childrenName]?.length > 0)) {
-                if (item[key]) {
-                    cache = cache.concat([item[key]]);
-                }
+            const children: any[] = item[childrenName];
+            if (item && children?.length > 0) {
+                cache = cache.concat([item]);
             }
-            for (var i = 0; i < item[childrenName]?.length; i++)
-                queue.push(item[childrenName][i]);
+            for (let i = 0; i < children?.length; i++)
+                queue.push(children?.[i]);
         }
     }
     return cache;
@@ -428,7 +404,7 @@ export const getArrMap = (arr: any[] = [], valueKey?: string, labelKey?: string)
 export const changeLocation = (arr: any[], index1: number, index2: number) => {
     arr[index1] = arr.splice(index2, 1, arr[index1])[0];
     return arr;
-}
+};
 
 // 根据条件合并两个对象数组
 export const combinedArr = (arr1: object[], arr2: object[], condition: (next: object, cur: object, nextIndex: number, curIndex: number) => boolean) => {
@@ -442,38 +418,34 @@ export const combinedArr = (arr1: object[], arr2: object[], condition: (next: ob
             ret?.push(cur);
         }
         return combined;
-    }, arr1)
+    }, arr1);
     return ret;
-}
+};
 
 // 更新对象数组中指定项的值
-export const updateArrItem = (arr: any[], itemData: any, condition: (item: any, index?: number) => boolean) => {
+export const updateArrItem = (arr: any[], value: any, condition: (item: any, index?: number) => boolean) => {
     const newArr = produce(arr, draft => {
-        if (draft && itemData) {
+        if (draft && value) {
             const index = draft?.findIndex((item, index) => condition(item, index));
-            if (isObject(itemData)) {
-                Object.keys(itemData)?.map((key) => {
-                    draft[index][key] = itemData[key];
-                })
+            if (isObject(value)) {
+                Object.keys(value)?.map((key) => {
+                    draft[index][key] = value[key];
+                });
             } else {
-                draft[index] = itemData;
+                draft[index] = value;
             }
         }
     });
     return newArr;
-}
+};
 
 export const arrayMove = (arr: any[], preIndex: number, nextIndex: number) => {
-    //如果当前元素在拖动目标位置的下方，先将当前元素从数组拿出，数组长度-1，我们直接给数组拖动目标位置的地方新增一个和当前元素值一样的元素，
-    //我们再把数组之前的那个拖动的元素删除掉，所以要len+1
     const newArr = produce(arr, draft => {
         if (preIndex > nextIndex) {
             draft.splice(nextIndex, 0, arr[preIndex]);
             draft.splice(preIndex + 1, 1)
         }
         else if (preIndex < nextIndex) {
-            //如果当前元素在拖动目标位置的上方，先将当前元素从数组拿出，数组长度-1，我们直接给数组拖动目标位置+1的地方新增一个和当前元素值一样的元素，
-            //这时，数组len不变，我们再把数组之前的那个拖动的元素删除掉，下标还是index
             draft.splice(nextIndex + 1, 0, arr[preIndex]);
             draft.splice(preIndex, 1)
         }

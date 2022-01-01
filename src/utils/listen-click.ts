@@ -70,14 +70,13 @@ export default class ClickListen {
         // 递归查询的层数
         let num = this.step;
         while (tagName !== 'body' && num > 0) {
-            if(!target) return;
             flag = target.getAttribute(key) != null;
             if (flag) {
                 // 自定义属性只能是字符串
                 return target.getAttribute(key);
             }
             target = target.parentNode;
-            tagName = target?.tagName?.toLowerCase();
+            tagName = target.tagName.toLowerCase();
             num--;
         }
         return flag;

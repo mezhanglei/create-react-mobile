@@ -2,6 +2,8 @@ import WebSocketProxy, { IMEvent } from './websocket';
 
 export const initWebsocket = (userId: string) => {
     const socket = new WebSocketProxy({ url: 'ws://127.0.0.1:8087' });
+    // 实例化完成需要主动启动链接
+    socket.connect();
 
     // 连接事件
     socket.addEventListener(IMEvent.CONNECTED, () => {
@@ -9,8 +11,13 @@ export const initWebsocket = (userId: string) => {
         const data = JSON.stringify({
             type: IMEvent.USER_REG,
             payload: userId
-        })
+        });
         socket?.sendMessage(data);
+    });
+
+    // 接收消息事件
+    socket.addEventListener(IMEvent.MESSAGE, (data) => {
+
     });
 
     // 意外断开事件
@@ -33,7 +40,5 @@ export const initWebsocket = (userId: string) => {
         });
         socket?.sendMessage(data);
     });
-
-    socket.connect();
     return socket;
-}
+};

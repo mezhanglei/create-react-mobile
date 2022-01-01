@@ -75,7 +75,7 @@ export function isEmpty(value: unknown) {
     }
 
     if (({}).toString.call(value) === '[object Object]') {
-        return Object.keys(value).length === 0;
+        return Object.keys(<object>value).length === 0;
     }
 
     return value === undefined || value === null;
