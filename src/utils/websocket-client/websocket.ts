@@ -7,16 +7,13 @@ export enum IMEvent {
   CLOSE = "close", // 关闭事件名
   ERROR = "error", // 错误事件名
   HEARTBEAT = "heartbeat", // 心跳检测事件
+  OFFLINE = "offline", // 网络离线事件
+  ONLINE = "online", // 网络上线事件
 }
 
 export interface WebSocketProxyProps {
   url: string; // 接口地址
   heartBeat?: boolean; // 是否执行心跳检测
-}
-
-export enum WebsocketStatus {
-  OPEN = 'open',
-  CLOSE = 'close'
 }
 
 export type SendData = string | ArrayBufferLike | Blob | ArrayBufferView;
@@ -33,13 +30,14 @@ export default class WebSocketProxy {
   }
 
   lockReconnect: boolean = false // true禁止重连
-  status: `${WebsocketStatus}` = WebsocketStatus.OPEN
+  status: `${IMEvent}` = IMEvent.CONNECTED
   handlerMap: Map<string, Set<Function>> = new Map() // 存储事件Map结构
   dataQueue: Set<SendData> = new Set() // 消息队列
   socket?: WebSocket = undefined // webscoket实例
   heartBeatTimer?: Timeout = undefined;
   timeoutCloseTimer?: Timeout = undefined;
   reconnectTimer?: Timeout = undefined;
+  reconnectCount: number = 0;
 
   // 监听事件
   addEventListener(type: `${IMEvent}`, handler: Function) {
@@ -86,6 +84,7 @@ export default class WebSocketProxy {
   // 触发type类型的所有监听事件
   emitEvent(type: `${IMEvent}`, ...args: unknown[]) {
     const handlers = this.handlerMap?.get(type);
+    this.status = type;
     if (handlers?.size) {
       for (const item of handlers) {
         item?.call(this, ...args)
@@ -96,26 +95,39 @@ export default class WebSocketProxy {
   // 重新连接的方法
   reconnect() {
     if (this.lockReconnect) return;
-    console.log(`意外断开，重连websocket`);
-    this.clearReconnect();
+    console.log(`意外断开，重连websocket，次数：${this.reconnectCount}`);
+    this.reconnectTimer && clearTimeout(this.reconnectTimer);
     this.lockReconnect = true;
+    const count = this.reconnectCount;
+
+    let time = 5000;
+    if (this.status === IMEvent.ONLINE) {
+      time = 1000;
+    } else if (count < 10) {
+      time = 1500;
+    } else if (count > 10) {
+      time = Math.min(count * 200, 10000);
+    }
+
     this.reconnectTimer = window.setTimeout(() => {
       if (this.socket?.readyState === WebSocket.OPEN) {
-        this.clearReconnect();
+        this.closeReconnect();
       } else {
         this.socket?.close();
+        this.reconnectCount++;
         this.connect();
       }
-    }, 5000);
+    }, time);
   }
 
-  // 清除重新链接的定时器
-  clearReconnect() {
+  // 关闭重连
+  closeReconnect() {
+    this.reconnectCount = 0;
     this.reconnectTimer && clearTimeout(this.reconnectTimer);
   }
 
-  // 重置心跳检测
-  clearHeartBeat() {
+  // 关闭心跳检测
+  closeHeartBeat() {
     this.heartBeatTimer && clearTimeout(this.heartBeatTimer);
     this.timeoutCloseTimer && clearTimeout(this.timeoutCloseTimer);
   }
@@ -123,7 +135,8 @@ export default class WebSocketProxy {
   // 心跳检测
   heartCheck() {
     if (!this.heartBeat) return;
-    this.clearHeartBeat();
+    this.heartBeatTimer && clearTimeout(this.heartBeatTimer);
+    this.timeoutCloseTimer && clearTimeout(this.timeoutCloseTimer);
     const timeout = 5000;
     this.heartBeatTimer = setTimeout(() => {
       this.emitEvent(IMEvent.HEARTBEAT);
@@ -144,7 +157,7 @@ export default class WebSocketProxy {
       let data = message && JSON.parse(message);
       this.emitEvent(IMEvent.MESSAGE, data);
       this.lockReconnect = false;
-      this.clearReconnect();
+      this.closeReconnect();
       this.heartCheck();
     };
 
@@ -154,20 +167,20 @@ export default class WebSocketProxy {
       this.emitEvent(IMEvent.CONNECTED);
       // 打开事件重置
       this.lockReconnect = false;
-      this.clearReconnect();
+      this.closeReconnect();
       this.heartCheck();
       // 如果有消息队列，则连通时就开始发送
       if (this.dataQueue?.size > 0) {
         this.dataQueue?.forEach(msg => {
           this.sendMessage(msg);
           this.dataQueue?.delete(msg);
-        })
+        });
       }
     };
 
     // 断开通讯
     this.socket.onclose = (evt) => {
-      if (this.status !== IMEvent.CLOSE) {
+      if (this.status !== IMEvent.CLOSE && this.status !== IMEvent.OFFLINE) {
         // 触发断开事件
         this.emitEvent(IMEvent.DISCONNECTED);
         this.reconnect();
@@ -178,21 +191,32 @@ export default class WebSocketProxy {
 
     //通讯出错
     this.socket.onerror = (evt) => {
-      console.error(`WebSocket error: `);
       this.emitEvent(IMEvent.ERROR);
       this.reconnect();
     };
+
+    // 监听下线
+    window.addEventListener('offline', () => {
+      // 触发断开事件
+      this.emitEvent(IMEvent.OFFLINE);
+      this.socket?.close();
+    });
+
+    // 监听上线
+    window.addEventListener('online', () => {
+      this.emitEvent(IMEvent.ONLINE);
+      this.reconnect();
+    });
   };
 
   // 主动关闭Websocket
   closeWebsocket() {
-    this.status = IMEvent.CLOSE;
-    this.clearHeartBeat();
-    this.clearReconnect();
-    this.clearMsgQueue();
     // 发送给后端关闭事件
     this.emitEvent(IMEvent.CLOSE);
     // 前端关闭websocket链接
     this.socket?.close();
+    this.closeHeartBeat();
+    this.closeReconnect();
+    this.clearMsgQueue();
   }
 }

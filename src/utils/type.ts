@@ -110,3 +110,9 @@ export function isBlob(data: any) {
 export function isStream(val: any) {
     return isObject(val) && isFunction(val.pipe);
 }
+
+// 是否为简单类型
+export function isBase(data: any) {
+    const type = typeof data;
+    return ['string', 'number', 'symbol', 'boolean']?.includes(type);
+}

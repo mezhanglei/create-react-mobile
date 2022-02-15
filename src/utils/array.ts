@@ -1,8 +1,7 @@
 
 // 数组的一些方法
 import { isObject, isArray, isEmpty } from "./type";
-import produce from "immer";
-import { isObjectEqual } from "./object";
+import deepCopy from "fast-copy";
 
 /**
  * 数组排序(数据量在万以内采取这种) 数组元素支持Object和简单类型
@@ -103,7 +102,7 @@ export function singleToMultiple(array: any[], unit: number): any[] {
     let res = [];
     for (let i = 0; i < totalNum; i++) {
         let temp = array.slice(i * unit, i * unit + unit);
-        res.push(JSON.parse(JSON.stringify(temp)));
+        res.push(deepCopy(temp));
     }
     return res;
 }
@@ -422,33 +421,15 @@ export const combinedArr = (arr1: object[], arr2: object[], condition: (next: ob
     return ret;
 };
 
-// 更新对象数组中指定项的值
-export const updateArrItem = (arr: any[], value: any, condition: (item: any, index?: number) => boolean) => {
-    const newArr = produce(arr, draft => {
-        if (draft && value) {
-            const index = draft?.findIndex((item, index) => condition(item, index));
-            if (isObject(value)) {
-                Object.keys(value)?.map((key) => {
-                    draft[index][key] = value[key];
-                });
-            } else {
-                draft[index] = value;
-            }
-        }
-    });
-    return newArr;
-};
-
 export const arrayMove = (arr: any[], preIndex: number, nextIndex: number) => {
-    const newArr = produce(arr, draft => {
-        if (preIndex > nextIndex) {
-            draft.splice(nextIndex, 0, arr[preIndex]);
-            draft.splice(preIndex + 1, 1)
-        }
-        else if (preIndex < nextIndex) {
-            draft.splice(nextIndex + 1, 0, arr[preIndex]);
-            draft.splice(preIndex, 1)
-        }
-    })
-    return newArr;
+    const clone = deepCopy(arr);
+    if (preIndex > nextIndex) {
+        clone.splice(nextIndex, 0, arr[preIndex]);
+        clone.splice(preIndex + 1, 1)
+    }
+    else if (preIndex < nextIndex) {
+        clone.splice(nextIndex + 1, 0, arr[preIndex]);
+        clone.splice(preIndex, 1)
+    }
+    return clone;
 }
