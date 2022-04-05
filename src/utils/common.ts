@@ -22,7 +22,7 @@ export function debounce(fn: any, time: number = 500): any {
  * 使用: 1. 实例化一个对象: const fn = throttle(函数)
  *       2. 执行fn()
  */
-export function throttle(fn: any, time: number = 2000): any {
+export function throttle(fn: any, time: number = 200): any {
     let timer: any = null;
     
     return function (...args: any[]) {

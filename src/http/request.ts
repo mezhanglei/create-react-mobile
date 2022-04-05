@@ -1,6 +1,6 @@
 import axios, { Method } from "axios";
 import { STATUS_ERROR, CODE_ERROR, STATUS_ERROR_MAP, CODE_ERROR_MAP, CancelPending, CustomConfig, ReuestInstance } from "./config";
-import { Toast } from "antd-mobile";
+// import { Toast } from "antd-mobile";
 import { myStorage } from "@/utils/cache";
 import { loginOut, getToken } from "@/core/common";
 import { trimParams } from "@/utils/character";
@@ -69,7 +69,7 @@ function statusError(status: STATUS_ERROR, msg: string) {
     if (status === 401) {
         loginOut();
     }
-    status && Toast.info(STATUS_ERROR_MAP[status] || msg);
+    // status && Toast.info(STATUS_ERROR_MAP[status] || msg);
 }
 
 /**
@@ -81,7 +81,7 @@ function resultError(code: CODE_ERROR, msg: string) {
     if (code == 401) {
         loginOut();
     }
-    code && Toast.info(CODE_ERROR_MAP[code] || msg);
+    // code && Toast.info(CODE_ERROR_MAP[code] || msg);
 }
 
 // 请求拦截(axios自动对请求类型进行类型转换)

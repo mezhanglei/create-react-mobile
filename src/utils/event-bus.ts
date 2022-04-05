@@ -7,38 +7,38 @@
  *             eventBus.emitAll(data) 触发所有监听的事件
  *      4. 通过eventBus.remove(type), 卸载对应的目标事件
  */
-export class EventBus {
-    _watchers: { type: string; handle: Function }[] = [];
+export default class EventBus {
+  _watchers: { type: string; handle: Function }[] = [];
 
-    // 触发事件池里的所有事件(所以监听多个事件，那么触发时会全部触发)
-    emitAll(...args: unknown[]) {
-        this._watchers.forEach(watcher => {
-            watcher.handle(args);
-        });
-    }
+  // 触发事件池里的所有事件(所以监听多个事件，那么触发时会全部触发)
+  emitAll(...args: unknown[]) {
+    this._watchers.forEach(watcher => {
+      watcher.handle(args);
+    });
+  }
 
-    // 触发事件池里对应type的事件
-    emit(type: string, ...args: unknown[]) {
-        this._watchers.forEach(watcher => {
-            if (watcher.type == type) {
-                watcher.handle(...args);
-            }
-        });
-    }
+  // 触发事件池里对应type的事件
+  emit(type: string, ...args: unknown[]) {
+    this._watchers.forEach(watcher => {
+      if (watcher.type == type) {
+        watcher.handle(...args);
+      }
+    });
+  }
 
-    // 监听事件，设置事件类型type和要监听的事件
-    on(type: string, func: Function) {
-        this._watchers.push({ type, handle: func });
-        return type;
-    }
+  // 监听事件，设置事件类型type和要监听的事件
+  on(type: string, func: Function) {
+    this._watchers.push({ type, handle: func });
+    return type;
+  }
 
-    // 根据监听事件时的type卸载对应的事件
-    remove(type: string) {
-        for (let i = 0; i < this._watchers.length; i++) {
-            if (this._watchers[i].type === type) {
-                this._watchers.splice(i, 1);
-                break;
-            }
-        }
+  // 根据监听事件时的type卸载对应的事件
+  remove(type: string) {
+    for (let i = 0; i < this._watchers.length; i++) {
+      if (this._watchers[i].type === type) {
+        this._watchers.splice(i, 1);
+        break;
+      }
     }
+  }
 }

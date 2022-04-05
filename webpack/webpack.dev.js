@@ -1,9 +1,5 @@
 "use strict";
 
-// 根据目标字符串自动匹配来动态扫描目标文件返回符合要求的文件路径数组,glob只能扫描一个,如果要同时扫描多个路径请使用glob-all
-// 匹配规则: 1. * 在单个路径中间匹配一个目录/文件(不会匹配路径分隔符/), /* 则表示一个或多个子目录/文件 2. ** 在单个路径中间匹配部分0个或多个目录/文件
-const glob = require("glob");
-const globAll = require("glob-all");
 const fs = require('fs');
 // 1. path.join('字段1','字段2'....) 使用平台特定的分隔符把所有的片段链接生成相对路径,遇到..和../时会进行相对路径计算
 // 2. path.resolve('字段1','字段2'....) 从右到左拼接路径片段,返回一个相对于当前工作目录的绝对路径,当遇到/时表示根路径,遇到../表示上一个目录, 如果还不是完整路径则自动添加当前绝对路径
@@ -34,6 +30,7 @@ const useEslintLoader = {
     }
 };
 
+
 // === webpack的plugins扩展 === //
 
 // stylelint的plugin配置
@@ -48,13 +45,6 @@ const useStylelintPlugin = new StyleLintPlugin({
     // 如果为true，则在全局构建过程中发生任何stylelint错误时结束构建过程 所以一般为false
     failOnError: false,
 });
-
-// 生成html的plugin配置,返回HtmlWebpackPlugin数组
-const HtmlPlugins = () => {
-    return configs.htmlConfigs.map(item => {
-        return new HtmlWebpackPlugin(item);
-    });
-};
 
 
 // === 自定义方法 === //
@@ -86,26 +76,13 @@ function getNetworkIp() {
     return needHost;
 }
 
-// 单页面/多页面对于history跳转重定向html
-const rewrites = configs.htmlConfigs.map(item => {
-    const reg = ".*";
-    // 公共路径
-    const publicPath = (configs.publicPath + '/').replace(/\/+/g, '/');
-    // 目标页面路径
-    const page = publicPath + item.filename;
-    return {
-        // 正则匹配路由
-        from: new RegExp(reg),
-        // 重定向的目标页面(必须/开头)
-        to: page
-    };
-});
+const isDev = process.env.NODE_ENV === 'development';
 
 //  === webpack配置内容 === //
 module.exports = {
-    // 对象语法： 1. 当有多条数据，则会打包生成多个依赖分离的入口js文件
-    // 2. 对象中的值为路径字符串数组或路径字符串，会被打包到该条数据对应生成的入口js文件
-    entry: configs.entries,
+    // 对象语法： 1. 当有多条数据，则会打包生成多个依赖分离的入口js文件, 对象中的值为路径字符串数组或路径字符串，会被打包到该条数据对应生成的入口js文件
+    // 字符串语法: 2. 单页面对应的入口文件路径 
+    entry: configs.entry,
     // 解析的起点, 默认为项目的根目录
     context: configs.root,
     // 输出
@@ -113,7 +90,7 @@ module.exports = {
         // 输出目录
         path: configs.outputPath,
         // 用[name]动态表示打包的名称 名称默认为入口文件指定的键
-        filename: "[name].js",
+        filename: '[name].js',
         // 资源引用的公共绝对路径
         publicPath: configs.publicPath
     },
@@ -144,9 +121,14 @@ module.exports = {
                     // eslint
                     ...(configs.useEslint ? [useEslintLoader] : [])
                 ],
-                // include: path.resolve("src"),
                 // 忽略第三方(看第三方包是否需要转译,不需要的话去掉)
-                exclude: /node_modules/,
+                // exclude: /node_modules/,
+                include: [
+                    configs.srcPath,
+                    configs.staticPath,
+                    path.join(configs.nodemodules, 'jian-pinyin'),
+                    path.join(configs.nodemodules, 'crypto-js')
+                ],
             },
             {
                 test: /\.css$/,
@@ -160,7 +142,7 @@ module.exports = {
             },
             {
                 test: /\.less$/,
-                exclude: /\.module\.less$/,
+                exclude: /(\.module\.less)$/,
                 use: [
                     "style-loader",
                     "css-loader",
@@ -171,7 +153,7 @@ module.exports = {
                             //   "@brand-primary": "red"
                             // },
                             modifyVars: {
-                                // 引入antd 主题颜色覆盖文件
+                                // 引入antd-mobile主题颜色覆盖文件
                                 hack: `true; @import "${path.join(
                                     configs.root,
                                     "less/constants/theme.less"
@@ -179,11 +161,11 @@ module.exports = {
                             },
                             javascriptEnabled: true,
                         },
-                    },
+                    }
                 ]
             },
             {
-                test: /\.module\.less$/,
+                test: /(\.module\.less)$/,
                 use: [
                     "style-loader",
                     {
@@ -239,7 +221,6 @@ module.exports = {
         // 设置项目的全局变量, 如果值是个字符串会被当成一个代码片段来使用, 如果不是,它会被转化为字符串(包括函数)
         new webpack.DefinePlugin({
             'process.env': {
-                // NODE_ENV: process.env.NODE_ENV,
                 // mock数据环境
                 MOCK: process.env.MOCK,
                 // 资源引用的公共路径字符串
@@ -256,7 +237,62 @@ module.exports = {
             },
         ]),
         useStylelintPlugin,
-        ...HtmlPlugins()
+        // htmlplugin
+        new HtmlWebpackPlugin({
+            // title: '生成的html文档的标题',
+            // 指定输出的html文档
+            filename: `index.html`,
+            // html模板所在的位置，默认支持html和ejs模板语法，处理文件后缀为html的模板会与html-loader冲突
+            template: path.join(configs.htmlPages, 'index.html'),
+            // 不能与template共存，也可以指定html字符串
+            // templateContent: string|function,
+            // 默认script一次性引用所有的chunk(chunk的name)
+            chunks: ["vendors", "common", `runtime~index`, 'index'],
+            // 跳过一个块
+            // excludeChunks: [],
+            // 注入静态资源的位置:
+            //    1. true或者body：所有JavaScript资源插入到body元素的底部
+            //    2. head： 所有JavaScript资源插入到head元素中
+            //    3. false：所有静态资源css和JavaScript都不会注入到模板文件中
+            inject: true,
+            // 图标的所在路径，最终会被打包到到输出目录
+            // favicon: item.favicon,
+            // 注入meta标签，例如{viewport: 'width=device-width, initial-scale=1, shrink-to-fit=no'}
+            // meta: {},
+            // 注入base标签。例如base: "https://example.com/path/page.html
+            // base: false,
+            minify: {
+                // 根据html5规范输入 默认true
+                html5: true,
+                // 是否对大小写敏感 默认false
+                caseSensitive: false,
+                // 去除属性引用
+                removeAttributeQuotes: process.env.NODE_ENV === "development" ? false : true,
+                // 删除空格换行 默认false
+                collapseWhitespace: process.env.NODE_ENV === "development" ? false : true,
+                // 当标记之间的空格包含换行符时，始终折叠为1换行符（从不完全删除它）。collapseWhitespace=true, 默认false
+                preserveLineBreaks: false,
+                // 压缩link进来的本地css文件 默认false,需要和clean-css一起使用
+                minifyCSS: false,
+                // 压缩script内联的本地js文件 默认false,为true需要和teserwebpackplugin一起使用
+                minifyJS: true,
+                // 移除html中的注释 默认false
+                removeComments: true
+            },
+            // 如果为true则为所有的script引入和css引入添加唯一的hash值
+            // hash: false,
+            // 错误详细信息将写入html
+            // showErrors: true,
+            // script引入的公共js文件
+            commonJs: [
+                // 'static/dll/base_dll.js'
+                '//fintechcdn.cmbyc.com/react/es6-shim.min.js'
+            ],
+            // link引入的公共css文件
+            commonCSS: [
+                // `static/fonts/iconfont.css?time=${new Date().getTime()}`
+            ]
+        })
     ],
     // require 引用入口配置
     resolve: configs.resolve,
@@ -269,7 +305,7 @@ module.exports = {
         // 在哪个url路径下首次访问启动页
         openPage: configs.openPage,
         // 有时无法访问可能是端口被占用
-        port: 8082,
+        port: 8034,
         // 启动webpack-dev-server时的host(设置为0.0.0.0无论是本机ip或127.0.0.1或localhost都会响应请求)
         host: getNetworkIp(),
         // 开启热更新
@@ -283,7 +319,12 @@ module.exports = {
         // 当使用 HTML5 History API 时，任意的 404 响应都需要重定向对应的html页面
         historyApiFallback: {
             // 重定向
-            rewrites: rewrites
+            rewrites: {
+                // 正则匹配路由
+                from: new RegExp(".*"),
+                // 重定向的目标页面(必须/开头)
+                to: (configs.publicPath + '/').replace(/\/+/g, '/') + 'index.html'
+            }
         },
         // webpack 使用文件系统(file system)获取文件改动的通知, 但是当在远程进行操作时有可能会出问题,所以需要轮询
         watchOptions: {
@@ -302,9 +343,9 @@ module.exports = {
         proxy: [
             {
                 // 当以context里的任意一个字符串开头的接口都会通过本地代理访问目标接口域名下
-                context: ["/xx"],
+                context: ["/api"],
                 // 要代理访问的目标接口域名
-                target: "http://xxx.xxx.xxx.com",
+                target: "http://localhost:3000",
                 // 允许代理 websockets 协议
                 ws: true,
                 // true不接受运行在 HTTPS 上，且使用了无效证书的后端服务, false关闭安全检测
@@ -312,9 +353,9 @@ module.exports = {
                 // 需要虚拟托管的站点要设为true，开发时大部分情况都是虚拟托管的站点
                 changeOrigin: true,
                 // 实际请求中不存在代理字段则重写接口路径把api字符串去掉
-                // pathRewrite: {
-                // 	"^/api": "/xx",
-                // }
+                pathRewrite: {
+                    "^/api": "",
+                }
             },
         ],
         // 将错误或警告覆盖显示在浏览器屏幕上
@@ -335,9 +376,6 @@ module.exports = {
     devtool: "source-map",
 };
 
-// 接口前缀, 会拦截以此为开头的请求
-const API_PREFIX = '/mock/*';
-
 // 拦截请求
 function handleRequest(req, res) {
     let data = "";
@@ -347,6 +385,7 @@ function handleRequest(req, res) {
     let reqQuery = req.query;
     // 协议
     let protocol = req.protocol;
+    // 方法
     let method = reqQuery['method'];
     // mock数据存放的文件路径作为mock请求的接口路径
     let fileUrl = path.join(configs.mock, reqPath.replace(/\/mock/ig, "") + '.json');

@@ -1,7 +1,7 @@
 
 // 数组的一些方法
 import { isObject, isArray, isEmpty } from "./type";
-import deepCopy from "fast-copy";
+import { klona } from "klona";
 
 /**
  * 数组排序(数据量在万以内采取这种) 数组元素支持Object和简单类型
@@ -10,18 +10,18 @@ import deepCopy from "fast-copy";
  * @param {bool} asc // 表示升序或降序，默认true升序
  */
 export function sortByAttr(data: any[], attr: string, asc: boolean = true): any[] {
-    let arr = data;
-    arr.sort(function (a, b) {
-        if (!isObject(a) && !isObject(b)) {
-            a = a;
-            b = b;
-        } else {
-            a = a[attr];
-            b = b[attr];
-        }
-        return (a - b) * (asc ? 1 : -1);
-    });
-    return arr;
+  let arr = data;
+  arr.sort(function (a, b) {
+    if (!isObject(a) && !isObject(b)) {
+      a = a;
+      b = b;
+    } else {
+      a = a[attr];
+      b = b[attr];
+    }
+    return (a - b) * (asc ? 1 : -1);
+  });
+  return arr;
 }
 
 /**
@@ -30,26 +30,26 @@ export function sortByAttr(data: any[], attr: string, asc: boolean = true): any[
  * @param {String} attr 属性名，可选, 数组元素为Object时设置
  */
 export function popSort(arr: any[], attr: string): any[] {
-    if (arr == null) return arr;
-    for (var i = 0; i < arr.length - 1; i++) {
-        for (var j = 0; j < arr.length - 1 - i; j++) {
-            // 相邻元素两两对比，元素交换，大的元素交换到后面
-            if (!isObject(arr[j])) {
-                if (arr[j] > arr[j + 1]) {
-                    var temp = arr[j];
-                    arr[j] = arr[j + 1];
-                    arr[j + 1] = temp;
-                }
-            } else {
-                if (arr[j][attr] > arr[j + 1][attr]) {
-                    var temp = arr[j];
-                    arr[j] = arr[j + 1];
-                    arr[j + 1] = temp;
-                }
-            }
+  if (arr == null) return arr;
+  for (var i = 0; i < arr.length - 1; i++) {
+    for (var j = 0; j < arr.length - 1 - i; j++) {
+      // 相邻元素两两对比，元素交换，大的元素交换到后面
+      if (!isObject(arr[j])) {
+        if (arr[j] > arr[j + 1]) {
+          var temp = arr[j];
+          arr[j] = arr[j + 1];
+          arr[j + 1] = temp;
         }
+      } else {
+        if (arr[j][attr] > arr[j + 1][attr]) {
+          var temp = arr[j];
+          arr[j] = arr[j + 1];
+          arr[j + 1] = temp;
+        }
+      }
     }
-    return arr;
+  }
+  return arr;
 }
 
 /**
@@ -58,35 +58,35 @@ export function popSort(arr: any[], attr: string): any[] {
  * @param {String} attr 属性名，可选，数组元素为Object时设置
  */
 export const quickSort = (arr: any[], attr: string): any[] => {
-    if (arr.length <= 1) {//如果数组长度小于等于1无需判断直接返回即可 
-        return arr;
-    }
-    let pivotIndex = Math.floor(arr.length / 2);//取基准点
-    let pivot = arr.splice(pivotIndex, 1)[0];
+  if (arr.length <= 1) {//如果数组长度小于等于1无需判断直接返回即可 
+    return arr;
+  }
+  let pivotIndex = Math.floor(arr.length / 2);//取基准点
+  let pivot = arr.splice(pivotIndex, 1)[0];
 
-    let left = [];//存放比基准点小的数组
-    let right = [];//存放比基准点大的数组 
-    for (let i = 0; i < arr.length; i++) { //遍历数组，进行判断分配
-        if (!isObject(arr[i])) {
-            if (arr[i] < pivot && !isEmpty(arr[i])) {
-                left.push(arr[i]);//比基准点小的放在左边数组
-            } else {
-                right.push(arr[i]);//比基准点大的放在右边数组
-            }
-        } else {
-            if (arr[i][attr] < pivot[attr] && !isEmpty(arr[i][attr])) {
-                left.push(arr[i]);//比基准点小的放在左边数组
-            } else {
-                right.push(arr[i]);//比基准点大的放在右边数组
-            }
-        }
-    }
-    //递归执行以上操作,对左右两个数组进行操作，直到数组长度为<=1
-    if (isEmpty(pivot)) {
-        return quickSort(left, attr).concat([], quickSort(right, attr));
+  let left = [];//存放比基准点小的数组
+  let right = [];//存放比基准点大的数组 
+  for (let i = 0; i < arr.length; i++) { //遍历数组，进行判断分配
+    if (!isObject(arr[i])) {
+      if (arr[i] < pivot && !isEmpty(arr[i])) {
+        left.push(arr[i]);//比基准点小的放在左边数组
+      } else {
+        right.push(arr[i]);//比基准点大的放在右边数组
+      }
     } else {
-        return quickSort(left, attr).concat([pivot], quickSort(right, attr));
+      if (arr[i][attr] < pivot[attr] && !isEmpty(arr[i][attr])) {
+        left.push(arr[i]);//比基准点小的放在左边数组
+      } else {
+        right.push(arr[i]);//比基准点大的放在右边数组
+      }
     }
+  }
+  //递归执行以上操作,对左右两个数组进行操作，直到数组长度为<=1
+  if (isEmpty(pivot)) {
+    return quickSort(left, attr).concat([], quickSort(right, attr));
+  } else {
+    return quickSort(left, attr).concat([pivot], quickSort(right, attr));
+  }
 };
 
 /**
@@ -95,16 +95,16 @@ export const quickSort = (arr: any[], attr: string): any[] => {
  * @param {Number} unit 分割单位个数
  */
 export function singleToMultiple(array: any[], unit: number): any[] {
-    // 一维数组的个数
-    const len = array && array.length;
-    // 分成几份
-    const totalNum = len % unit == 0 ? len / unit : Math.floor(len / unit + 1);
-    let res = [];
-    for (let i = 0; i < totalNum; i++) {
-        let temp = array.slice(i * unit, i * unit + unit);
-        res.push(deepCopy(temp));
-    }
-    return res;
+  // 一维数组的个数
+  const len = array && array.length;
+  // 分成几份
+  const totalNum = len % unit == 0 ? len / unit : Math.floor(len / unit + 1);
+  let res = [];
+  for (let i = 0; i < totalNum; i++) {
+    let temp = array.slice(i * unit, i * unit + unit);
+    res.push(klona(temp));
+  }
+  return res;
 }
 
 /**
@@ -114,14 +114,14 @@ export function singleToMultiple(array: any[], unit: number): any[] {
  */
 export function flatten(list: any[] = [], res: any[] = []): any[] {
 
-    list.forEach((item) => {
-        res.push(item);
-        if (item.children instanceof Array && item.children?.length) {
-            flatten(item.children, res);
-            delete item.children;
-        }
-    });
-    return res;
+  list.forEach((item) => {
+    res.push(item);
+    if (item.children instanceof Array && item.children?.length) {
+      flatten(item.children, res);
+      delete item.children;
+    }
+  });
+  return res;
 }
 
 /**
@@ -130,36 +130,36 @@ export function flatten(list: any[] = [], res: any[] = []): any[] {
  * @param {Array} object {key: 依赖字段， extra: 额外的字段，childrenName：子元素的children名}
  */
 export function arrGroupByAtrr(array: any[], { key, extra = [], childrenName = 'children' }: any = {}) {
-    // 缓存内容，用来判断是否存在这个相同的类型
-    const cache: any = {};
-    // 最终需要的数组格式
-    const newArr: any[] = [];
-    array?.map((item) => {
-        // 如果是一条新数据则创建一条
-        if (isEmpty(cache[item[key]])) {
-            // 组合嵌套完成的对象
-            let newObject: any = {};
-            // 添加区分字段
-            newObject[key] = item[key];
-            // 添加嵌套的子数组字段
-            newObject[childrenName] = [item];
-            // 添加需要的其他字段
-            extra.map((str: string) => {
-                newObject[str] = item[str];
-            });
-            // 将嵌套好的对象添加进新数组
-            newArr.push(newObject);
-            cache[item[key]] = item;
-            // 如果已经存在同类型的则添加到同类型的对象下
-        } else {
-            newArr?.map((sub) => {
-                if (sub[key] === item[key]) {
-                    sub[childrenName].push(item);
-                }
-            });
+  // 缓存内容，用来判断是否存在这个相同的类型
+  const cache: any = {};
+  // 最终需要的数组格式
+  const newArr: any[] = [];
+  array?.map((item) => {
+    // 如果是一条新数据则创建一条
+    if (isEmpty(cache[item[key]])) {
+      // 组合嵌套完成的对象
+      let newObject: any = {};
+      // 添加区分字段
+      newObject[key] = item[key];
+      // 添加嵌套的子数组字段
+      newObject[childrenName] = [item];
+      // 添加需要的其他字段
+      extra.map((str: string) => {
+        newObject[str] = item[str];
+      });
+      // 将嵌套好的对象添加进新数组
+      newArr.push(newObject);
+      cache[item[key]] = item;
+      // 如果已经存在同类型的则添加到同类型的对象下
+    } else {
+      newArr?.map((sub) => {
+        if (sub[key] === item[key]) {
+          sub[childrenName].push(item);
         }
-    });
-    return newArr;
+      });
+    }
+  });
+  return newArr;
 }
 
 /**
@@ -168,22 +168,22 @@ export function arrGroupByAtrr(array: any[], { key, extra = [], childrenName = '
  * @param {String} attr 属性名 可选，数组元素为Object时设置
  */
 export function unique(arr: any[], attr: string): any[] {
-    const result = [];
-    const tagobj: any = {};
-    for (let item of arr) {
-        if (!isObject(item)) {
-            if (isEmpty(tagobj[item]) && !isEmpty(item)) {
-                result.push(item);
-                tagobj[item] = 1;
-            }
-        } else {
-            if (isEmpty(tagobj[item[attr]]) && !isEmpty(item)) {
-                result.push(item);
-                tagobj[item[attr]] = 1;
-            }
-        }
+  const result = [];
+  const tagobj: any = {};
+  for (let item of arr) {
+    if (!isObject(item)) {
+      if (isEmpty(tagobj[item]) && !isEmpty(item)) {
+        result.push(item);
+        tagobj[item] = 1;
+      }
+    } else {
+      if (isEmpty(tagobj[item[attr]]) && !isEmpty(item)) {
+        result.push(item);
+        tagobj[item[attr]] = 1;
+      }
     }
-    return result;
+  }
+  return result;
 }
 
 /**
@@ -193,24 +193,24 @@ export function unique(arr: any[], attr: string): any[] {
  * @param {Object} children 如果有嵌套数组则指明嵌套的属性名字符串, 默认为children字符串
  */
 export function formaterData(data: any[], attrObj: any = { label: 'key' }, children = 'children'): any[] {
-    if (!isObject(attrObj)) {
-        return data;
-    }
-    let newArr: any[] = [];
-    data.map((item) => {
-        let newObj: any = {};
-        // 遍历旧属性数组更改属性名
-        const keys = Object.keys(attrObj);
-        keys.map((key) => {
-            newObj[attrObj[key]] = item[key];
-        });
-        // 判断是否有嵌套数组, 有的话也同样执行
-        if (isArray(item[children]) && item[children].length > 0) {
-            newObj[children] = formaterData(item[children], attrObj, children);
-        }
-        newArr.push({ ...item, ...newObj });
+  if (!isObject(attrObj)) {
+    return data;
+  }
+  let newArr: any[] = [];
+  data.map((item) => {
+    let newObj: any = {};
+    // 遍历旧属性数组更改属性名
+    const keys = Object.keys(attrObj);
+    keys.map((key) => {
+      newObj[attrObj[key]] = item[key];
     });
-    return newArr;
+    // 判断是否有嵌套数组, 有的话也同样执行
+    if (isArray(item[children]) && item[children].length > 0) {
+      newObj[children] = formaterData(item[children], attrObj, children);
+    }
+    newArr.push({ ...item, ...newObj });
+  });
+  return newArr;
 }
 
 /**
@@ -218,25 +218,25 @@ export function formaterData(data: any[], attrObj: any = { label: 'key' }, child
  * @param {*} len 数组长度
  */
 export function createArrayByLen(len: number): number[] {
-    return [...new Array(len).keys()];
+  return [...new Array(len).keys()];
 }
 
 // 获取js数组中字符串的最长公共前缀
 export function longestCommonPrefix(arr: string[]) {
-    if (arr.length) {//判断数组是否为空
-        let res = ""; //记录公共前缀
-        for (let i = 0; i < arr[0].length; i++) {
-            let temp = arr[0][i];
-            // 每个字符串是否都有相同的字符
-            if (arr.every(el => {
-                return el.charAt(i) == temp;
-            })) {
-                res += temp; // 记录公共前缀
-            } else break; //如果返回false，就停止判断，说明不是前缀了
-        }
-        return res;
+  if (arr.length) {//判断数组是否为空
+    let res = ""; //记录公共前缀
+    for (let i = 0; i < arr[0].length; i++) {
+      let temp = arr[0][i];
+      // 每个字符串是否都有相同的字符
+      if (arr.every(el => {
+        return el.charAt(i) == temp;
+      })) {
+        res += temp; // 记录公共前缀
+      } else break; //如果返回false，就停止判断，说明不是前缀了
     }
-    return ""; //说明是空数组
+    return res;
+  }
+  return ""; //说明是空数组
 };
 
 /**
@@ -246,12 +246,12 @@ export function longestCommonPrefix(arr: string[]) {
  * @param {*} condition 判断相等的条件
  */
 export function isArrSame(arr1: any, arr2: any, condition: (item1: any, item2: any) => boolean): boolean {
-    if (!(arr1 instanceof Array) || !(arr2 instanceof Array)) {
-        return false;
-    }
-    if (arr1?.length !== arr2?.length) return false;
-    let noMatched = arr1?.some(item1 => !arr2?.some(item2 => condition(item2, item1)));
-    return !noMatched;
+  if (!(arr1 instanceof Array) || !(arr2 instanceof Array)) {
+    return false;
+  }
+  if (arr1?.length !== arr2?.length) return false;
+  let noMatched = arr1?.some(item1 => !arr2?.some(item2 => condition(item2, item1)));
+  return !noMatched;
 }
 
 /**
@@ -259,25 +259,25 @@ export function isArrSame(arr1: any, arr2: any, condition: (item1: any, item2: a
  * @param {*} node 结点
  */
 export function deepTraversal(node: any): any[] {
-    // 存储节点
-    let cache = [];
-    if (node != null) {
-        // 记录栈
-        let stack = [];
-        stack.push(node);
-        while (stack.length !== 0) {
-            // 删除栈
-            let item: any = stack.pop();
-            cache.push(item);
-            // 添加栈
-            if (item.children) {
-                let child = item.children;
-                for (let i = child.length - 1; i >= 0; i--)
-                    stack.push(child[i]);
-            }
-        }
+  // 存储节点
+  let cache = [];
+  if (node != null) {
+    // 记录栈
+    let stack = [];
+    stack.push(node);
+    while (stack.length !== 0) {
+      // 删除栈
+      let item: any = stack.pop();
+      cache.push(item);
+      // 添加栈
+      if (item.children) {
+        let child = item.children;
+        for (let i = child.length - 1; i >= 0; i--)
+          stack.push(child[i]);
+      }
     }
-    return cache;
+  }
+  return cache;
 }
 
 /**
@@ -285,20 +285,20 @@ export function deepTraversal(node: any): any[] {
  * @param {*} node 根节点
  */
 export function breadthFirstSearch(node: any): any[] {
-    // 存储节点
-    let cache = [];
-    if (node != null) {
-        let queue = [];
-        queue.unshift(node);
-        while (queue.length != 0) {
-            let item: any = queue.shift();
-            cache.push(item);
-            const children = item.children;
-            for (var i = 0; i < children.length; i++)
-                queue.push(children[i]);
-        }
+  // 存储节点
+  let cache = [];
+  if (node != null) {
+    let queue = [];
+    queue.unshift(node);
+    while (queue.length != 0) {
+      let item: any = queue.shift();
+      cache.push(item);
+      const children = item.children;
+      for (var i = 0; i < children.length; i++)
+        queue.push(children[i]);
     }
-    return cache;
+  }
+  return cache;
 }
 
 /**
@@ -307,22 +307,22 @@ export function breadthFirstSearch(node: any): any[] {
  * @param {*} childrenName 标识孩子的字段名
  */
 export function findLeaves(node: any, childrenName = 'children'): any[] {
-    // 存储节点
-    let cache: any[] = [];
-    if (node != null) {
-        let queue = [];
-        queue.unshift(node);
-        while (queue.length != 0) {
-            let item = queue.shift();
-            const children: any[] = item[childrenName];
-            if (item && children?.length > 0) {
-                cache = cache.concat([item]);
-            }
-            for (let i = 0; i < children?.length; i++)
-                queue.push(children?.[i]);
-        }
+  // 存储节点
+  let cache: any[] = [];
+  if (node != null) {
+    let queue = [];
+    queue.unshift(node);
+    while (queue.length != 0) {
+      let item = queue.shift();
+      const children: any[] = item[childrenName];
+      if (item && children?.length > 0) {
+        cache = cache.concat([item]);
+      }
+      for (let i = 0; i < children?.length; i++)
+        queue.push(children?.[i]);
     }
-    return cache;
+  }
+  return cache;
 }
 
 /**
@@ -333,36 +333,36 @@ export function findLeaves(node: any, childrenName = 'children'): any[] {
  */
 export const findPath = (key: string, value: any, rootNode: any): any[] | undefined => {
 
-    //定义变量保存当前结果路径
-    const path: any[] = [];
+  //定义变量保存当前结果路径
+  const path: any[] = [];
 
-    try {
-        const getNodePath = (node: any) => {
-            path.push(node[key]);
-            //找到符合条件的节点，通过throw终止掉递归
-            if (node[key] == value) {
-                throw ("ok");
-            }
-            if (node?.children && node?.children?.length > 0) {
-                for (var i = 0; i < node.children.length; i++) {
-                    getNodePath(node.children[i]);
-                }
-                //当前节点的子节点遍历完依旧没找到，则删除路径中的该节点
-                path.pop();
-            } else {
-                //找到叶子节点时，删除路径当中的该叶子节点
-                path.pop();
-            }
-        };
-
-        getNodePath(rootNode);
-    } catch (res) {
-        if (res === "ok") {
-            return path;
-        } else {
-            return [];
+  try {
+    const getNodePath = (node: any) => {
+      path.push(node[key]);
+      //找到符合条件的节点，通过throw终止掉递归
+      if (node[key] == value) {
+        throw ("ok");
+      }
+      if (node?.children && node?.children?.length > 0) {
+        for (var i = 0; i < node.children.length; i++) {
+          getNodePath(node.children[i]);
         }
+        //当前节点的子节点遍历完依旧没找到，则删除路径中的该节点
+        path.pop();
+      } else {
+        //找到叶子节点时，删除路径当中的该叶子节点
+        path.pop();
+      }
+    };
+
+    getNodePath(rootNode);
+  } catch (res) {
+    if (res === "ok") {
+      return path;
+    } else {
+      return [];
     }
+  }
 };
 
 /**
@@ -372,64 +372,64 @@ export const findPath = (key: string, value: any, rootNode: any): any[] | undefi
  * @param {*} tree 树列表
  */
 export function getNode(key: string, value: any, tree = []): any {
-    let ele;
-    for (let i = 0; i < tree.length; i++) {
-        const node: any = tree[i];
-        if (node[key] === value) {
-            ele = node;
-        } else if (node?.children?.length) {
-            ele = getNode(key, value, node?.children);
-        }
+  let ele;
+  for (let i = 0; i < tree.length; i++) {
+    const node: any = tree[i];
+    if (node[key] === value) {
+      ele = node;
+    } else if (node?.children?.length) {
+      ele = getNode(key, value, node?.children);
     }
-    return ele;
+  }
+  return ele;
 };
 
 // 根据某个过滤函数，从遍历器中寻找到复合条件的值
 export function findInArray(array: any, callback: (value: any, i?: number, array?: any) => boolean | undefined): any {
-    for (let i = 0, length = array?.length; i < length; i++) {
-        if (callback.apply(callback, [array[i], i, array])) return array[i];
-    }
+  for (let i = 0, length = array?.length; i < length; i++) {
+    if (callback.apply(callback, [array[i], i, array])) return array[i];
+  }
 }
 
 // 转化对象数组为map数据
 export const getArrMap = (arr: any[] = [], valueKey?: string, labelKey?: string) => {
-    const data = {};
-    arr.forEach((item, index) => data[valueKey ? item[valueKey] : index] = labelKey ? item[labelKey] : item);
-    return data;
+  const data = {};
+  arr.forEach((item, index) => data[valueKey ? item[valueKey] : index] = labelKey ? item[labelKey] : item);
+  return data;
 };
 
 
 // 两个元素交换位置		
 export const changeLocation = (arr: any[], index1: number, index2: number) => {
-    arr[index1] = arr.splice(index2, 1, arr[index1])[0];
-    return arr;
+  arr[index1] = arr.splice(index2, 1, arr[index1])[0];
+  return arr;
 };
 
 // 根据条件合并两个对象数组
 export const combinedArr = (arr1: object[], arr2: object[], condition: (next: object, cur: object, nextIndex: number, curIndex: number) => boolean) => {
-    const ret: any[] = [];
-    arr2?.reduce((combined: object[], cur, curIndex) => {
-        let target = combined?.find((next, nextIndex) => condition(next, cur, nextIndex, curIndex));
-        if (target) {
-            target = { ...target, ...cur };
-            ret?.push(target)
-        } else {
-            ret?.push(cur);
-        }
-        return combined;
-    }, arr1);
-    return ret;
+  const ret: any[] = [];
+  arr2?.reduce((combined: object[], cur, curIndex) => {
+    let target = combined?.find((next, nextIndex) => condition(next, cur, nextIndex, curIndex));
+    if (target) {
+      target = { ...target, ...cur };
+      ret?.push(target)
+    } else {
+      ret?.push(cur);
+    }
+    return combined;
+  }, arr1);
+  return ret;
 };
 
 export const arrayMove = (arr: any[], preIndex: number, nextIndex: number) => {
-    const clone = deepCopy(arr);
-    if (preIndex > nextIndex) {
-        clone.splice(nextIndex, 0, arr[preIndex]);
-        clone.splice(preIndex + 1, 1)
-    }
-    else if (preIndex < nextIndex) {
-        clone.splice(nextIndex + 1, 0, arr[preIndex]);
-        clone.splice(preIndex, 1)
-    }
-    return clone;
+  const clone = klona(arr);
+  if (preIndex > nextIndex) {
+    clone.splice(nextIndex, 0, arr[preIndex]);
+    clone.splice(preIndex + 1, 1)
+  }
+  else if (preIndex < nextIndex) {
+    clone.splice(nextIndex + 1, 0, arr[preIndex]);
+    clone.splice(preIndex, 1)
+  }
+  return clone;
 }

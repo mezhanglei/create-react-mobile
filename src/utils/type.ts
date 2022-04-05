@@ -49,7 +49,7 @@ export function isElement(data: any) {
     return data instanceof Element;
 }
 
-export function isDom(ele: any) {
+export function isDom(ele: HTMLElement) {
     if (typeof HTMLElement === 'object') {
         return ele instanceof HTMLElement;
     } else {

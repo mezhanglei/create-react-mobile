@@ -1,5 +1,5 @@
 import { isObject } from "./type";
-import deepCopy from 'fast-copy';
+import { klona } from 'klona';
 
 // 判断两个值是否相等
 export function isObjectEqual(a: any, b: any) {
@@ -68,13 +68,13 @@ export function deepGet(obj: object | undefined, keys: string | string[]): any {
 // 给对象目标属性添加值
 export function deepSet(obj: any, path: string | string[], value: any, arraySetPath?: Array<string>) {
   if (typeof obj !== 'object') return obj;
-  let temp = deepCopy(obj);
+  let temp = klona(obj);
   const root = temp;
   const parts = !Array.isArray(path) ? path.replace(/\[/g, '.').replace(/\]/g, '').split('.') : path;
-  const length = parts.length
+  const length = parts.length;
 
   for (let i = 0; i < length; i++) {
-    const p = parts[i]
+    const p = parts[i];
     // 该字段是否设置为数组
     const isSetArray = arraySetPath?.some((path) => {
       const end = path?.split('.')?.pop();
@@ -91,7 +91,7 @@ export function deepSet(obj: any, path: string | string[], value: any, arraySetP
     } else if (typeof temp[p] !== 'object') {
       temp[p] = {};
     }
-    temp = temp[p]
+    temp = temp[p];
   }
   return root;
 }
@@ -101,7 +101,7 @@ export const mergeObject = function (obj1: any, obj2: any) {
   if (!isObject(obj1) || !isObject(obj2)) {
     return obj1;
   }
-  const clone = deepCopy(obj1);
+  const clone = klona(obj1);
   for (let key in obj2) {
     if (obj2[key] !== undefined) {
       clone[key] = obj2[key];

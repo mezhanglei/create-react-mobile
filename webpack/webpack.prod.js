@@ -1,9 +1,5 @@
 "use strict";
 
-// 根据目标字符串自动匹配来动态扫描目标文件返回符合要求的文件路径数组,glob只能扫描一个,如果要同时扫描多个路径请使用glob-all
-// 匹配规则: 1. * 在单个路径中间匹配一个目录/文件(不会匹配路径分隔符/), /* 则表示一个或多个子目录/文件 2. ** 在单个路径中间匹配部分0个或多个目录/文件
-const glob = require("glob");
-const globAll = require("glob-all");
 // 引入webpack
 const webpack = require("webpack");
 // 1. path.join('字段1','字段2'....) 使用平台特定的分隔符把所有的片段链接生成相对路径,遇到..和../时会进行相对路径计算
@@ -34,19 +30,8 @@ const CopyWebpackPlugin = require("copy-webpack-plugin");
 const configs = require('./configs.js');
 
 
-// === webpack的loader扩展 === //
-
-// === webpack的plugins扩展(plugins中不允许空值存在) === //
-
-// 生成html的plugin配置,返回HtmlWebpackPlugin数组
-const HtmlPlugins = () => {
-    return configs.htmlConfigs.map(item => {
-        return new HtmlWebpackPlugin(item);
-    });
-};
-
-// webpack从manifest文件中读取到已预编译的文件, 然后忽略对其的编辑打包(这里循环是为了当有多个dll文件时进行循环操作)
-const dllArr = configs.manifestPathArr.map((path) => {
+// webpack从manifest文件中读取到已预编译的文件, 然后忽略对其的编辑打包,多个dll文件则循环
+const dllList = configs.manifestPathArr.map((path) => {
     return new webpack.DllReferencePlugin({
         // 上下文环境路径(与dllplugin在同一目录)
         context: configs.root,
@@ -57,12 +42,13 @@ const dllArr = configs.manifestPathArr.map((path) => {
 // 体积分析插件
 const bundleAnalyze = configs.isAnalyz ? [new BundleAnalyzerPlugin()] : [];
 
+const isDev = process.env.NODE_ENV === 'development';
 
 //  === webpack配置内容 === //
 const webpackConfig = {
     // 对象语法： 1. 当有多条数据，则会打包生成多个依赖分离的入口js文件
     // 2. 对象中的值为路径字符串数组或路径字符串，会被打包到该条数据对应生成的入口js文件
-    entry: configs.entries,
+    entry: configs.entry,
     // 解析的起点, 默认为项目的根目录
     context: configs.root,
     // 输出(默认只能打包js文件,如果需要打包其他文件,需要借助相对应的loader)
@@ -128,7 +114,7 @@ const webpackConfig = {
                     {
                         loader: MiniCssExtractPlugin.loader,
                         options: {
-                            // 修改css文件中静态资源的引用相对路径
+                            // 修改打包后目录中css文件中静态资源的引用的基础路径
                             publicPath: configs.assetsPath,
                         },
                     },
@@ -140,7 +126,7 @@ const webpackConfig = {
             },
             {
                 test: /\.less$/,
-                exclude: /\.module\.less$/,
+                exclude: /(\.module\.less)$/,
                 use: [
                     // "style-loader",
                     {
@@ -158,7 +144,7 @@ const webpackConfig = {
                             //   "@brand-primary": "red"
                             // },
                             modifyVars: {
-                                // 引入antd 主题颜色覆盖文件
+                                // 引入antd-mobile 主题颜色覆盖文件
                                 hack: `true; @import "${path.join(
                                     configs.root,
                                     "less/constants/theme.less"
@@ -169,8 +155,9 @@ const webpackConfig = {
                     },
                 ]
             },
+            // 解析css module
             {
-                test: /\.module\.less$/,
+                test: /(\.module\.less)$/,
                 use: [
                     {
                         loader: MiniCssExtractPlugin.loader,
@@ -230,30 +217,7 @@ const webpackConfig = {
                             // 默认超出后file-loader
                             fallback: "file-loader"
                         },
-                    },
-                    // {
-                    //     // yarn官方镜像依赖丢失不可用，淘宝镜像正常
-                    //     loader: "image-webpack-loader",
-                    //     options: {
-                    //         mozjpeg: {
-                    //             progressive: true,
-                    //             quality: 65,
-                    //         },
-                    //         optipng: {
-                    //             enabled: false,
-                    //         },
-                    //         pngquant: {
-                    //             quality: [0.65, 0.9],
-                    //             speed: 4,
-                    //         },
-                    //         gifsicle: {
-                    //             interlaced: false,
-                    //         },
-                    //         webp: {
-                    //             quality: 75,
-                    //         },
-                    //     },
-                    // }
+                    }
                 ],
             },
             {
@@ -272,13 +236,10 @@ const webpackConfig = {
     },
     // 插件
     plugins: [
-        // 暴露模块为全局模块，在全局都可以使用，而不必使用时import或require
-        // 如果加载的模块没有使用，则不会被打包
         new webpack.ProvidePlugin(configs.providePlugin),
         // 设置项目的全局变量,String类型, 如果值是个字符串会被当成一个代码片段来使用, 如果不是,它会被转化为字符串(包括函数)
         new webpack.DefinePlugin({
             'process.env': {
-                // NODE_ENV: process.env.NODE_ENV,
                 // mock数据环境
                 MOCK: process.env.MOCK,
                 // 资源引用的公共路径字符串
@@ -318,8 +279,63 @@ const webpackConfig = {
                 // ignore: ['.*']
             },
         ]),
-        ...HtmlPlugins(),
-        ...dllArr,
+        // htmlplugin
+        new HtmlWebpackPlugin({
+            // title: '生成的html文档的标题',
+            // 指定输出的html文档
+            filename: `index.html`,
+            // html模板所在的位置，默认支持html和ejs模板语法，处理文件后缀为html的模板会与html-loader冲突
+            template: path.join(configs.htmlPages, 'index.html'),
+            // 不能与template共存，也可以指定html字符串
+            // templateContent: string|function,
+            // 默认script一次性引用所有的chunk(chunk的name)
+            chunks: ["vendors", "common", `runtime~index`, 'index'],
+            // 跳过一个块
+            // excludeChunks: [],
+            // 注入静态资源的位置:
+            //    1. true或者body：所有JavaScript资源插入到body元素的底部
+            //    2. head： 所有JavaScript资源插入到head元素中
+            //    3. false：所有静态资源css和JavaScript都不会注入到模板文件中
+            inject: true,
+            // 图标的所在路径，最终会被打包到到输出目录
+            // favicon: item.favicon,
+            // 注入meta标签，例如{viewport: 'width=device-width, initial-scale=1, shrink-to-fit=no'}
+            // meta: {},
+            // 注入base标签。例如base: "https://example.com/path/page.html
+            // base: false,
+            minify: {
+                // 根据html5规范输入 默认true
+                html5: true,
+                // 是否对大小写敏感 默认false
+                caseSensitive: false,
+                // 去除属性引用
+                removeAttributeQuotes: process.env.NODE_ENV === "development" ? false : true,
+                // 删除空格换行 默认false
+                collapseWhitespace: process.env.NODE_ENV === "development" ? false : true,
+                // 当标记之间的空格包含换行符时，始终折叠为1换行符（从不完全删除它）。collapseWhitespace=true, 默认false
+                preserveLineBreaks: false,
+                // 压缩link进来的本地css文件 默认false,需要和clean-css一起使用
+                minifyCSS: false,
+                // 压缩script内联的本地js文件 默认false,为true需要和teserwebpackplugin一起使用
+                minifyJS: true,
+                // 移除html中的注释 默认false
+                removeComments: true
+            },
+            // 如果为true则为所有的script引入和css引入添加唯一的hash值
+            // hash: false,
+            // 错误详细信息将写入html
+            // showErrors: true,
+            // script引入的公共js文件
+            commonJs: [
+                // 如果执行了npm run dll生成了static/dll文件，则必须在这里进行引入
+                // 'static/dll/base_dll.js'
+            ],
+            // link引入的公共css文件
+            commonCSS: [
+                // `static/fonts/iconfont.css?time=${new Date().getTime()}`
+            ]
+        }),
+        ...dllList,
         ...bundleAnalyze
     ],
     // require 引用入口配置
@@ -329,8 +345,8 @@ const webpackConfig = {
     // 优化项
     optimization: {
         // 分割js代码块,目的是进行颗粒度更细的打包,将相同的模块提取出来打包这样可以减小包的体积(以前用CommonsChunkPlugin)
-        // 1.基础类库：react，react-redux，react-router等等
-        // 2.UI库：antd，antd-icons
+        // 1.基础类库：react，react-redux，react-router-dom等等
+        // 2.UI库：antd-mobile
         // 3.公共组件库：自定义的公共组件
         // 4.页面(react和vue提供了分包策略,不需要这个)
         splitChunks: {
@@ -345,14 +361,14 @@ const webpackConfig = {
             // 配置规则(里面选项自定义, 默认选项有vendors基础资源包和default(即output输出)资源包)
             cacheGroups: {
                 // 重写vendors基础资源打包分组
-                vendors: {
-                    name: "vendors",
-                    test: /[\\/]node_modules[\\/]/,
-                    chunks: "initial",
-                    priority: 1,
-                    // 默认true时，该组复用引用的其他chunk，false时则不会复用而是重新创建一个新chunk
-                    reuseExistingChunk: false,
-                },
+                // vendors: {
+                //     name: "vendors",
+                //     test: /[\\/]node_modules[\\/]/,
+                //     chunks: "initial",
+                //     priority: 1,
+                //     // 默认true时，该组复用引用的其他chunk，false时则不会复用而是重新创建一个新chunk
+                //     reuseExistingChunk: false,
+                // },
                 // 不同的html公用的包
                 common: {
                     // 打包的chunks名，最终打包名称为${cacheGroup的key} ${automaticNameDelimiter} ${chunk的name},可以自定义
@@ -400,6 +416,12 @@ const webpackConfig = {
                 parallel: true,
                 // 启用文件缓存，缓存目录的默认路径：node_modules/.cache/terser-webpack-plugin。也可以手动设置路径
                 cache: true,
+                // 去掉console.log
+                terserOptions: {
+                    compress: {
+                        pure_funcs: ["console.log"]
+                    }
+                }
             })
         ],
     },

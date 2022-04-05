@@ -1,5 +1,5 @@
-import { message } from "antd";
-import zhCN from 'antd/lib/locale/zh_CN';
+import { Toast } from "antd-mobile";
+import zhCN from 'antd-mobile/es/locales/zh-CN';
 import 'moment/locale/zh-cn';
 import moment from 'moment';
 
@@ -14,9 +14,7 @@ export default {
 };
 
 // 消息管理
-message.config({
-    maxCount: 1,
-});
+Toast.config({ duration: 1000 });
 
 // 修改moment配置，注意请修改你正在使用的 locale 语言，比如 zh-cn
 moment.locale('zh-cn', {

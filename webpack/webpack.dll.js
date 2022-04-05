@@ -16,7 +16,7 @@ module.exports = {
     // 入口文件
     entry: {
         // 数组中如果为node_modules文件夹里的包,则直接写名, 如果是其他位置的包则写入路径(绝对路径)
-        base: []
+        base: ['react']
     },
     // 解析的起点, 默认为项目的根目录
     context: configs.root,

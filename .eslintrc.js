@@ -32,7 +32,7 @@ module.exports = {
   // 0 - 关闭规则 1 - 开启规则，触发则警告  2 - 开启规则，触发则报错
   "rules": {
     // 强制使用一样的缩进, 还有强制switch 语句中的 case 子句的缩进级别
-    "indent": ["error", 4, {
+    "indent": ["error", 2, {
       "SwitchCase": 1
     }],
     "typescript/member-ordering": 'off',

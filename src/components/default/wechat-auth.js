@@ -1,4 +1,4 @@
-import { Toast } from "antd-mobile";
+// import { Toast } from "antd-mobile";
 import { getUrlQuery } from "@/utils/url";
 import { WECHAT_TOKEN } from "@/constants/account/index";
 import { myStorage } from "@/utils/cache";
@@ -27,7 +27,7 @@ const AuthWechat = (props) => {
         myStorage.set(WECHAT_TOKEN, token);
         window.location.replace(backPath);
     } else {
-        Toast.fail("微信授权失败, 请稍后再试");
+        // Toast.fail("微信授权失败, 请稍后再试");
     }
 
     return null;
