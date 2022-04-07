@@ -9,12 +9,12 @@ import { TimeInputType } from "./interface";
  * @param {*} time 时间字符串/对象/时间戳
  */
 export function getMonthEndDay(time: TimeInputType): Date | null {
-    const newDate = getNewDate(time);
-    if(!newDate) return null;
-    const year = newDate.getFullYear();
-    const month = newDate.getMonth() + 1;
-    const end = new Date(year, month, 0);
-    return end;
+  const newDate = getNewDate(time);
+  if (!newDate) return null;
+  const year = newDate.getFullYear();
+  const month = newDate.getMonth() + 1;
+  const end = new Date(year, month, 0);
+  return end;
 }
 
 /**
@@ -22,12 +22,12 @@ export function getMonthEndDay(time: TimeInputType): Date | null {
  * @param {*} time 时间字符串/对象/时间戳
  */
 export function getMonthStartDay(time: TimeInputType): Date | null {
-    const newDate = getNewDate(time);
-    if(!newDate) return null;
-    const year = newDate.getFullYear();
-    const month = newDate.getMonth();
-    const start = new Date(year, month, 1);
-    return start;
+  const newDate = getNewDate(time);
+  if (!newDate) return null;
+  const year = newDate.getFullYear();
+  const month = newDate.getMonth();
+  const start = new Date(year, month, 1);
+  return start;
 }
 
 /**
@@ -37,13 +37,13 @@ export function getMonthStartDay(time: TimeInputType): Date | null {
  * @returns
  */
 export function getMonthDayNum(time: TimeInputType): number | undefined {
-    const newDate = getNewDate(time);
-    if(!newDate) return;
-    const year = newDate.getFullYear();
-    const month = newDate.getMonth() + 1;
-    // 下个月初零点
-    const endDate = new Date(year, month, 0);
-    return endDate.getDate();
+  const newDate = getNewDate(time);
+  if (!newDate) return;
+  const year = newDate.getFullYear();
+  const month = newDate.getMonth() + 1;
+  // 下个月初零点
+  const endDate = new Date(year, month, 0);
+  return endDate.getDate();
 }
 
 /**
@@ -54,11 +54,11 @@ export function getMonthDayNum(time: TimeInputType): number | undefined {
  * @returns
  */
 export function getMonthRestDayNum(time: TimeInputType, n = 0): string | undefined {
-    const start = getNewDate(time);
-    if(!start) return;
-    const monthDayNum = getMonthDayNum(time);
-    const T = 1000 * 24 * 60 * 60;
-    return formatFloat((monthDayNum * T - start.getTime()) / (1000 * 24 * 60 * 60), n);
+  const start = getNewDate(time);
+  if (!start) return;
+  const monthDayNum = getMonthDayNum(time);
+  const T = 1000 * 24 * 60 * 60;
+  return formatFloat((monthDayNum * T - start.getTime()) / (1000 * 24 * 60 * 60), n);
 }
 
 /**
@@ -69,12 +69,12 @@ export function getMonthRestDayNum(time: TimeInputType, n = 0): string | undefin
  * @returns
  */
 export function getMonthStartDayNum(time: TimeInputType, n = 0) {
-    if (!getNewDate(time)) {
-        return null;
-    }
-    const start = getMonthStartDay(time);
-    const end = getNewDate(time);
-    return formatFloat((end.getTime() - start.getTime()) / (1000 * 24 * 60 * 60), n);
+  if (!getNewDate(time)) {
+    return null;
+  }
+  const start = getMonthStartDay(time);
+  const end = getNewDate(time);
+  return formatFloat((end.getTime() - start.getTime()) / (1000 * 24 * 60 * 60), n);
 }
 
 /**
@@ -84,17 +84,17 @@ export function getMonthStartDayNum(time: TimeInputType, n = 0) {
  * @returns
  */
 export function getMonthStartDays(time: TimeInputType): string[] {
-    let newDate = getNewDate(time);
-    if(!newDate) return [];
-    const currentDay = newDate.getDate();
-    let dayArray = [];
-    for (let i = 1; i <= currentDay; i++) {
-        // 设置月的第几天(时刻为当前时刻),返回时间戳
-        let day = newDate.setDate(i);
-        let everyDay = dateFormat(day, 'YYYY-MM-DD');
-        dayArray.push(everyDay);
-    }
-    return dayArray;
+  let newDate = getNewDate(time);
+  if (!newDate) return [];
+  const currentDay = newDate.getDate();
+  let dayArray = [];
+  for (let i = 1; i <= currentDay; i++) {
+    // 设置月的第几天(时刻为当前时刻),返回时间戳
+    let day = newDate.setDate(i);
+    let everyDay = dateFormat(day, 'YYYY-MM-DD');
+    dayArray.push(everyDay);
+  }
+  return dayArray;
 }
 
 /**
@@ -104,17 +104,17 @@ export function getMonthStartDays(time: TimeInputType): string[] {
  * @returns
  */
 export function getMonthRestDays(time: TimeInputType): string[] {
-    let newDate = getNewDate(time);
-    if(!newDate) return [];
-    const currentDay = newDate.getDate();
-    const dayNum = getMonthDayNum(newDate);
-    let dayArray = [];
-    for (let i = currentDay; i <= dayNum; i++) {
-        let day = newDate.setDate(i);
-        let everyDay = dateFormat(day, 'YYYY-MM-DD');
-        dayArray.push(everyDay);
-    }
-    return dayArray;
+  let newDate = getNewDate(time);
+  if (!newDate) return [];
+  const currentDay = newDate.getDate();
+  const dayNum = getMonthDayNum(newDate);
+  let dayArray = [];
+  for (let i = currentDay; i <= dayNum; i++) {
+    let day = newDate.setDate(i);
+    let everyDay = dateFormat(day, 'YYYY-MM-DD');
+    dayArray.push(everyDay);
+  }
+  return dayArray;
 }
 
 /**
@@ -124,14 +124,14 @@ export function getMonthRestDays(time: TimeInputType): string[] {
  * @returns
  */
 export function getMonthDays(time: TimeInputType): string[] {
-    let newDate = getNewDate(time);
-    if(!newDate) return [];
-    let dayNum = getMonthDayNum(newDate);
-    let dayArray = [];
-    for (let i = 1; i <= dayNum; i++) {
-        let day = newDate.setDate(i);
-        let everyDay = dateFormat(day, 'YYYY-MM-DD');
-        dayArray.push(everyDay);
-    }
-    return dayArray;
+  let newDate = getNewDate(time);
+  if (!newDate) return [];
+  let dayNum = getMonthDayNum(newDate);
+  let dayArray = [];
+  for (let i = 1; i <= dayNum; i++) {
+    let day = newDate.setDate(i);
+    let everyDay = dateFormat(day, 'YYYY-MM-DD');
+    dayArray.push(everyDay);
+  }
+  return dayArray;
 }

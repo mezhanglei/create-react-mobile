@@ -10,12 +10,12 @@ import { TimeInputType } from "./interface";
  * @returns
  */
 export function getWeek(time: TimeInputType) {
-    if (!getNewDate(time)) {
-        return time;
-    }
-    let newDate = getNewDate(time);
-    if(!newDate) return time;
-    let index = newDate.getDay();
-    let weeks = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
-    return weeks[index];
+  if (!getNewDate(time)) {
+    return time;
+  }
+  let newDate = getNewDate(time);
+  if (!newDate) return time;
+  let index = newDate.getDay();
+  let weeks = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+  return weeks[index];
 }

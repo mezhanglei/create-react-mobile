@@ -1,6 +1,7 @@
 import { CSSProperties } from "react";
 import { isDom } from "./type";
 import { findInArray } from "./array";
+import { getPrefixStyle } from "./cssPrefix";
 
 /**
  * 接收类名或节点，返回节点
@@ -59,14 +60,9 @@ export function getAbsolute(ele: HTMLElement, parent: HTMLElement): { x: number,
 }
 
 // 获取当前的window
-export const getWindow = (node: any) => {
-  // if node is not the window object
-  if (node.toString() !== '[object Window]') {
-    // get the top-level document object of the node, or null if node is a document.
-    const { ownerDocument } = node;
-    // get the window object associated with the document, or null if none is available.
-    return ownerDocument ? ownerDocument.defaultView || window : window;
-  }
+export const getWindow = (el?: any) => {
+  const ownerDocument = el?.ownerDocument || document?.ownerDocument;
+  return ownerDocument ? (ownerDocument.defaultView || window) : window;
 };
 
 /**
@@ -87,6 +83,48 @@ export function isContains(root: HTMLElement, child: HTMLElement): boolean {
   if (!root || root === child) return false;
   return root.contains(child);
 };
+
+// 目标元素是否匹配选择器
+export function matches(el: any, selector: string) {
+  if (!selector) return;
+
+  selector[0] === '>' && (selector = selector.substring(1));
+
+  if (el) {
+    try {
+      if (el.matches) {
+        return el.matches(selector);
+      } else if (el.msMatchesSelector) {
+        return el.msMatchesSelector(selector);
+      } else if (el.webkitMatchesSelector) {
+        return el.webkitMatchesSelector(selector);
+      }
+    } catch (_) {
+      return false;
+    }
+  }
+
+  return false;
+}
+
+// 根据选择器返回在父元素内的序号
+export function getChildrenIndex(el: any, excluded?: HTMLElement, selector?: string) {
+  const children = el?.parentNode?.children;
+  if (!children) return -1;
+  let index = 0;
+  for (let i = 0; i < children?.length; i++) {
+    const node = children[i] as HTMLElement;
+    if ((!selector || matches(node, selector)) && node !== excluded) {
+      // 如果等于就结束循环
+      if (el !== node) {
+        index++
+      } else {
+        break;
+      }
+    }
+  }
+  return index;
+}
 
 /**
  * 查询元素是否在某个元素内
@@ -355,27 +393,6 @@ export function getInsideRange(el: HTMLElement, parent: HTMLElement): null | {
 }
 
 /**
- * 给目标节点设置样式,并返回旧样式
- * @param {*} style 样式对象
- * @param {*} node 目标元素
- */
-export function setStyle(style: CSSProperties, node: HTMLElement = document.body || document.documentElement): CSSProperties {
-  const oldStyle: CSSProperties = {};
-
-  const styleKeys: string[] = Object.keys(style);
-
-  styleKeys.forEach(key => {
-    oldStyle[key] = (node.style)[key];
-  });
-
-  styleKeys.forEach(key => {
-    (node.style)[key] = style[key];
-  });
-
-  return oldStyle;
-}
-
-/**
  * 判断目标元素内部是否可以滚动
  * @param {*} ele 内容可以scroll的元素
  */
@@ -493,17 +510,22 @@ export const getDirection = (e: MouseEvent | TouchEvent, ele: any) => {
   return direction;
 }
 
-// 获取元素指定的属性值
-export function css(el: any, key?: string) {
+// 获取或设置目标元素的style值
+export function css(el: any, prop?: string | CSSProperties) {
+  let style = el && el.style;
   const win = getWindow(el);
-  let elStyle;
-  if (win) {
-    elStyle = win.getComputedStyle(el);
-  } else {
-    elStyle = el.currentStyle;
+  if (style) {
+    const ownerStyle = win.getComputedStyle(el, '') || el.currentStyle;
+    if (prop === void 0) {
+      return ownerStyle;
+    } else if (typeof prop === 'string') {
+      return ownerStyle[prop];
+    } else if (typeof prop === 'object') {
+      for (const key in prop) {
+        style[getPrefixStyle(key)] = prop[key]
+      }
+    }
   }
-
-  return typeof key === 'string' ? elStyle[key] : elStyle;
 }
 
 // 获取当前元素的前面的兄弟元素
@@ -535,6 +557,56 @@ export const nextAll = function (node: HTMLElement) {
   }
   return siblings;
 
+}
+
+export interface BoundingRect {
+  left: number;
+  top: number;
+  right: number;
+  bottom: number;
+}
+// 事件对象是否在目标范围内
+export const isMoveIn = (event: { x: number, y: number }, other: BoundingRect) => {
+
+  const eventX = event?.x;
+  const eventY = event?.y;
+
+  return !(eventX - other?.left < 0 || eventY - other?.top < 0 || eventX - other?.right > 0 || eventY - other?.bottom > 0)
+};
+
+// 点距离目标内的四条边的最短距离
+export function getMinDistance(event: { x: number, y: number }, other: BoundingRect) {
+  const distances = [Math.floor(event.x - other.left), Math.floor(event.y - other?.top), Math.floor(other?.bottom - event?.y), Math.floor(other?.right - event.x)];
+  const minDistance = Math.min.apply(Math, distances);
+  return minDistance;
+};
+
+// 距离事件对象最近的目标
+export function findNearest(e: any, list: Array<{ node: HTMLElement }>) {
+  let addChilds = [];
+  let addDistance = [];
+  const eventXY = getEventPosition(e);
+  for (let child of list?.values()) {
+    const childNode = child?.node;
+    const other = getInsidePosition(childNode);
+    // 碰撞目标(排除拖拽源的后代子元素)
+    if (other && eventXY && isMoveIn(eventXY, other)) {
+      addDistance.push(getMinDistance(eventXY, other));
+      addChilds.push(child);
+    }
+  }
+  let minNum = Number.MAX_VALUE;
+  let minChild;
+  for (let i = 0; i < addDistance.length; i++) {
+    if (addDistance[i] < minNum) {
+      minNum = addDistance[i];
+      minChild = addChilds[i];
+    } else if (addDistance[i] == minNum && minChild?.node?.contains(addChilds[i]?.node)) {
+      minNum = addDistance[i];
+      minChild = addChilds[i];
+    }
+  }
+  return minChild;
 }
 
 

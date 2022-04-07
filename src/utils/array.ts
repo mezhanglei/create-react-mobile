@@ -412,7 +412,7 @@ export const combinedArr = (arr1: object[], arr2: object[], condition: (next: ob
     let target = combined?.find((next, nextIndex) => condition(next, cur, nextIndex, curIndex));
     if (target) {
       target = { ...target, ...cur };
-      ret?.push(target)
+      ret?.push(target);
     } else {
       ret?.push(cur);
     }
@@ -426,10 +426,9 @@ export const arrayMove = (arr: any[], preIndex: number, nextIndex: number) => {
   if (preIndex > nextIndex) {
     clone.splice(nextIndex, 0, arr[preIndex]);
     clone.splice(preIndex + 1, 1)
-  }
-  else if (preIndex < nextIndex) {
+  } else if (preIndex < nextIndex) {
     clone.splice(nextIndex + 1, 0, arr[preIndex]);
     clone.splice(preIndex, 1)
   }
   return clone;
-}
+};
