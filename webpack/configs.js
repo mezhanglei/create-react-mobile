@@ -103,6 +103,33 @@ const dllConfig = {
   manifestPathArr: glob.sync(path.join(dllOutputPath, '*.json'))
 };
 
+// 自动获取可远程访问的ip
+const os = require("os");
+function getNetworkIp() {
+  // 打开的host
+  let needHost = "";
+  try {
+    // 获得网络接口对象
+    let network = os.networkInterfaces();
+    // 遍历网络接口对象得到ipv4且不为127.0.0.1且internal为fasle(可远程访问)的host
+    Object.keys(network).map((item) => {
+      // 遍历每个类型的网络地址列表
+      network[item].map((sub) => {
+        if (
+          sub.family === "IPv4" &&
+          sub.address !== "127.0.0.1" &&
+          !sub.internal
+        ) {
+          needHost = sub.address;
+        }
+      });
+    });
+  } catch (e) {
+    needHost = "localhost";
+  }
+  return needHost;
+}
+
 // 合并为一个对象输出
 module.exports = {
   root,
@@ -113,6 +140,7 @@ module.exports = {
   dllOutputPath,
   publicPath,
   nodemodules,
+  getNetworkIp,
   ...baseConfig,
   ...devConfig,
   ...prodConfig,

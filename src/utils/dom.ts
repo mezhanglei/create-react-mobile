@@ -7,10 +7,10 @@ import { getPrefixStyle } from "./cssPrefix";
  * 接收类名或节点，返回节点
  * @param target 目标参数
  */
-export const findElement = (target: any): null | HTMLElement => {
+export const findElement = (target: any, parent: any = document): null | HTMLElement => {
   let result = null;
   if (typeof target === "string") {
-    result = document.querySelector(target);
+    result = parent.querySelector(target);
   } else if (isDom(target)) {
     result = target;
   }
@@ -65,6 +65,12 @@ export const getWindow = (el?: any) => {
   return ownerDocument ? (ownerDocument.defaultView || window) : window;
 };
 
+// 获取当前的document
+export const getOwnerDocument = (el?: any) => {
+  const ownerDocument = el?.ownerDocument || document?.ownerDocument;
+  return ownerDocument;
+};
+
 /**
  * 返回元素的视窗内的位置
  * @param el 
@@ -108,13 +114,16 @@ export function matches(el: any, selector: string) {
 }
 
 // 根据选择器返回在父元素内的序号
-export function getChildrenIndex(el: any, excluded?: HTMLElement, selector?: string) {
+export function getChildrenIndex(el: any, excluded?: Array<string | HTMLElement>, include?: Array<string | HTMLElement>) {
   const children = el?.parentNode?.children;
   if (!children) return -1;
   let index = 0;
   for (let i = 0; i < children?.length; i++) {
     const node = children[i] as HTMLElement;
-    if ((!selector || matches(node, selector)) && node !== excluded) {
+    if (
+      (!include || include?.some((item) => typeof item === 'string' ? matches(node, item) : node == item)) &&
+      !excluded?.some((item) => typeof item === 'string' ? matches(node, item) : node == item)
+    ) {
       // 如果等于就结束循环
       if (el !== node) {
         index++
@@ -487,29 +496,6 @@ export const isBump = (move: BoundingRect, other: BoundingRect) => {
   return !(r1 - l2 < 0 || b1 - t2 < 0 || r2 - l1 < 0 || b2 - t1 < 0)
 }
 
-export const getDirection = (e: MouseEvent | TouchEvent, ele: any) => {
-  const eventXY = getEventPosition(e, ele);
-  const offsetWH = getOffsetWH(ele);
-  if (!eventXY || !offsetWH) return '';
-  const { x, y } = eventXY;
-  const { width, height } = offsetWH;
-  const midX = width / 2;
-  const midY = height / 2;
-  let direction = [];
-
-  if (y > 0 && y < midY) {
-    direction.push('top');
-  } else if (y > midY && y < height) {
-    direction.push('bottom')
-  }
-  if (x > 0 && x < midX) {
-    direction.push('left')
-  } else if (x > midX && x < width) {
-    direction.push('right')
-  }
-  return direction;
-}
-
 // 获取或设置目标元素的style值
 export function css(el: any, prop?: string | CSSProperties) {
   let style = el && el.style;
@@ -558,57 +544,6 @@ export const nextAll = function (node: HTMLElement) {
   return siblings;
 
 }
-
-export interface BoundingRect {
-  left: number;
-  top: number;
-  right: number;
-  bottom: number;
-}
-// 事件对象是否在目标范围内
-export const isMoveIn = (event: { x: number, y: number }, other: BoundingRect) => {
-
-  const eventX = event?.x;
-  const eventY = event?.y;
-
-  return !(eventX - other?.left < 0 || eventY - other?.top < 0 || eventX - other?.right > 0 || eventY - other?.bottom > 0)
-};
-
-// 点距离目标内的四条边的最短距离
-export function getMinDistance(event: { x: number, y: number }, other: BoundingRect) {
-  const distances = [Math.floor(event.x - other.left), Math.floor(event.y - other?.top), Math.floor(other?.bottom - event?.y), Math.floor(other?.right - event.x)];
-  const minDistance = Math.min.apply(Math, distances);
-  return minDistance;
-};
-
-// 距离事件对象最近的目标
-export function findNearest(e: any, list: Array<{ node: HTMLElement }>) {
-  let addChilds = [];
-  let addDistance = [];
-  const eventXY = getEventPosition(e);
-  for (let child of list?.values()) {
-    const childNode = child?.node;
-    const other = getInsidePosition(childNode);
-    // 碰撞目标(排除拖拽源的后代子元素)
-    if (other && eventXY && isMoveIn(eventXY, other)) {
-      addDistance.push(getMinDistance(eventXY, other));
-      addChilds.push(child);
-    }
-  }
-  let minNum = Number.MAX_VALUE;
-  let minChild;
-  for (let i = 0; i < addDistance.length; i++) {
-    if (addDistance[i] < minNum) {
-      minNum = addDistance[i];
-      minChild = addChilds[i];
-    } else if (addDistance[i] == minNum && minChild?.node?.contains(addChilds[i]?.node)) {
-      minNum = addDistance[i];
-      minChild = addChilds[i];
-    }
-  }
-  return minChild;
-}
-
 
 /**
  * 添加事件监听

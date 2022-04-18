@@ -1,6 +1,4 @@
-import { setUrlQuery } from "./url";
 import { isBlob, isArrayBuffer } from "./type";
-import { findElement } from "./dom";
 
 // === 格式转换 ===
 
