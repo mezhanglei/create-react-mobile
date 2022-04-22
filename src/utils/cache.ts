@@ -1,16 +1,24 @@
+export const base = '';
+
+export const getKey = (key: string) => {
+  return base + key;
+};
+
 /**
  * localstorage标准封装
  */
 const myStorage = {
   //存储
   set(key: string, value: any) {
-    localStorage.setItem(key, JSON.stringify(value));
+    const currentkey = getKey(key);
+    localStorage.setItem(currentkey, JSON.stringify(value));
     return value;
   },
   //取出数据
   get(key: string) {
+    const currentkey = getKey(key);
     try {
-      const value = localStorage.getItem(key);
+      const value = localStorage.getItem(currentkey);
       if (value === null || value === undefined || value === "") {
         return null;
       }
@@ -21,7 +29,8 @@ const myStorage = {
   },
   // 删除数据
   remove(key: string) {
-    localStorage.removeItem(key);
+    const currentkey = getKey(key);
+    localStorage.removeItem(currentkey);
   }
 };
 
@@ -31,13 +40,15 @@ const myStorage = {
 const mySession = {
   //存储
   set(key: string, value: any) {
-    sessionStorage.setItem(key, JSON.stringify(value));
+    const currentkey = getKey(key);
+    sessionStorage.setItem(currentkey, JSON.stringify(value));
     return value;
   },
   //取出数据
   get(key: string) {
+    const currentkey = getKey(key);
     try {
-      const value = sessionStorage.getItem(key);
+      const value = sessionStorage.getItem(currentkey);
       if (value === null || value === undefined || value === "") {
         return null;
       }
@@ -48,7 +59,8 @@ const mySession = {
   },
   // 删除数据
   remove(key: string) {
-    sessionStorage.removeItem(key);
+    const currentkey = getKey(key);
+    sessionStorage.removeItem(currentkey);
   }
 };
 
@@ -59,6 +71,7 @@ const mySession = {
 const timeStorage = {
   //存储
   set(key: string, value: any, time?: number) {
+    const currentkey = getKey(key);
     try {
       if (!localStorage) {
         return null;
@@ -70,7 +83,7 @@ const timeStorage = {
       //过期时间的毫秒数
       const endTime = (new Date()).getTime() + time * 60 * 1000;
       // 将时间和值一起存储
-      localStorage.setItem(key, JSON.stringify({ data: value, time: endTime }));
+      localStorage.setItem(currentkey, JSON.stringify({ data: value, time: endTime }));
       return value;
     } catch (e) {
       return null;
@@ -78,8 +91,9 @@ const timeStorage = {
   },
   //取出数据
   get(key: string) {
+    const currentkey = getKey(key);
     try {
-      const value = sessionStorage.getItem(key);
+      const value = sessionStorage.getItem(currentkey);
       if (!value) {
         return null;
       }
@@ -89,17 +103,18 @@ const timeStorage = {
       const now = (new Date()).getTime();
       //如果缓存时间过期则移除数据
       if (now > result.time) {
-        this.remove(key);
+        this.remove(currentkey);
         return null;
       }
       return result.data;
     } catch (e) {
-      this.remove(key);
+      this.remove(currentkey);
       return null;
     }
   },
   remove(key: string) {
-    localStorage.removeItem(key);
+    const currentkey = getKey(key);
+    localStorage.removeItem(currentkey);
   }
 };
 

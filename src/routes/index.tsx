@@ -3,7 +3,7 @@ import { HashRouter as Router, Route, Switch, Redirect, RouteProps } from "react
 // import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-dom";
 import { DemoRoute } from "./demo";
 import { DefaultRoutes } from "./default";
-import { isLogin } from "@/core/common";
+import { isLogin } from "@/core/session";
 import { LOGIN_ROUTE } from "@/constants/account/index";
 import TransitionSwitch from '@/components/transition-switch';
 
