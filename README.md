@@ -2,25 +2,24 @@
 
 ## 项目安装和依赖说明
 ```
-说明：基于webpack4.x + react16.12 + redux + react-redux + dva-core + ant-design-mobile等的h5开发脚手架,支持typescript
+说明：基于webpack5.x + react16.x + redux + react-redux + dva-core + ant-design-mobile等的h5开发脚手架,支持typescript
 依赖管理(注意设置合适的数据源): 
-npm i ---不更新package-lock.json(建议)
 npm install ---会创建package-lock.json
 ```
 ### 项目运行说明
 ```
-npm run dev 运行项目
+npm run start 运行项目
 npm run dll 如果想对某些基础包进行预编译,在webpack.dll.js中配置相关基础包,然后启动,最后在html中script引进
-npm run build 生产打包
+npm run build:sit 测试打包
+npm run build:prod 生产打包
 npm run eslint 检查js规范
 npm run csslint 检查css规范
 ```
 
 ### 脚手架功能说明(mddir)
 ```
-1. 支持单或多页面开发, 纯净友好无冗余代码脚手架,开箱修改即用, 使用时注意遵循规范,看清楚目录结构!
-2. 可在configs中自定义不同使用场景,比如添加publicPath, 添加多页面,更改目录, 项目的一些配置开关等等
-3. 支持typescript开发
+1. 支持单开发, 纯净友好无冗余代码脚手架,开箱修改即用, 使用时注意遵循规范,看清楚目录结构!
+2. 支持typescript开发
 ```
 
 ### css样式(两种解析方式)
@@ -60,35 +59,33 @@ npm run csslint 检查css规范
     |-- postcss.config.js // postcss配置信息
     |-- tsconfig.json // ts配置
     |-- less         // 全局的基础css配置文件夹, 全局样式写在这里
-    |   |-- index.less
     |   |-- base   // 基础原子标签样式和公共基础类
     |   |-- components // ui组件库的自定义样式(自定义组件和开源ui组件)
     |   |-- constants // 公共的less常量
+    |   |-- fonts // 字体文件
     |   |-- pages  // 页面业务相关的公共类
     |       |-- index.less
     |-- src
-    |   |-- api // 接口文件夹, 一个子文件代表一个功能模块
     |   |-- components // 全局要使用的组件必须要放在这里
     |   |-- constants // 项目所有的常量必须全部放在这里, 一个子文件代表一个功能模块，禁止在别处定义常量,分散不宜管理
-    |   |-- core // 项目相关的公共的业务代码都放在这里(公共的接口,公共的业务文件,兼容处理等等放在这里)
+    |   |-- core // 项目的业务代码都放在这里(公共的业务文件,兼容处理等等放在这里)
     |   |-- http      // 请求配置文件
     |   |   |-- config.js
     |   |   |-- jsonpRequest.js
     |   |   |-- request.js
     |   |-- mock // mock数据文件夹(看上面使用说明)
-    |   |-- pages // 页面代码所在文件夹
-    |   |   |-- index.html // 公用的html模板
-    |   |   |-- index.js // 多页面公用的js文件
-    |   |   |-- index // 多页面中第一个页面
-    |   |   |-- second // 多页面中第二个页面
-    |   |       |-- index.js
-    |   |-- routes // 路由所在文件夹，其下的子文件夹名为各个多页入口的名
-    |   |   |-- index // 目前只有一个单页index
+    |   |-- pages // 单页面代码所在文件夹
+    |   |   |-- index.js // 入口js文件
+    |   |   |-- index.html // html模板
+    |   |-- routes // 路由所在文件夹
+    |   |-- services // 接口所在文件夹
     |   |-- store    // redux仓库
     |   |-- utils   // js工具方法
-    |-- static     // 打包时要拷贝的静态资源, 需要在webpack/configs文件中配置引用路径后才能生效
+    |-- static     // 打包时要拷贝的静态资源
     |-- webpack   // webpack配置文件夹
         |-- configs.js  // 自定义配置
+        |-- paths.js  // 目录配置
+        |-- webpack.base.js // 基础配置环境
         |-- webpack.dev.js // 开发环境
         |-- webpack.dll.js // 预编译文件(需要预编译时使用)
         |-- webpack.prod.js // 生产环境

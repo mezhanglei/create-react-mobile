@@ -61,32 +61,36 @@ export function deepGet(obj: object | undefined, keys: string | string[]): any {
     (!Array.isArray(keys)
       ? keys.replace(/\[/g, '.').replace(/\]/g, '').split('.')
       : keys
-    ).reduce((o, k) => (o || {})[k], obj)
+    ).reduce((o, k) => (o || {})[k?.replace(/\[/g, '').replace(/\]/g, '')], obj)
   );
 }
 
 // 给对象目标属性添加值
-export function deepSet(obj: any, path: string | string[], value: any, arraySetPath?: Array<string>) {
+export function deepSet(obj: any, path: string | string[], value: any) {
   if (typeof obj !== 'object') return obj;
   let temp = klona(obj);
   const root = temp;
   const parts = !Array.isArray(path) ? path.replace(/\[/g, '.').replace(/\]/g, '').split('.') : path;
   const length = parts.length;
+  // 过滤出其中的数组项
+  const listItems = !Array.isArray(path) ? path.match(/\[(.{1}?)\]/gi) : path;
 
   for (let i = 0; i < length; i++) {
     const p = parts[i];
-    // 该字段是否设置为数组
-    const isSetArray = arraySetPath?.some((path) => {
-      const end = path?.split('.')?.pop();
-      return end === p;
+    const next = parts[i + 1];
+    // 下个字段是否为数组项
+    const isListItem = listItems?.some((item) => {
+      const listItem = item?.replace(/\[/g, '').replace(/\]/g, '')
+      return listItem === next;
     });
+
     if (i === length - 1) {
       if (value === undefined) {
         delete temp[p];
       } else {
         temp[p] = value;
       }
-    } else if (typeof temp[p] !== 'object' && isSetArray) {
+    } else if (typeof temp[p] !== 'object' && isListItem) {
       temp[p] = [];
     } else if (typeof temp[p] !== 'object') {
       temp[p] = {};

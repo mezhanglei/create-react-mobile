@@ -8,9 +8,7 @@
 // 2. path.resolve('字段1','字段2'....) 从右到左拼接路径片段,返回一个相对于当前工作目录的绝对路径,当遇到/时表示根路径,遇到../表示上一个目录, 如果还不是完整路径则自动添加当前绝对路径
 const path = require("path");
 const webpack = require("webpack");
-const { CleanWebpackPlugin } = require("clean-webpack-plugin");
-// 引入配置
-const configs = require('./configs.js');
+const paths = require('./paths.js');
 
 module.exports = {
   // 入口文件
@@ -19,11 +17,12 @@ module.exports = {
     base: ['react']
   },
   // 解析的起点, 默认为项目的根目录
-  context: configs.root,
+  context: paths.appRoot,
   // 输出文件
   output: {
+    clean: true,
     // 输出目录
-    path: configs.dllOutputPath,
+    path: paths.dllOutputPath,
     // 输出的文件名
     filename: "[name]_dll.js",
     // 配置这项作为变量声明导出(script引入后在全局作用域可用)
@@ -33,14 +32,12 @@ module.exports = {
   },
   mode: 'production',
   plugins: [
-    // 清除之前的dll文件
-    new CleanWebpackPlugin(),
     new webpack.DllPlugin({
       // 生成的json文件路径
-      path: path.join(configs.dllOutputPath, "[name]_manifest.json"),
+      path: path.join(paths.dllOutputPath, "[name]_manifest.json"),
       name: "[name]_[hash:8]",
       // 解析的起点, 必填，为了与DllReferencePlugin存在与同一上下文中）
-      context: configs.root
+      context: paths.appRoot
     })
   ]
 };
