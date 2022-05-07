@@ -17,8 +17,8 @@ module.exports = merge(base, {
   // development 开启NamedChunksPlugin 和 NameModulesPlugin
   // production开启FlagDependencyUsagePlugin, FlagIncludedChunksPlugin, ModuleConcatenationPlugin(减少声明和闭包引起的内存开销,但对引入多次的模块无效), NoEmitOnErrorsPlugin, occurrenceOrderPlugin, SideEffectsFlagPlugin, TerserWebpackPlugin(统一提取js和css)
   mode: "development",
-  // 构建快，重建最快
-  devtool: "eval",
+  // eval(构建快，重建最快, 但是开发报错寻址不详细)eval-cheap-module-source-map(构建慢，重建快)
+  devtool: "eval-cheap-module-source-map",
   // 在初始构建之后，webpack 将继续监听任何已解析文件的更改
   watch: true,
   // webpack 使用文件系统(file system)获取文件改动的通知, 但是当在远程进行操作时有可能会出问题,所以需要轮询

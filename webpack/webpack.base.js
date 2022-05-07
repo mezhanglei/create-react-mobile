@@ -12,8 +12,6 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 // 对webpack打包的信息进行警告,错误的明显标识提示 可以选择使用或不使用
 const FriendlyErrorsWebpackPlugin = require("friendly-errors-webpack-plugin");
-// 实现css的treeshaking 将没有用到的css做擦除 需要和MiniCssExtractPlugin配合使用
-// const PurgecssWebpackPlugin = require("purgecss-webpack-plugin");
 // 通过CopyWebpackPlugin将目标文件夹里的静态资源拷贝到目标文件夹
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 // (构建过程优化)webpack体积分析插件(会单独打开一个端口8888的页面显示体积构造图)
@@ -27,7 +25,15 @@ const configs = require('./configs.js');
 // 引入路径
 const paths = require('./paths.js');
 // const versionShell = require('./version.js');
-
+const isDev = configs.isDev;
+// less/less module 正则表达式
+const lessRegex = /\.less$/;
+const lessModuleRegex = /\.module\.less$/;
+// css/css module 正则表达式
+const cssRegex = /\.css$/;
+const cssModuleRegex = /\.module\.css$/;
+// node_modules正则表达式
+const nodeModulesRegex = /node_modules/;
 
 // webpack从manifest文件中读取到已预编译的文件, 然后忽略对其的编辑打包,多个dll文件则循环
 const dllList = paths.manifestPathArr.map((path) => {
@@ -38,7 +44,13 @@ const dllList = paths.manifestPathArr.map((path) => {
   });
 });
 
-const isDev = configs.isDev;
+const cssLoader = isDev ? 'style-loader' : {
+  loader: MiniCssExtractPlugin.loader,
+  options: {
+    // 修改打包后目录中css文件中静态资源的引用的基础路径
+    publicPath: paths.assetsPath,
+  },
+};
 
 //  === webpack配置内容 === //
 module.exports = {
@@ -84,11 +96,9 @@ module.exports = {
     rules: [
       {
         test: /\.(ts|tsx|js|jsx)$/,
-        // 指定必须处理的文件
-        // include: ,
         // 忽略第三方
         // 忽略第三方(看第三方包是否需要转译,不需要的话去掉)
-        // exclude: /node_modules/,
+        // exclude: nodeModulesRegex,
         include: [
           paths.srcPath,
           paths.staticPath,
@@ -118,18 +128,13 @@ module.exports = {
         ],
       },
       {
-        test: /\.css$/,
+        test: cssRegex,
+        exclude: cssModuleRegex,
         // 这里需要遵循一定的顺序 因为是compose函数方式先解析数组后面的css-loader然后插入到style-loader
         use: [
           // 不能和style-loader一起使用,会互斥
           // 把 js 中 import 导入的样式文件代码，打包成一个实际的 css 文件，结合 html-webpack-plugin，在 dist/index.html 中以 link 插入 css 文件；默认将 js 中 import 的多个 css 文件，打包时合成一个
-          !isDev ? {
-            loader: MiniCssExtractPlugin.loader,
-            options: {
-              // 修改打包后目录中css文件中静态资源的引用的基础路径
-              publicPath: paths.assetsPath,
-            },
-          } : 'style-loader',
+          cssLoader,
           // style-loader 把 js 中 import 导入的样式文件代码，打包到 js 文件中，运行 js 文件时，将样式自动插入到<style>标签中
           // 'style-loader',
           // css-loader解析几个css之间的关系 最终把几个css文件打包成一个css文件
@@ -137,15 +142,10 @@ module.exports = {
         ],
       },
       {
-        test: /\.less$/,
-        exclude: /node_modules | (\.module\.less)$/,
+        test: lessRegex,
+        exclude: lessModuleRegex,
         use: [
-          !isDev ? {
-            loader: MiniCssExtractPlugin.loader,
-            options: {
-              publicPath: paths.assetsPath,
-            },
-          } : 'style-loader',
+          cssLoader,
           "css-loader",
           "postcss-loader",
           {
@@ -167,25 +167,19 @@ module.exports = {
       },
       // 解析css module
       {
-        test: /(\.module\.less)$/,
-        exclude: /node_modules/,
+        test: lessModuleRegex,
+        exclude: nodeModulesRegex,
         use: [
-          !isDev ? {
-            loader: MiniCssExtractPlugin.loader,
-            options: {
-              publicPath: paths.assetsPath,
-            },
-          } : 'style-loader',
+          cssLoader,
           {
             loader: 'css-loader',
             options: {
               modules: {
                 mode: 'local',
                 localIdentName: '[path][name]__[local]--[hash:base64:5]',
-                context: paths.srcPath
+                localIdentContext: paths.srcPath
               },
               importLoaders: 3,
-              localsConvention: 'camelCase'
             } //css modules
           },
           // 提供一种用js来处理css方法,抽象成语法树结构,一般不单独使用
@@ -197,7 +191,7 @@ module.exports = {
       },
       {
         test: /\.(png|svg|jpg|gif|jpeg|ico)$/i,
-        exclude: /node_modules/,
+        exclude: nodeModulesRegex,
         type: "asset",
         parser: {
           dataUrlCondition: {
@@ -211,7 +205,7 @@ module.exports = {
       },
       {
         test: /\.(woff|woff2|eot|ttf|otf)$/,
-        exclude: /node_modules/,
+        exclude: nodeModulesRegex,
         type: 'asset',
         generator: {
           filename: "font/[name]_[hash:8].[ext]"
@@ -234,14 +228,6 @@ module.exports = {
     }),
     // 统计信息提示插件(比如错误或者警告会用带颜色的字体来显示,更加友好)
     new FriendlyErrorsWebpackPlugin(),
-    // css文件指纹 使用contenthash 只要css文件不变则contenthash不变
-    new MiniCssExtractPlugin({
-      filename: "css/[name]_[contenthash:8].css",
-    }),
-    // css实现treeshaking(删除无用的css, 不适用css modules模式) 需要和MiniCssExtractPlugin配合使用
-    // new PurgecssWebpackPlugin({
-    //   paths: paths.treeShakingCssPath,
-    // }),
     // 将目标目录里的文件直接拷贝到输出dist目录
     new CopyWebpackPlugin({
       patterns: [{
@@ -323,6 +309,10 @@ module.exports = {
         failOnError: false,
       })] : [])
     ] : [
+      // css文件指纹 使用contenthash 只要css文件不变则contenthash不变
+      new MiniCssExtractPlugin({
+        filename: "css/[name]_[contenthash:8].css",
+      }),
       ...(configs.isAnalyz ? [new BundleAnalyzerPlugin()] : [])
     ]),
     ...dllList

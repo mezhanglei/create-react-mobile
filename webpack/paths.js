@@ -5,7 +5,6 @@ const fs = require('fs');
 // 根据目标字符串自动匹配来动态扫描目标文件返回符合要求的文件路径数组,glob只能扫描一个,如果要同时扫描多个路径请使用glob-all
 // 匹配规则: 1. * 在单个路径中间匹配一个目录/文件, /* 则表示一个或多个子目录/文件 2. ** 在单个路径中间匹配部分0个或多个目录/文件
 const glob = require("glob");
-const globAll = require("glob-all");
 // 返回运行当前脚本的工作目录的路径。
 const appRoot = fs.realpathSync(process.cwd());
 // 加载根目录下面的其他目录
@@ -44,12 +43,6 @@ module.exports = {
   eslintrcPath: path.join(appRoot, "./.eslintrc.{js,ts}"),
   stylelintrcPath: path.join(appRoot, "./.stylelintrc.js"),
   assetsPath: '../',
-  treeShakingCssPath: globAll.sync([
-    // 入口文件
-    path.join(appRoot, "src/**/*.{js,ts}"),
-    // less文件
-    path.join(appRoot, "src/**/*.less")
-  ]),
   checkStylePath: ["src/**/*.{css,sass,scss,less}"],
   mockPath: path.join(srcPath, 'mock'),
   // favicon: path.join(staticPath, '')
