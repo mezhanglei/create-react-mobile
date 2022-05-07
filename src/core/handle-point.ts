@@ -1,4 +1,4 @@
-import { setUrlQuery } from "@/utils/url";
+import { addUrlQuery } from "@/utils/url";
 import ClickListen from "@/utils/listen-click";
 
 /**
@@ -23,7 +23,7 @@ export function Handlepoint(url: string, data = {}) {
         cpImg = null;
       };
       // 标签发送请求
-      cpImg.src = setUrlQuery({ ...data }, url);
+      cpImg.src = addUrlQuery({ ...data }, url);
     }
   });
   event.addEvent();

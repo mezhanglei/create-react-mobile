@@ -3,7 +3,7 @@
  * @param {*} url 目标url， 默认当前url
  * @param {*} query 参数对象
  */
-export function setUrlQuery(query: object, url = location.href) {
+export function addUrlQuery(query: object, url = location.href) {
   if (!url) return "";
   url = url?.lastIndexOf('&') === url?.length - 1 ? url.substring(0, url?.length - 1) : url;
   if (query) {
