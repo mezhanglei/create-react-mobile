@@ -401,6 +401,38 @@ export function getInsideRange(el: HTMLElement, parent: HTMLElement): null | {
   return pos;
 }
 
+// 获取点到矩形框的最短距离
+export function dotToRect(rect: { left: number, top: number, right: number, bottom: number }, p: { x: number, y: number }) {
+  const dx = Math.max(rect.left - p.x, 0, p.x - rect.right);
+  const dy = Math.max(rect.top - p.y, 0, p.y - rect.bottom);
+  return Math.sqrt(dx * dx + dy * dy);
+}
+
+// 父元素内距离事件对象最近的元素
+export function findNearest(e: MouseEvent | TouchEvent, parent: HTMLElement) {
+  const children = parent?.children;
+  const eventXY = getClientXY(e);
+  if (!eventXY) return;
+  let near;
+  for (let i = 0; i < children?.length; i++) {
+    const node = children[i] as HTMLElement;
+    if (node && css(node, 'display') !== 'none') {
+      if (near) {
+        const minChildRect = getRect(near)
+        const nextChildRect = getRect(node)
+        const currentDis = dotToRect(minChildRect, eventXY)
+        const nextDis = dotToRect(nextChildRect, eventXY)
+        if (nextDis < currentDis) {
+          near = node;
+        }
+      } else {
+        near = node;
+      }
+    }
+  }
+  return near;
+}
+
 /**
  * 判断目标元素内部是否可以滚动
  * @param {*} ele 内容可以scroll的元素

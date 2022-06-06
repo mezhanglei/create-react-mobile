@@ -1,21 +1,15 @@
+// babel流程：源代码->解析->转换->代码生成目标源代码
+// babel转译分类：会将源代码分成syntax(语法)和api(函数或方法)两部分来处理
+// babel使用polyfill来处理api, 该库分为两部分：core-js和regenerator-runtime。
+// 在@babel/preset-env编译时转译的问题: 1. api转译时会直接修改全局变量或者修改全局变量的原型。2. syntax转译时会重复自定义辅助函数helper
 {
   "presets": [
-    // Babel功能提供polyfill垫片和转译新语法,但不提供但不处理新的api比如Promise、Set、Map
-    // 想处理新的api两种方案(一般偏向第二种):
-    // 第一种方式(缺点会污染原型链, 所以开发类库时不能用来开发):
-    // (1) 安装babel-loader@8, @babel/core, @babel/preset-env, core-js,regenerator-runtime
-    // (2) 配置@babel/preset-env的useBuiltIns和corejs选项.
-    // (3) 注意只有"useBuiltIns": "entry"时需要在入口文件添加两行代码:import "core-js/stable"; import "regenerator-runtime/runtime"
     [
       "@babel/preset-env",
       {
-        // 不将ES6模块语法转换为其他模块类型(例如commonjs)的功能，tree shaking禁止转译其他类型
-        "modules": false,
-        // 1. false默认值, 默认不引入@babel/polyfill
-        // 2. "entry" 表示全部引入, 会多加几百kb包大小, 需要额外引入操作.
-        // 3. "usage" 会参考browserslist浏览器版本和core-js(特性)的版本按需引入polyfill,但是不会对第三方模块进行转译
-        "useBuiltIns": "usage",
-        // 使用新特性,使用需要安装core-js和regenerator-runtime两个包
+        "modules": false, // 禁止将es模块类型转换为其他类型
+        // entry时需要在入口文件添加两行代码:import "core-js/stable"; import "regenerator-runtime/runtime"
+        "useBuiltIns": "entry",
         "corejs": {
           "version": 3,
           "proposals": true
@@ -28,36 +22,28 @@
     "@babel/preset-react"
   ],
   "plugins": [
-    // 第二种方式(将全局内置对象抽取成单独的模块,并创建沙盒环境解决全局变量污染, 做js库的时候必须要用这种.):
-    // (1) 安装包babel-loader@8,@babel/core,@babel/preset-env,@babel/plugin-transform-runtime,@babel/runtime-corejs3
-    // (2) 配置
+    // 此插件将helpers和polyfill都改为从一个统一的地方引入, 按需引入@babel/runtime-corejs3中的模块而不是直接修改全局变量或者全局变量原型，导致不可预知的问题，开发库时必选.
     // [
     //   "@babel/plugin-transform-runtime",
     //   {
     //     // 使用特性,需要安装@babel/runtime-corejs3
     //     "corejs": {
     //       "version": 3,
-    //       "proposals": true
-    //     },
-    //     // 进行较小的构建,不保留commonjs语义
-    //     "useESModules": true
+    //       "proposals": true // 默认情况不会使用提案中的，true则使用
+    //     }
     //   }
     // ],
     // 异步加载语法解析插件,解析import().then()这种语法
     "@babel/plugin-syntax-dynamic-import",
-    // 装饰器(必须在@babel/plugin-proposal-class-properties前面)
+    // 类的装饰器提案(必须在@babel/plugin-proposal-class-properties前面)
     [
       "@babel/plugin-proposal-decorators",
       {
-        // 使用旧式语法，但是@babel/plugin-proposal-class-properties也必须设置loose为true
-        "legacy": true
+        "version": "legacy" // 选用遗留提案
       }
     ],
-    // 用来编译类,loose为true表示编译成赋值表达式,
-    // @babel/plugin-proposal-class-properties、@babel/plugin-proposal-private-methods和@babel/plugin-proposal-private-property-in-object的loose必须相同才会启用
+    // 编译静态属性和类属性
     ["@babel/plugin-proposal-class-properties", { "loose": true }],
-    ["@babel/plugin-proposal-private-property-in-object", { "loose": true }],
-    ["@babel/plugin-proposal-private-methods", { "loose": true }],
     // babel-plugin-import配置类库按需加载
     ["import", { "libraryName": "antd-mobile", "libraryDirectory": "es/components", "style": false}]
   ]

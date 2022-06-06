@@ -1,7 +1,7 @@
 
 // 数组的一些方法
+import { deepClone } from "./object";
 import { isObject, isArray, isEmpty } from "./type";
-import { klona } from "klona";
 
 /**
  * 数组排序(数据量在万以内采取这种) 数组元素支持Object和简单类型
@@ -102,7 +102,7 @@ export function singleToMultiple(array: any[], unit: number): any[] {
   let res = [];
   for (let i = 0; i < totalNum; i++) {
     let temp = array.slice(i * unit, i * unit + unit);
-    res.push(klona(temp));
+    res.push(deepClone(temp));
   }
   return res;
 }
@@ -421,8 +421,8 @@ export const combinedArr = (arr1: object[], arr2: object[], condition: (next: ob
   return ret;
 };
 
-export const arrayMove = (arr: any[], preIndex: number, nextIndex: number) => {
-  const clone = klona(arr);
+export const arraySwap = <T = any>(arr: T[], preIndex: number, nextIndex: number) => {
+  const clone = deepClone(arr);
   if (preIndex > nextIndex) {
     clone.splice(nextIndex, 0, arr[preIndex]);
     clone.splice(preIndex + 1, 1)
