@@ -36,14 +36,10 @@
     // 异步加载语法解析插件,解析import().then()这种语法
     "@babel/plugin-syntax-dynamic-import",
     // 类的装饰器提案(必须在@babel/plugin-proposal-class-properties前面)
-    [
-      "@babel/plugin-proposal-decorators",
-      {
-        "version": "legacy" // 选用遗留提案
-      }
-    ],
+    ["@babel/plugin-proposal-decorators", {"version": "legacy"}],
     // 编译静态属性和类属性
     ["@babel/plugin-proposal-class-properties", { "loose": true }],
+    ["@babel/plugin-proposal-private-property-in-object", { "loose": true }],
     // babel-plugin-import配置类库按需加载
     ["import", { "libraryName": "antd-mobile", "libraryDirectory": "es/components", "style": false}]
   ]
