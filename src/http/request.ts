@@ -1,5 +1,5 @@
 import axios, { Method } from "axios";
-import { STATUS_ERROR, CODE_ERROR, STATUS_ERROR_MAP, CODE_ERROR_MAP, CancelPending, CustomConfig, ReuestInstance } from "./config";
+import { HTTP_STATUS, HTTP_CODE, HTTP_STATUS_MAP, HTTP_CODE_MAP, CancelPending, CustomConfig, ReuestInstance } from "./config";
 // import { Toast } from "antd-mobile";
 import { myStorage } from "@/utils/cache";
 import { loginOut, getToken } from "@/core/session";
@@ -65,11 +65,11 @@ const axiosCancel = new AxiosCancel();
  * @param {Number} status 表示响应状态码
  * @param {String} msg 表示响应的信息
  */
-function statusError(status: STATUS_ERROR, msg: string) {
-  if (status === 401) {
+function statusError(status: HTTP_STATUS, msg: string) {
+  if (status === HTTP_STATUS.LOGINFAIL) {
     loginOut();
   }
-  // status && Toast.info(STATUS_ERROR_MAP[status] || msg);
+  // status && Toast.info(HTTP_STATUS_MAP[status] || msg);
 }
 
 /**
@@ -77,11 +77,11 @@ function statusError(status: STATUS_ERROR, msg: string) {
  * @param {Number} code 表示后台返回的code
  * @param {String} msg 表示后台返回的信息
  */
-function resultError(code: CODE_ERROR, msg: string) {
-  if (code == 401) {
+function resultError(code: HTTP_CODE, msg: string) {
+  if (code == HTTP_CODE.LOGINFAIL) {
     loginOut();
   }
-  // code && Toast.info(CODE_ERROR_MAP[code] || msg);
+  // code && Toast.info(HTTP_CODE_MAP[code] || msg);
 }
 
 // 请求拦截(axios自动对请求类型进行类型转换)
@@ -92,6 +92,7 @@ http.interceptors.request.use(
       // t: new Date().getTime()
     };
     // 公共headers
+    config.headers = config.headers || {};
     config.headers["Authorization"] = getToken();
 
     // 请求参数处理
@@ -132,7 +133,7 @@ http.interceptors.response.use(
     const msg = response.data && response.data.message;
     const result = response.data;
     // 响应异常提示
-    if (code != 200) {
+    if (code != HTTP_CODE.SUCCESS) {
       resultError(code, msg);
     }
 
