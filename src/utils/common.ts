@@ -1,40 +1,5 @@
 import { isEmpty } from "./type";
 
-/**
- * 防抖， 一段时间内没有再执行则执行完一次，否则重新执行
- * @param {*} fn 目标函数
- * 使用： 1. 实例化一个对象: const fn = debounce(函数)
- *        2. 执行fn()
- */
-export function debounce(fn: any, time: number = 500): any {
-  let timeout: any = null;
-  return function (...args: any[]) {
-    if (timeout !== null) clearTimeout(timeout);
-    timeout = setTimeout(() => {
-      fn?.(...args);
-    }, time);
-  };
-};
-
-/**
- * 节流, 一段时间只能执行一次
- * @param {*} fn 目标函数
- * 使用: 1. 实例化一个对象: const fn = throttle(函数)
- *       2. 执行fn()
- */
-export function throttle(fn: any, time: number = 200): any {
-  let timer: any = null;
-
-  return function (...args: any[]) {
-    if (!timer) {
-      timer = setTimeout(function () {
-        fn?.(...args);
-        timer = null;
-      }, time);
-    }
-  };
-};
-
 // 将函数或promise统一为promise
 export function createPromise(x: Promise<any> | ((...rest: any[]) => any)) {
   if (x instanceof Promise) { // if promise just return it
