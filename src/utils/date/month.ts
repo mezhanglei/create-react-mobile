@@ -1,4 +1,4 @@
-import { formatFloat } from "@/utils/character";
+import { formatNumber } from "@/utils/character";
 import { getNewDate, dateFormat } from "./format";
 import { TimeInputType } from "./interface";
 
@@ -58,7 +58,7 @@ export function getMonthRestDayNum(time: TimeInputType, n = 0): string | undefin
   if (!start) return;
   const monthDayNum = getMonthDayNum(time);
   const T = 1000 * 24 * 60 * 60;
-  return formatFloat((monthDayNum * T - start.getTime()) / (1000 * 24 * 60 * 60), n);
+  return formatNumber((monthDayNum * T - start.getTime()) / (1000 * 24 * 60 * 60), n);
 }
 
 /**
@@ -74,7 +74,7 @@ export function getMonthStartDayNum(time: TimeInputType, n = 0) {
   }
   const start = getMonthStartDay(time);
   const end = getNewDate(time);
-  return formatFloat((end.getTime() - start.getTime()) / (1000 * 24 * 60 * 60), n);
+  return formatNumber((end.getTime() - start.getTime()) / (1000 * 24 * 60 * 60), n);
 }
 
 /**

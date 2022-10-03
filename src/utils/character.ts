@@ -1,35 +1,17 @@
 //===基础字符串或数字的处理===//
 import { isObject, isNumber, isEmpty } from "./type";
 import * as Pinyin from 'jian-pinyin';
+import numbro from 'numbro'
 
-//保留n位小数并格式化输出字符串类型的数据
-export function formatFloat(value: number | string, n = 2) {
-  if (typeof value === 'string') {
-    value = parseFloat(value);
-  } else if (!isNumber(value)) {
-    return "";
-  }
-  // 浮点类型数字
-  let numValue = Math.round(value * Math.pow(10, n)) / Math.pow(10, n);
-  // 转为字符串
-  let strValue = numValue.toString();
-  // 小数点索引值
-  let spotIndex = strValue.indexOf('.');
-  // 没有点加个点
-  if (spotIndex < 0 && n > 0) {
-    spotIndex = strValue.length;
-    strValue += '.';
-  }
-  while (strValue.length <= spotIndex + n) {
-    strValue += '0';
-  }
-  return strValue;
+// 格式化数字或字符串
+export function formatNumber(value: number | string, digit = 2) {
+  return numbro(value).format({ mantissa: digit, optionalMantissa: true })
 }
 
 // 自动补充0
 export function prefixZero(num: number, len: number) {
   if (String(num).length > len) return num;
-  return (Array(len).join(0) + num).slice(-len);
+  return (Array(len).join('0') + num).slice(-len);
 }
 
 // 将数字或数字字符串转成百分比
@@ -38,7 +20,7 @@ export function numberToRate(value: number | string, n = 2) {
     return '';
   }
   let num = typeof value === 'number' ? value : parseFloat(value);
-  return formatFloat(num * 100, n) + '%';
+  return formatNumber(num * 100, n) + '%';
 }
 
 // 对正整数循环除以10得到10的几次幂。
@@ -85,7 +67,7 @@ export function numberAddUnit(number: number | string, unit = "万", n = 2) {
   // 当前单位对应的十的幂次
   const unitPower = unitMap[unit];
   if (power >= unitPower) {
-    return formatFloat(number / Math.pow(10, unitPower), n) + unit;
+    return formatNumber(number / Math.pow(10, unitPower), n) + unit;
   }
   return number;
 }
@@ -249,3 +231,17 @@ export const matchChar = (content: string, keyWords?: string) => {
     return content?.replace(matchReg, replaceReturn)
   }
 };
+
+// 截取两个字符串之间的字符
+export const sliceBetweenStr = (str: string, firstStr: string, endStr?: string) => {
+  if (str == "" || str == null || str == undefined) { // "",null,undefined
+    return "";
+  }
+  if (str.indexOf(firstStr) < 0) {
+    return "";
+  }
+  const subFirstStr = str.substring(str.indexOf(firstStr) + firstStr.length, str.length);
+  const endIndex = endStr ? subFirstStr.indexOf(endStr) : subFirstStr?.length;
+  const subSecondStr = subFirstStr.substring(0, endIndex);
+  return subSecondStr;
+}

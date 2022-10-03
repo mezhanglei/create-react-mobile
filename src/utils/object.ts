@@ -42,11 +42,11 @@ export function filterObject(obj: object | undefined | null, callback: (value: a
 
 // 路径根据规则分割成数组
 export function pathToArr(path: string) {
-  return path?.replace?.(/\[/g, '.')?.replace(/\]/g, '')?.split('.');
+  return path?.replace(/\.\[/g, '.')?.replace?.(/\[/g, '.')?.replace(/\]\./g, '.')?.replace(/\]/g, '.')?.replace(/\.$/g, '')?.split('.');
 }
 
 // 处理将路径中的数组项转换成普通字符串
-export function handleListPath(str: string) {
+export function formatName(str: string) {
   return str?.replace(/\[/g, '')?.replace(/\]/g, '');
 }
 
@@ -56,36 +56,56 @@ export function deepGet(obj: object | undefined, keys: string | string[]): any {
     (!Array.isArray(keys)
       ? pathToArr(keys)
       : keys
-    ).reduce((o, k) => (o || {})[handleListPath(k)], obj)
+    ).reduce((o, k) => (o)?.[formatName(k)], obj)
   );
 }
 
 // 给对象目标属性添加值
 export function deepSet(obj: any, path: string | string[], value: any) {
-  if (typeof obj !== 'object') return obj;
   let temp = deepClone(obj);
-  const root = temp;
+  let root = temp;
   const parts = !Array.isArray(path) ? pathToArr(path) : path;
   const length = parts.length;
   // 过滤出其中的数组项
-  const listItems = !Array.isArray(path) ? path.match(/\[(.{1}?)\]/gi) : path;
+  const listItems = !Array.isArray(path) ? path.match(/\[(\d+)\]/gi) : path;
 
   for (let i = 0; i < length; i++) {
     const p = parts[i];
     const next = parts[i + 1];
     // 下个字段是否为数组项
-    const isListItem = listItems?.some((item) => {
-      const listItem = handleListPath(item);
+    const nextIsListItem = listItems?.some((item) => {
+      const listItem = formatName(item);
       return listItem === next;
     });
+    // 当前字段是否为数组项
+    const isListItem = listItems?.some((item) => {
+      const listItem = formatName(item);
+      return listItem === p;
+    });
+
+    // 当传入的值为空赋值初始值
+    if (typeof obj !== 'object' && i === 0) {
+      if (isListItem) {
+        temp = [];
+        root = temp;
+      } else {
+        temp = {};
+        root = temp;
+      }
+    }
 
     if (i === length - 1) {
       if (value === undefined) {
-        delete temp[p];
+        if (isListItem) {
+          const index = +p;
+          temp?.splice(index, 1);
+        } else {
+          delete temp[p];
+        }
       } else {
         temp[p] = value;
       }
-    } else if (typeof temp[p] !== 'object' && isListItem) {
+    } else if (typeof temp[p] !== 'object' && nextIsListItem) {
       temp[p] = [];
     } else if (typeof temp[p] !== 'object') {
       temp[p] = {};
@@ -111,4 +131,16 @@ export const mergeObject = function (obj1: any, obj2: any) {
     }
   }
   return clone;
+};
+
+// 合并新对象，新对象浅合并, 新的覆盖旧的
+export const shallowMerge = function (oldValue: any, newValue: any) {
+  if (!isObject(oldValue) || !isObject(oldValue)) {
+    return oldValue;
+  }
+  const result = { ...oldValue };
+  for (let key in newValue) {
+    result[key] = newValue[key];
+  }
+  return result;
 };

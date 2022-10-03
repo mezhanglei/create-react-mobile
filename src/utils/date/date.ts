@@ -1,4 +1,4 @@
-import { formatFloat } from "@/utils/character";
+import { formatNumber } from "@/utils/character";
 import { getNewDate, getYMD, dateFormat } from "./format";
 import { TimeInputType } from "./interface";
 
@@ -111,7 +111,7 @@ export function getBetweenDateNum(startTime: TimeInputType, endTime: TimeInputTy
   // 结束时间对象
   let end = getNewDate(endTime);
   if (!start || !end) return null;
-  return formatFloat((end.getTime() - start.getTime()) / (1000 * 24 * 60 * 60), n);
+  return formatNumber((end.getTime() - start.getTime()) / (1000 * 24 * 60 * 60), n);
 }
 
 /**

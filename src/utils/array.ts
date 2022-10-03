@@ -394,10 +394,9 @@ export function findInArray(array: any, callback: (value: any, i?: number, array
 // 转化对象数组为map数据
 export const getArrMap = (arr: any[] = [], valueKey?: string, labelKey?: string) => {
   const data = {};
-  arr.forEach((item, index) => data[valueKey ? item[valueKey] : index] = labelKey ? item[labelKey] : item);
+  arr.forEach((item, index) => valueKey && item?.[valueKey] && (data[item?.[valueKey]] = labelKey ? item[labelKey] : item));
   return data;
 };
-
 
 // 两个元素交换位置		
 export const changeLocation = (arr: any[], index1: number, index2: number) => {
