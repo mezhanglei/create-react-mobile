@@ -1,4 +1,4 @@
-import { isObject } from "./type";
+import { isEmpty, isObject } from "./type";
 import { copy } from 'copy-anything';
 import compare from 'react-fast-compare';
 
@@ -51,7 +51,8 @@ export function formatName(str: string) {
 }
 
 // 根据路径获取目标对象中的值
-export function deepGet(obj: object | undefined, keys: string | string[]): any {
+export function deepGet(obj: object | undefined, keys?: string | string[]): any {
+  if (!keys?.length) return
   return (
     (!Array.isArray(keys)
       ? pathToArr(keys)
@@ -115,22 +116,16 @@ export function deepSet(obj: any, path: string | string[], value: any) {
   return root;
 }
 
-// 合并两个对象
-export const mergeObject = function (obj1: any, obj2: any) {
-  if (!isObject(obj1) || !isObject(obj2)) {
-    return obj1;
-  }
-  const clone = deepClone(obj1);
+// 深度合并两个对象
+export const deepMergeObject = function (obj1: any, obj2: any) {
   for (let key in obj2) {
-    if (obj2[key] !== undefined) {
-      if (obj2[key].constructor == Object) {
-        clone[key] = mergeObject(clone[key], obj2[key]);
-      } else {
-        clone[key] = obj2[key];
-      }
+    if (isObject(obj1[key])) {
+      obj1[key] = deepMergeObject(obj1[key], obj2[key])
+    } else {
+      obj1 = { ...obj1, ...obj2 }
     }
   }
-  return clone;
+  return obj1;
 };
 
 // 合并新对象，新对象浅合并, 新的覆盖旧的

@@ -114,16 +114,13 @@ export function matches(el: any, selector: string) {
 }
 
 // 根据选择器返回在父元素内的序号
-export function getChildrenIndex(el: any, excluded?: Array<string | HTMLElement>, include?: Array<string | HTMLElement>) {
+export function getChildrenIndex(el: any, excluded?: Array<string | HTMLElement>) {
   const children = el?.parentNode?.children;
   if (!children) return -1;
   let index = 0;
   for (let i = 0; i < children?.length; i++) {
     const node = children[i] as HTMLElement;
-    if (
-      (!include || include?.some((item) => typeof item === 'string' ? matches(node, item) : node == item)) &&
-      !excluded?.some((item) => typeof item === 'string' ? matches(node, item) : node == item)
-    ) {
+    if (!excluded?.some((item) => typeof item === 'string' ? matches(node, item) : node == item)) {
       // 如果等于就结束循环
       if (el !== node) {
         index++
