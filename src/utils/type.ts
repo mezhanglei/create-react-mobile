@@ -116,3 +116,9 @@ export function isBase(data: any) {
   const type = typeof data;
   return ['string', 'number', 'symbol', 'boolean']?.includes(type);
 }
+
+// 是否为字符串形式的数字
+export const isNumberStr = (str?: string) => {
+  const target = Number(str)
+  if (!isNaN(target) && str) return true
+}

@@ -420,7 +420,7 @@ export const combinedArr = (arr1: object[], arr2: object[], condition: (next: ob
   return ret;
 };
 
-export const arraySwap = <T = any>(arr: T[], preIndex: number, nextIndex: number) => {
+export const arrayMove = <T = any>(arr: T[], preIndex: number, nextIndex: number) => {
   const clone = deepClone(arr);
   if (preIndex > nextIndex) {
     clone.splice(nextIndex, 0, arr[preIndex]);
