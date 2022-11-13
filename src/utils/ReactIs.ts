@@ -20,7 +20,9 @@ export function isFunctionComponent(component: any) {
 export function isReactComponent(component: any) {
   return (
     isClassComponent(component) ||
-    isFunctionComponent(component)
+    isFunctionComponent(component) ||
+    isClassComponent(component?.render || component?.type) ||
+    isFunctionComponent(component?.render || component?.type)
   )
 }
 

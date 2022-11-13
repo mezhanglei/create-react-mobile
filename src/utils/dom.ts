@@ -481,10 +481,11 @@ export function getScrollParent(target: any, step?: number): HTMLElement {
 
 // 是否可以使用dom
 export function canUseDom(): boolean {
+  const win = getWindow()
   return !!(
-    typeof window !== 'undefined' &&
-    window.document &&
-    window.document.createElement
+    typeof win !== 'undefined' &&
+    win.document &&
+    win.document.createElement
   );
 }
 
