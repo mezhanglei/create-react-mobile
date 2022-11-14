@@ -1,11 +1,44 @@
 //===基础字符串或数字的处理===//
-import { isObject, isNumber, isEmpty } from "./type";
+import { isObject, isNumber, isEmpty, isNumberStr } from "./type";
 import * as Pinyin from 'jian-pinyin';
-import numbro from 'numbro'
+import BigNumber from 'bignumber.js'
 
 // 格式化数字或字符串
-export function formatNumber(value: number | string, digit = 2) {
-  return numbro(value).format({ mantissa: digit, optionalMantissa: true })
+export function formatNumber(value: number | string, decimal = 2) {
+  if (!isNumberStr(value)) return ''
+  return decimal !== undefined ? new BigNumber(value).toFixed(decimal) : new BigNumber(value).toFixed()
+}
+
+export function strToCurrency(value?: string | number, decimal?: number) {
+  if (isEmpty(value)) return ''
+  if (!isNumberStr(value)) return '0.00'
+  const fmt = {
+    prefix: '',
+    decimalSeparator: '.', // 小数点
+    groupSeparator: ',', // 分组隔离符
+    groupSize: 3, // 正数组分割数量
+    secondaryGroupSize: 0,
+    fractionGroupSeparator: ' ', //小数组分组的分隔符
+    fractionGroupSize: 0, // 小数组的分割单位
+    suffix: ''
+  }
+  return decimal !== undefined ? new BigNumber(value).toFormat(decimal, fmt) : new BigNumber(value).toFormat(fmt)
+}
+
+export function add(a?: string | number, b?: string | number) {
+  return BigNumber(a || '0').plus(b || '0').toString()
+}
+
+export function subtract(a?: string | number, b?: string | number) {
+  return BigNumber(a || '0').minus(b || '0').toString()
+}
+
+export function multiply(a?: string | number, b?: string | number) {
+  return BigNumber(a || '0').multipliedBy(b || '0').toString()
+}
+
+export function divide(a?: string | number, b?: string | number) {
+  return BigNumber(a || '0').dividedBy(b || '0').toString()
 }
 
 // 自动补充0
