@@ -2,6 +2,7 @@
 // babel转译分类：会将源代码分成syntax(语法)和api(函数或方法)两部分来处理
 // babel使用polyfill来处理api, 该库分为两部分：core-js和regenerator-runtime。
 // 在@babel/preset-env编译时转译的问题: 1. api转译时会直接修改全局变量或者修改全局变量的原型。2. syntax转译时会重复自定义辅助函数helper
+// 执行顺序：从后往前执行
 {
   "presets": [
     [
@@ -16,19 +17,20 @@
         }
       }
     ],
-    // 和ts-loader方案二选一，目的是把ts转为js
-    "@babel/preset-typescript",
     // 转换react语法
-    "@babel/preset-react"
+    "@babel/preset-react",
+    // 和ts-loader方案二选一，目的是把ts转为js
+    "@babel/preset-typescript"
   ],
+  // 执行顺序，从前往后执行
   "plugins": [
-    // 此插件将helpers和polyfill都改为从一个统一的地方引入, 按需引入@babel/runtime-corejs3中的模块而不是直接修改全局变量或者全局变量原型，导致不可预知的问题，开发库时必选.
+    // 此插件将helpers和polyfill都改为从一个统一的地方引入, @babel/runtime代替regenerator-runtime, @babel/runtime-corejs3代替core-js
     // [
     //   "@babel/plugin-transform-runtime",
     //   {
-    //     // 使用特性,需要安装@babel/runtime-corejs3
+    //     // core-js的API, 需要安装@babel/runtime-corejs3
     //     "corejs": {
-    //       "version": 3,
+    //       "version": "3",
     //       "proposals": true // 默认情况不会使用提案中的，true则使用
     //     }
     //   }
@@ -36,11 +38,21 @@
     // 异步加载语法解析插件,解析import().then()这种语法
     "@babel/plugin-syntax-dynamic-import",
     // 类的装饰器提案(必须在@babel/plugin-proposal-class-properties前面)
-    ["@babel/plugin-proposal-decorators", {"version": "legacy"}],
+    ["@babel/plugin-proposal-decorators", { "version": "legacy" }], // 选用遗留提案
     // 编译静态属性和类属性
     ["@babel/plugin-proposal-class-properties", { "loose": true }],
     ["@babel/plugin-proposal-private-property-in-object", { "loose": true }],
+    ["@babel/plugin-proposal-private-methods",{ "loose": true }],
     // babel-plugin-import配置类库按需加载
-    ["import", { "libraryName": "antd-mobile", "libraryDirectory": "es/components", "style": false}]
+    [
+      "import",
+      {
+        "libraryName": "antd",
+        "libraryDirectory": "es",
+        // css 表示导入解析后的css文件
+        // true 表示在解析阶段引入less
+        "style": true
+      }
+    ]
   ]
 }

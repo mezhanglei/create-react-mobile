@@ -25,20 +25,39 @@ export function strToCurrency(value?: string | number, decimal?: number) {
   return decimal !== undefined ? new BigNumber(value).toFormat(decimal, fmt) : new BigNumber(value).toFormat(fmt)
 }
 
+// 加
 export function add(a?: string | number, b?: string | number) {
   return BigNumber(a || '0').plus(b || '0').toString()
 }
 
+// 减
 export function subtract(a?: string | number, b?: string | number) {
   return BigNumber(a || '0').minus(b || '0').toString()
 }
 
+// 乘
 export function multiply(a?: string | number, b?: string | number) {
   return BigNumber(a || '0').multipliedBy(b || '0').toString()
 }
 
+// 除
 export function divide(a?: string | number, b?: string | number) {
   return BigNumber(a || '0').dividedBy(b || '0').toString()
+}
+
+/**
+ * 比较大小
+ * 返回 1  a > b
+ * 返回 0 a = b
+ * 返回 -1 a < b
+ * 返回-2 存在空值 
+ * @param a 
+ * @param b 
+ * @returns 
+ */
+export function compareTo(a?: string | number, b?: string | number) {
+  if (!isNumberStr(a) || !isNumberStr(b)) return -2;
+  return BigNumber(a).comparedTo(b)
 }
 
 // 自动补充0
