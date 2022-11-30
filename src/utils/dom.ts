@@ -17,6 +17,28 @@ export const findElement = (target: any, parent: any = document): null | HTMLEle
   return result;
 };
 
+// 查找dom中指定属性名的值，没有返回null
+export const findSource = (dom: any, attr: string) => {
+  let flag = null;
+  // 标签名
+  let tagName = dom.tagName.toLowerCase();
+  // 触发事件的目标
+  let target = dom;
+  // 递归查询的层数
+  let num = 20;
+  while (tagName !== 'body' && num > 0) {
+    flag = target.getAttribute(attr) != null;
+    if (flag) {
+      // 自定义属性只能是字符串
+      return target.getAttribute(attr);
+    }
+    target = target.parentNode;
+    tagName = target.tagName.toLowerCase();
+    num--;
+  }
+  return flag;
+}
+
 // 返回目标元素的兄弟节点
 export const findSiblingsElement = (target: HTMLElement, containOwner?: boolean) => {
   if (target && !isDom(target)) return;
