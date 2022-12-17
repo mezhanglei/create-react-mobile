@@ -82,13 +82,13 @@ export function getAbsolute(ele: HTMLElement, parent: HTMLElement): { x: number,
 }
 
 // 获取当前的window
-export const getWindow = (el?: any) => {
+export const getWindow = (el?: Node) => {
   const ownerDocument = el?.ownerDocument || document?.ownerDocument;
   return ownerDocument ? (ownerDocument.defaultView || window) : window;
 };
 
 // 获取当前的document
-export const getOwnerDocument = (el?: any) => {
+export const getOwnerDocument = (el?: Node) => {
   const ownerDocument = el?.ownerDocument || document?.ownerDocument;
   return ownerDocument;
 };
@@ -98,7 +98,7 @@ export const getOwnerDocument = (el?: any) => {
  * @param el 
  * @returns 
  */
-export function getRect(el: HTMLElement) {
+export function getRect(el: Element) {
   return el.getBoundingClientRect()
 }
 
@@ -107,7 +107,7 @@ export function getRect(el: HTMLElement) {
  * @param {*} root 根元素
  * @param {*} child 目标元素
  */
-export function isContains(root: HTMLElement, child: HTMLElement): boolean {
+export function isContains(root: Node, child: Node): boolean {
   if (!root || root === child) return false;
   return root.contains(child);
 };
@@ -136,12 +136,12 @@ export function matches(el: any, selector: string) {
 }
 
 // 根据选择器返回在父元素内的序号
-export function getChildrenIndex(el: any, excluded?: Array<string | HTMLElement>) {
+export function getChildrenIndex(el: any, excluded?: Array<string | Node | undefined>) {
   const children = el?.parentNode?.children;
   if (!children) return -1;
   let index = 0;
   for (let i = 0; i < children?.length; i++) {
-    const node = children[i] as HTMLElement;
+    const node = children[i] as Node;
     if (!excluded?.some((item) => typeof item === 'string' ? matches(node, item) : node == item)) {
       // 如果等于就结束循环
       if (el !== node) {
@@ -159,12 +159,12 @@ export function getChildrenIndex(el: any, excluded?: Array<string | HTMLElement>
  * @param el 元素
  * @param parent 父元素
  */
-export function matchParent(el: any, parent: HTMLElement): boolean {
+export function matchParent(el: HTMLElement, parent: HTMLElement): boolean {
   let node = el;
   do {
     if (node === parent) return true;
     if ([document.documentElement, document.body].includes(node)) return false;
-    node = node.parentNode;
+    node = node.parentNode as HTMLElement;
   } while (node);
 
   return false;
@@ -514,16 +514,16 @@ export function canUseDom(): boolean {
 export const insertBefore = (newElement: HTMLElement, targetElement: HTMLElement) => {
   const parentElement = targetElement.parentNode;
   if (!parentElement) return;
-  (parentElement as HTMLElement).insertBefore(newElement, targetElement);
+  return parentElement.insertBefore(newElement, targetElement);
 }
 
 export const insertAfter = (newElement: HTMLElement, targetElement: HTMLElement) => {
   const parentElement = targetElement.parentNode;
   if (!parentElement) return;
-  if ((parentElement as HTMLElement).lastChild == targetElement) {
-    (parentElement as HTMLElement).appendChild(newElement);
+  if (parentElement.lastChild == targetElement) {
+    return parentElement.appendChild(newElement);
   } else {
-    (parentElement as HTMLElement).insertBefore(newElement, targetElement.nextElementSibling);
+    return parentElement.insertBefore(newElement, targetElement.nextElementSibling);
   }
 }
 
@@ -546,7 +546,7 @@ export function css(el: any, prop?: string | CSSProperties) {
 }
 
 // 获取当前元素的前面的兄弟元素
-export const prevAll = function (node: HTMLElement) {
+export const prevAll = function (node: Node) {
   const _parent = node.parentNode;
   const children = _parent?.children || [];
   const siblings = [];
@@ -561,7 +561,7 @@ export const prevAll = function (node: HTMLElement) {
 };
 
 // 获取当前元素之后的兄弟元素
-export const nextAll = function (node: HTMLElement) {
+export const nextAll = function (node: Node) {
   const _parent = node.parentNode;
   const children = _parent?.children || [];
   const siblings = [];

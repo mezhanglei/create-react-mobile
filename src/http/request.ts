@@ -5,7 +5,7 @@ import { myStorage } from "@/utils/cache";
 import { loginOut, getToken } from "@/core/session";
 import { trimParams } from "@/utils/character";
 import Loader from "@/components/loader/index";
-import { myBrowser } from "@/utils/brower";
+import { IE11OrLess } from "@/utils/brower";
 
 // 开始loading
 export function startLoading() {
@@ -99,7 +99,7 @@ http.interceptors.request.use(
     if (!config.noTrim) {
       if (config.params) {
         config.params = Object.assign(trimParams(config.params), defaults);
-        if (myBrowser() == "IE") {
+        if (IE11OrLess) {
           // ie下get请求会缓存
           config.params = { ...config.params, rand: Math.random() };
         }

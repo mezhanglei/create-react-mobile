@@ -24,7 +24,6 @@ setTimeout(() => {
   objectFitImages();
 }, 100);
 
-
 ReactDOM.render(
   <Provider store={store} >
     <ConfigProvider {...antdMobileConfigs}>
