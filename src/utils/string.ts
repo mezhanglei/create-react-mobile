@@ -22,10 +22,14 @@ export function parseJSON(val: string) {
 }
 
 // 将对象转化为普通字符串(非json格式)
-export function uneval(val: any): string | undefined {
+export function uneval(val: any, allowFunction: boolean = true): string | undefined {
   if (isEmpty(val)) return;
   if (typeof val === 'function') {
-    return val.toString()
+    if (allowFunction) {
+      return val.toString()
+    } else {
+      return
+    }
   }
   try {
     return devalue.uneval(val)
