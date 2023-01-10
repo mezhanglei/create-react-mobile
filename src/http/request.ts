@@ -50,7 +50,7 @@ export function AxiosCancel() {
 // 实例化一个axios实例(浏览器自动设置content-type或者自己手动设置)
 // 1.默认application/x-www-form-urlencoded, form表单默认的方式,提交的数据按照key1=val1&key2=val2的方式进行编码，key和val都进行了URL转码(只支持表单键值对,不支持二进制文件)
 // 2.application/json,表示请求体中消息类型为序列化的json字符串
-// 3.multipart/form-data; boundary=${分隔符},利用form表单设置mutiple时浏览器自动添加,专门用于有效的传输文件, 既可以上传二进制数据，也可以上传表单键值对
+// 3.multipart/form-data; boundary=${分隔符}, 请求时浏览器自动添加,不能人工设置, 专门用于有效的传输文件, 既可以上传二进制数据，也可以上传表单键值对
 const http = axios.create({
   timeout: 1000 * 10,
   withCredentials: true,
@@ -58,7 +58,7 @@ const http = axios.create({
 });
 
 // 实例化取消axois的方法
-const axiosCancel = new AxiosCancel();
+const axiosCancel = AxiosCancel();
 
 /**
  * 响应状态异常的处理
@@ -91,19 +91,17 @@ http.interceptors.request.use(
     const defaults = {
       // t: new Date().getTime()
     };
-    // 公共headers
     config.headers = config.headers || {};
+    // 公共headers
     config.headers["Authorization"] = getToken();
 
     // 请求参数处理
-    if (!config.noTrim) {
-      if (config.params) {
-        config.params = Object.assign(trimParams(config.params), defaults);
-        if (IE11OrLess) {
-          // ie下get请求会缓存
-          config.params = { ...config.params, rand: Math.random() };
-        }
-      } else if (config.data) {
+    if (config.trim) {
+      const params = IE11OrLess ? { ...config.params, rand: Math.random() } : config?.params;
+      const data = config.data;
+      if (data) {
+        config.params = Object.assign(trimParams(params), defaults);
+      } else {
         config.data = Object.assign(trimParams(config.data), defaults);
       }
     }
@@ -129,16 +127,21 @@ http.interceptors.response.use(
     }
     endLoading();
     // 响应
+    const configs = response.config as CustomConfig;
+    const headers = response.headers;
     const code = response.data && response.data.code;
     const msg = response.data && response.data.message;
-    const result = response.data;
+    const result = configs && headers ? response.data : response;
+    // 完成的请求移除pending
+    axiosCancel.remove(configs);
     // 响应异常提示
     if (code != HTTP_CODE.SUCCESS) {
       resultError(code, msg);
     }
-
-    axiosCancel.remove(response.config)
-
+    // 是否携带请求体
+    if (configs?.withRequest) {
+      return response;
+    }
     return result;
   },
   (error) => {

@@ -16,7 +16,7 @@ export function isEqual(a: any, b: any) {
  * @param {Object} obj 传入的对象数据
  * @param {FormData} formData 是否传入已有的formData数据
  */
-export function objectToFormData(obj: any, formData: FormData) {
+export function objectToFormData(obj: any, formData?: FormData) {
   const fd = (formData instanceof FormData) ? formData : new FormData();
   let formKey;
   for (let property in obj) {

@@ -1,4 +1,4 @@
-import { blobToBase64 } from "./file";
+import { fileToBase64 } from "./file";
 
 // 根据图片路径转化为base64
 export function imgUrlToBase64(url: string, options?: { width: number, fileType?: string, quality?: number }): Promise<string> {
@@ -39,7 +39,7 @@ export function pressImg(param: PressImg): Promise<string | null> {
     if (!file || fileType.indexOf("image") == -1) return resolve(null);
     try {
       // 转为base64
-      const base64 = await blobToBase64(file);
+      const base64 = await fileToBase64(file);
       // 压缩base64
       const pressBase64 = await imgUrlToBase64(base64, { width, fileType, quality });
       resolve(pressBase64);
