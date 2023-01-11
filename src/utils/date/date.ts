@@ -1,4 +1,4 @@
-import { formatNumber } from "@/utils/character";
+import { formatNumber } from "@/utils/number";
 import { getNewDate, getYMD, dateFormat } from "./format";
 import { TimeInputType } from "./interface";
 

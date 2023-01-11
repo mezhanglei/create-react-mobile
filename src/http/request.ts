@@ -3,7 +3,7 @@ import { HTTP_STATUS, HTTP_CODE, HTTP_STATUS_MAP, HTTP_CODE_MAP, CancelPending, 
 // import { Toast } from "antd-mobile";
 import { myStorage } from "@/utils/cache";
 import { loginOut, getToken } from "@/core/session";
-import { trimParams } from "@/utils/character";
+import { trimParams } from "@/utils/object";
 import Loader from "@/components/loader/index";
 import { IE11OrLess } from "@/utils/brower";
 

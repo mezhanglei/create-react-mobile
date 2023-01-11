@@ -1,3 +1,4 @@
+import { formatNumber, getPower } from "./number";
 import { FILE_MIME } from "./mime";
 import { isBlob, isArrayBuffer } from "./type";
 
@@ -172,4 +173,26 @@ export function readTxt(url: string) {
   xhr.overrideMimeType("text/html;charset=utf-8");
   xhr.send(null);
   return xhr.status === okStatus ? xhr.responseText : null;
+}
+
+// 格式化返回文件大小
+export const formatFileSize = (size?: number, unitStr?: string) => {
+  if (!size) return;
+  const unitByPower = {
+    1: "B",
+    2: "KB",
+    3: "MB",
+    4: "GB"
+  }
+  const powerByUnit = Object.entries(unitByPower).reduce((acc, [k, v]) => ({ ...acc, [v]: k }), {})
+  if (unitStr) {
+    const power = powerByUnit[unitStr];
+    const result = formatNumber(size / Math.pow(10, power), 2)
+    return result + unitStr;
+  } else {
+    const power = getPower(size);
+    const unit = unitByPower[power]
+    const result = formatNumber(size / Math.pow(10, power), 2)
+    return result + unit;
+  }
 }

@@ -12,6 +12,20 @@ export function isEqual(a: any, b: any) {
 }
 
 /**
+ * 递归去除参数的前后空格
+ * @param {*} data 参数
+ */
+export const trimParams = (data: any) => {
+  if (typeof data === 'string') return data.trim();
+  if (isObject(data)) {
+    for (let key in data) {
+      data[key] = trimParams(data[key]);
+    }
+  }
+  return data;
+};
+
+/**
  * 递归将对象/嵌套对象的数据转化为formdata格式数据
  * @param {Object} obj 传入的对象数据
  * @param {FormData} formData 是否传入已有的formData数据
@@ -49,9 +63,9 @@ export function pathToArr(path?: string | string[]) {
 // 根据路径获取目标对象中的单个值或多个值
 export function deepGet(obj: object | undefined, keys?: string | string[]): any {
   if (!keys?.length) return
-  if(keys instanceof Array) {
+  if (keys instanceof Array) {
     const result = {}
-    for(let key in keys) {
+    for (let key in keys) {
       const item = keys[key]
       result[item] = pathToArr(item)?.reduce?.((o, k) => (o)?.[k], obj)
     }
