@@ -1,6 +1,6 @@
 import React from "react";
 
-// 是否为函数类组件声明
+// 是否为类组件声明
 export function isClassComponent(component: any) {
   return (
     typeof component === 'function' &&
@@ -8,7 +8,7 @@ export function isClassComponent(component: any) {
   )
 }
 
-// 是否为函数组件(函数都可以渲染为组件)
+// 是否为函数组件
 export function isFunctionComponent(component: any) {
   return (
     typeof component === 'function'
