@@ -82,13 +82,13 @@ export function getAbsolute(ele: HTMLElement, parent: HTMLElement): { x: number,
 }
 
 // 获取当前的window
-export const getWindow = (el?: Node) => {
+export const getWindow = (el?: Node | null) => {
   const ownerDocument = el?.ownerDocument || document?.ownerDocument;
   return ownerDocument ? (ownerDocument.defaultView || window) : window;
 };
 
 // 获取当前的document
-export const getOwnerDocument = (el?: Node) => {
+export const getOwnerDocument = (el?: Node | null) => {
   const ownerDocument = el?.ownerDocument || document?.ownerDocument;
   return ownerDocument;
 };
@@ -136,7 +136,7 @@ export function matches(el: any, selector: string) {
 }
 
 // 根据选择器返回在父元素内的序号
-export function getChildrenIndex(el: any, excluded?: Array<string | Node | undefined>) {
+export function getChildrenIndex(el: any, excluded?: Array<string | Node | undefined | null>) {
   const children = el?.parentNode?.children;
   if (!children) return -1;
   let index = 0;

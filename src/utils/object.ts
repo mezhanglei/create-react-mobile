@@ -125,14 +125,16 @@ export function deepSet(obj: any, path: string | string[], value: any) {
 
 // 深度合并两个对象
 export const deepMergeObject = function (obj1: any, obj2: any) {
-  for (let key in obj2) {
-    if (isObject(obj1[key])) {
-      obj1[key] = deepMergeObject(obj1[key], obj2[key])
-    } else {
-      obj1 = { ...obj1, ...obj2 }
+  if (typeof obj1 === 'object') {
+    for (let key in obj2) {
+      if (isObject(obj1[key])) {
+        obj1[key] = deepMergeObject(obj1[key], obj2[key])
+      } else if (obj2[key] !== undefined) {
+        obj1[key] = obj2[key]
+      }
     }
+    return obj1;
   }
-  return obj1;
 };
 
 // 合并新对象，新对象浅合并, 新的覆盖旧的

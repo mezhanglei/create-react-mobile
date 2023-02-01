@@ -51,7 +51,7 @@ export function AxiosCancel() {
 // 1.默认application/x-www-form-urlencoded, form表单默认的方式,提交的数据按照key1=val1&key2=val2的方式进行编码，key和val都进行了URL转码(只支持表单键值对,不支持二进制文件)
 // 2.application/json,表示请求体中消息类型为序列化的json字符串
 // 3.multipart/form-data; boundary=${分隔符}, 请求时浏览器自动添加,不能人工设置, 专门用于有效的传输文件, 既可以上传二进制数据，也可以上传表单键值对
-const http = axios.create({
+const axiosInstance = axios.create({
   timeout: 1000 * 10,
   withCredentials: true,
   baseURL: process.env.MOCK ? '/mock' : "/api"
@@ -85,7 +85,7 @@ function resultError(code: HTTP_CODE, msg: string) {
 }
 
 // 请求拦截(axios自动对请求类型进行类型转换)
-http.interceptors.request.use(
+axiosInstance.interceptors.request.use(
   (config: CustomConfig) => {
     // 公共的请求参数
     const defaults = {
@@ -100,9 +100,9 @@ http.interceptors.request.use(
       const params = IE11OrLess ? { ...config.params, rand: Math.random() } : config?.params;
       const data = config.data;
       if (data) {
-        config.params = Object.assign(trimParams(params), defaults);
+        config.data = Object.assign(trimParams(data), defaults);
       } else {
-        config.data = Object.assign(trimParams(config.data), defaults);
+        config.params = Object.assign(trimParams(params), defaults);
       }
     }
 
@@ -120,7 +120,7 @@ http.interceptors.request.use(
 );
 
 // 响应拦截(axios默认自动对响应请求进行类型转换)
-http.interceptors.response.use(
+axiosInstance.interceptors.response.use(
   (response) => {
     if (response == null || response === undefined) {
       return null;
@@ -160,7 +160,7 @@ const request = {};
 const RequestTypes = ['get', 'post', 'delete', 'put'] as Method[];
 RequestTypes.map((method) => {
   request[method] = function (configs: CustomConfig) {
-    return http({
+    return axiosInstance({
       ...configs,
       method: method
     });

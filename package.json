@@ -10,8 +10,8 @@
     "dll": "cross-env NODE_ENV=prod webpack --config ./webpack/webpack.dll.js",
     "start": "cross-env NODE_ENV=dev webpack serve --config ./webpack/webpack.dev.js",
     "start-mock": "cross-env NODE_ENV=dev MOCK=true webpack serve --config ./webpack/webpack.dev.js",
-    "eslint": "eslint --ext .js --ext .jsx src/",
-    "eslint-fix": "eslint --fix --ext .js --ext src/",
+    "eslint": "eslint --ext .js,.jsx,.ts,.tsx ./",
+    "eslint-fix": "eslint --fix --ext .js,.jsx,.ts,.tsx ./",
     "csslint": "stylelint src/**/*.{css,scss,less}",
     "css-fix": "stylelint src/**/*.{css,scss,less} --fix"
   },
