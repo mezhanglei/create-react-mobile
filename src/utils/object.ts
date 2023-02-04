@@ -57,7 +57,8 @@ export function filterObject(obj: object | undefined | null, callback: (value: a
 // 接收路径字符串或数组字符串，返回数组字符串表示路径
 export function pathToArr(path?: string | string[]) {
   if (path instanceof Array) return path;
-  return typeof path === 'string' && path ? path.replace(/\]$/, '').split(/\.\[|\[\]|\]\[|\[|\]\.|\]|\./g) : [];
+  const parts = typeof path === 'string' && path ? path.replace(/\]$/, '').replace(/^\[/, '').split(/\.\[|\[\]|\]\[|\[|\]\.|\]|\./g) : []
+  return parts;
 }
 
 // 根据路径获取目标对象中的单个值或多个值

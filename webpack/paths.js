@@ -25,11 +25,14 @@ const dllOutputPath = path.join(staticPath, 'dll');
 const appHtml = path.join(srcPath, 'pages/index.html');
 // 引入配置
 const configs = require('./configs.js');
+// 图标路径
+const iconsPath = path.resolve(srcPath, './icons');
 const isDev = configs.isDev;
 // 合并为一个对象输出
 module.exports = {
   appRoot,
   srcPath,
+  iconsPath,
   staticPath,
   lessPath,
   outputPath,

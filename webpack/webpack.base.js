@@ -191,7 +191,7 @@ module.exports = {
       },
       {
         test: /\.(png|svg|jpg|gif|jpeg|ico)$/i,
-        exclude: nodeModulesRegex,
+        exclude: [nodeModulesRegex, paths.iconsPath],
         type: "asset",
         parser: {
           dataUrlCondition: {
@@ -202,6 +202,18 @@ module.exports = {
         generator: {
           filename: "img/[name]_[hash:8].[ext]"
         }
+      },
+      {
+        test: /\.svg$/,
+        include: paths.iconsPath,
+        use: [
+          { loader: 'svg-sprite-loader' },
+          {
+            loader: 'svgo-loader', options: {
+              plugins: [{ name: "removeAttrs", params: { attrs: 'fill' } }]
+            }
+          },
+        ],
       },
       {
         test: /\.(woff|woff2|eot|ttf|otf)$/,

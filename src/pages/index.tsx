@@ -10,7 +10,8 @@ import "slick-carousel/slick/slick-theme.css";
 import "less/index.less";
 import { ConfigProvider } from 'antd-mobile';
 import antdMobileConfigs from '@/core/antd-mobile-configs';
-
+// 引入图标
+import "@/icons/index.js";
 
 // 只在开发环境下引入
 // if (process.env.NODE_ENV === 'development') {
