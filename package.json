@@ -99,7 +99,6 @@
     "devalue": "^4.2.0",
     "dva-core": "^2.0.4",
     "dva-loading": "^3.0.22",
-    "fingerprintjs2": "^2.1.0",
     "history": "^5.0.0",
     "jian-pinyin": "^0.2.3",
     "jsencrypt": "^3.0.0-rc.1",

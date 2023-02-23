@@ -57,7 +57,7 @@ export function filterObject(obj: object | undefined | null, callback: (value: a
 // 接收路径字符串或数组字符串，返回数组字符串表示路径
 export function pathToArr(path?: string | string[]) {
   if (path instanceof Array) return path;
-  const parts = typeof path === 'string' && path ? path.replace(/\]$/, '').replace(/^\[/, '').split(/\.\[|\[\]|\]\[|\[|\]\.|\]|\./g) : []
+  const parts = typeof path === 'string' && path ? path.replace(/\]$/, '').replace(/^\[/, '').split(/\.\[|\]\[|\[|\]\.|\]|\./g) : []
   return parts;
 }
 
@@ -65,7 +65,7 @@ export function pathToArr(path?: string | string[]) {
 export function deepGet(obj: object | undefined, keys?: string | string[]): any {
   if (!keys?.length) return
   if (keys instanceof Array) {
-    const result = {}
+    const result = obj instanceof Array ? [] : {}
     for (let key in keys) {
       const item = keys[key]
       result[item] = pathToArr(item)?.reduce?.((o, k) => (o)?.[k], obj)
