@@ -1,5 +1,4 @@
 import { formatNumber, getPower } from "./number";
-import { FILE_MIME } from "./mime";
 import { isBlob, isArrayBuffer } from "./type";
 
 // === 格式转换 ===
@@ -101,7 +100,7 @@ export function formExportFile(url: string, params = {}) {
   form.method = 'post';
   document.body.appendChild(form);
   //创建隐藏的控件
-  for (let key in params) {
+  for (let key of Object.keys(params)) {
     let input = document.createElement('input');
     input.type = 'hidden';
     input.name = key;
@@ -116,47 +115,30 @@ export function formExportFile(url: string, params = {}) {
 
 
 /**
- * 下载二进制数据(ajax请求需设置responseType: "blob"或"arraybuffer")
+ * 下载二进制文件流(ajax请求需设置responseType: "blob"或"arraybuffer")
  * @param {Blob} data 二进制数据 必填
- * @param {string} fileName 文件名称 必填
- * @param {string} type 文件后缀 必填
+ * @param {string} 文件名及后缀
  */
-export function saveAsBinary(data: Blob | ArrayBuffer, fileName: string, type: string) {
-  if (!fileName || !type) {
-    console.error("please set file name and file type");
+export function saveAsBinary(data: any, filename: string) {
+  if (!filename) {
+    console.error("please set file name");
   }
 
-  // 转换成blob数据
-  let blob = null;
-  if (isBlob(data)) {
-    blob = data;
-  } else if (isArrayBuffer(data)) {
-    blob = new Blob([data], { type: FILE_MIME[type?.replace('.', '')] });
-  } else {
-    return;
-  }
+  const blob = isBlob(data) ? data : (isArrayBuffer(data) ? new Blob([data]) : null)
+  if(!blob) return;
 
   // ie浏览器兼容
-  if (window.navigator.msSaveOrOpenBlob) {
-    navigator.msSaveBlob(blob, `${fileName}.${type}`);
+  if (window.navigator.msSaveBlob) {
+    navigator.msSaveBlob(blob, filename);
   } else if (window.URL) {
-    //创建a标签
     const link = document.createElement('a');
-    //获取body元素
-    const body = document.querySelector('body');
-    //创建url链接
-    link.href = window.URL.createObjectURL(blob);
-    //重命名
-    link.download = `${fileName}.${type}`;
-    //火狐需要隐藏标签
+    const href = window.URL.createObjectURL(blob);
+    link.href = href;
+    link.download = filename;
     link.style.display = 'none';
-    //插入到body中
-    body.appendChild(link);
-    //触发下载
+    document.body.appendChild(link);
     link.click();
-    //移除a标签
-    body.removeChild(link);
-    //释放url对象
+    document.body.removeChild(link);
     window.URL.revokeObjectURL(link.href);
   }
 }
@@ -167,7 +149,7 @@ export function saveAsBinary(data: Blob | ArrayBuffer, fileName: string, type: s
  */
 export function readTxt(url: string) {
   let xhr = new XMLHttpRequest();
-  let okStatus = document.loacation.protocol === "file:" ? 0 : 200;
+  let okStatus = document.location.protocol === "file:" ? 0 : 200;
   xhr.open('GET', url, false);
   // 强制解析为text/html
   xhr.overrideMimeType("text/html;charset=utf-8");

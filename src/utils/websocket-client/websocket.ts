@@ -4,7 +4,7 @@ export enum IMEvent {
   CONNECTED = "connected", // 链接时触发的事件名
   MESSAGE = 'message', // 接收消息触发事件名
   DISCONNECTED = "disconnected", // 意外断开事件名
-  CLOSE = "close", // 关闭事件名
+  CLOSE = "close", // 后端关闭websokcet事件名，只有后端断开才算真正的断开
   ERROR = "error", // 错误事件名
   HEARTBEAT = "heartbeat", // 心跳检测事件
   OFFLINE = "offline", // 网络离线事件
@@ -13,7 +13,6 @@ export enum IMEvent {
 
 export interface WebSocketProxyProps {
   url: string; // 接口地址
-  heartBeat?: boolean; // 是否执行心跳检测
 }
 
 export type SendData = string | ArrayBufferLike | Blob | ArrayBufferView;
@@ -23,10 +22,10 @@ export type SendData = string | ArrayBufferLike | Blob | ArrayBufferView;
 // Websocket 使用和 HTTP 相同的 TCP 端口，可以绕过大多数防火墙的限制。默认情况下，Websocket 协议使用 80 端口；如果运行在 TLS 之上时，默认使用 443 端口。
 export default class WebSocketProxy {
   url: string;
-  heartBeat?: boolean;
+  heartCheck: ReturnType<typeof CreateHeartCheck>;
   constructor(config: WebSocketProxyProps) {
     this.url = config?.url;
-    this.heartBeat = config?.heartBeat;
+    this.heartCheck = CreateHeartCheck();
   }
 
   lockReconnect: boolean = false // true禁止重连
@@ -34,8 +33,6 @@ export default class WebSocketProxy {
   handlerMap: Map<string, Set<Function>> = new Map() // 存储事件Map结构
   dataQueue: Set<SendData> = new Set() // 消息队列
   socket?: WebSocket = undefined // webscoket实例
-  heartBeatTimer?: Timeout = undefined;
-  timeoutCloseTimer?: Timeout = undefined;
   reconnectTimer?: Timeout = undefined;
   reconnectCount: number = 0;
 
@@ -95,24 +92,17 @@ export default class WebSocketProxy {
   // 重新连接的方法
   reconnect() {
     if (this.lockReconnect) return;
-    console.log(`意外断开，重连websocket，次数：${this.reconnectCount}`);
+    const count = this.reconnectCount;
+    console.log(`意外断开，重连websocket，次数：${count}`);
     this.reconnectTimer && clearTimeout(this.reconnectTimer);
     this.lockReconnect = true;
-    const count = this.reconnectCount;
-
-    let time = 5000;
-    if (this.status === IMEvent.ONLINE) {
-      time = 1000;
-    } else if (count < 10) {
-      time = 1500;
-    } else if (count > 10) {
-      time = Math.min(count * 200, 10000);
-    }
+    const time = 5000;
 
     this.reconnectTimer = window.setTimeout(() => {
       if (this.socket?.readyState === WebSocket.OPEN) {
         this.closeReconnect();
       } else {
+        this.lockReconnect = false;
         this.socket?.close();
         this.reconnectCount++;
         this.connect();
@@ -126,25 +116,23 @@ export default class WebSocketProxy {
     this.reconnectTimer && clearTimeout(this.reconnectTimer);
   }
 
-  // 关闭心跳检测
-  closeHeartBeat() {
-    this.heartBeatTimer && clearTimeout(this.heartBeatTimer);
-    this.timeoutCloseTimer && clearTimeout(this.timeoutCloseTimer);
+  // 开启心跳检测
+  startHeartCheck() {
+    // 发送心跳事件
+    const send = () => {
+      this.emitEvent(IMEvent.HEARTBEAT);
+    }
+    // 超时断开事件
+    const timeoutEvent = () => {
+      console.log('超时关闭ws');
+      this.socket?.close();
+    }
+    this.heartCheck.start(send, timeoutEvent);
   }
 
-  // 心跳检测
-  heartCheck() {
-    if (!this.heartBeat) return;
-    this.heartBeatTimer && clearTimeout(this.heartBeatTimer);
-    this.timeoutCloseTimer && clearTimeout(this.timeoutCloseTimer);
-    const timeout = 5000;
-    this.heartBeatTimer = setTimeout(() => {
-      this.emitEvent(IMEvent.HEARTBEAT);
-      this.timeoutCloseTimer = setTimeout(() => {
-        console.log('超时关闭ws');
-        this.socket?.close();
-      }, timeout)
-    }, timeout)
+  // 终止心跳检测
+  stopHeartCheck() {
+    this.heartCheck.stop();
   }
 
   // 创建websocket实例
@@ -156,19 +144,18 @@ export default class WebSocketProxy {
       // 根据消息类型触发对应的监听事件
       let data = message && JSON.parse(message);
       this.emitEvent(IMEvent.MESSAGE, data);
-      this.lockReconnect = false;
       this.closeReconnect();
-      this.heartCheck();
+      // 收到消息，循环发起下一次心跳
+      this.startHeartCheck();
     };
 
-    //打开通讯
+    // 打开通讯
     this.socket.onopen = () => {
       //触发链接事件
       this.emitEvent(IMEvent.CONNECTED);
-      // 打开事件重置
-      this.lockReconnect = false;
       this.closeReconnect();
-      this.heartCheck();
+      // 启动心跳功能
+      this.startHeartCheck();
       // 如果有消息队列，则连通时就开始发送
       if (this.dataQueue?.size > 0) {
         this.dataQueue?.forEach(msg => {
@@ -181,15 +168,16 @@ export default class WebSocketProxy {
     // 断开通讯
     this.socket.onclose = (evt) => {
       if (this.status !== IMEvent.CLOSE && this.status !== IMEvent.OFFLINE) {
-        // 触发断开事件
+        // 非主动断开事件
         this.emitEvent(IMEvent.DISCONNECTED);
         this.reconnect();
       } else {
         console.log(`websocket主动关闭链接`);
       }
+      this.stopHeartCheck();
     };
 
-    //通讯出错
+    // 通讯出错
     this.socket.onerror = (evt) => {
       this.emitEvent(IMEvent.ERROR);
       this.reconnect();
@@ -211,12 +199,40 @@ export default class WebSocketProxy {
 
   // 主动关闭Websocket
   closeWebsocket() {
-    // 发送给后端关闭事件
+    // 后端关闭
     this.emitEvent(IMEvent.CLOSE);
-    // 前端关闭websocket链接
+    // 前端关闭
     this.socket?.close();
-    this.closeHeartBeat();
+    this.stopHeartCheck();
     this.closeReconnect();
     this.clearMsgQueue();
+  }
+}
+
+// 创建心跳检测
+const CreateHeartCheck = () => {
+  const timeout = 5000;
+  let heartCheckTimer: Timeout = null;
+  let serverTimer: Timeout = null;
+
+  return {
+    stop: function () {
+      heartCheckTimer && clearTimeout(heartCheckTimer);
+      serverTimer && clearTimeout(serverTimer);
+      return this;
+    },
+    start: function (send: () => void, timeoutEvent: () => void) {
+      heartCheckTimer && clearTimeout(heartCheckTimer);
+      serverTimer && clearTimeout(serverTimer);
+      heartCheckTimer = setTimeout(() => {
+        // 执行发送命令
+        send && send();
+        console.log('ping start');
+        // 如果超过一定时间还没重置，说明后端主动断开了，执行断开操作
+        serverTimer = setTimeout(() => {
+          timeoutEvent && timeoutEvent();
+        }, timeout);
+      }, timeout);
+    }
   }
 }

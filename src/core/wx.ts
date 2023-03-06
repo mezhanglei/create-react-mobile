@@ -1,5 +1,5 @@
 import { getUrlQuery } from "@/utils/url";
-import { isInWeChat, isCompanyChat } from "@/utils/verify";
+import { isInWeChat } from "@/utils/brower";
 import { myStorage } from "@/utils/cache";
 import { WECHAT_TOKEN } from "@/constants/account/index";
 import { isEmpty } from "@/utils/type";
@@ -28,7 +28,7 @@ export function wxLink() {
 // 初始化微信授权功能
 export function initWX() {
   // 首先判断在不在微信内, 不在则跳转到提醒页面
-  if (!isInWeChat() && process.env.NODE_ENV != "development") {
+  if (!isInWeChat && process.env.NODE_ENV != "development") {
     const prefix = location.origin + process.env.PUBLIC_PATH + '#/' + "not-wechat";
     // const prefix = location.origin + process.env.PUBLIC_PATH + "not-wechat"; // history模式
     window.location.href = prefix;
