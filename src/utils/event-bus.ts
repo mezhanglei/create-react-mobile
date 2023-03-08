@@ -5,8 +5,8 @@
  *      2. 监听目标事件，const type = eventBus.on(事件名, 目标事件)，返回一个事件type(也就是事件名)
  *      3. 通过eventBus.emit(type, data)来触发对应的监听事件,并传递参数给监听的事件
  *             eventBus.emitAll(data) 触发所有监听的事件
- *      4. 通过eventBus.remove(type), 卸载对应的目标事件
- *      5. 通过eventBus.clear(), 清空对应的目标事件
+ *             eventBus.remove(type), 卸载对应的目标事件
+ *             eventBus.clear(), 清空对应的目标事件
  */
 export default class EventBus {
   _watchers: { type: string; handle: Function }[] = [];
