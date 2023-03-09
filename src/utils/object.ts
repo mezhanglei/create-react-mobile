@@ -1,4 +1,4 @@
-import { isNumberStr, isObject } from "./type";
+import { isEmpty, isNumberStr, isObject } from "./type";
 import { copy } from 'copy-anything';
 import compare from 'react-fast-compare';
 
@@ -126,16 +126,18 @@ export function deepSet(obj: any, path: string | string[], value: any) {
 
 // 深度合并两个对象
 export const deepMergeObject = function (obj1: any, obj2: any) {
-  if (typeof obj1 !== 'object' && typeof obj2 !== 'object') return;
-  const result = typeof obj1 === 'object' ? obj1 : {};
+  const obj1Type = Object.prototype.toString.call(obj1);
+  const obj2Type = Object.prototype.toString.call(obj2);
+  if (isEmpty(obj1)) return obj2;
+  if (obj1Type !== obj2Type) return obj1;
   for (let key in obj2) {
-    if (isObject(result[key])) {
-      result[key] = deepMergeObject(result[key], obj2[key])
+    if (isObject(obj1[key])) {
+      obj1[key] = deepMergeObject(obj1[key], obj2[key])
     } else if (obj2[key] !== undefined) {
-      result[key] = obj2[key]
+      obj1[key] = obj2[key]
     }
   }
-  return result;
+  return obj1;
 };
 
 // 合并新对象，新对象浅合并, 新的覆盖旧的
