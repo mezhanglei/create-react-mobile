@@ -167,7 +167,7 @@ export default class CreateWebSocket {
 
     // 断开通讯
     this.socket.onclose = (evt) => {
-      if (this.status !== IMEvent.CLOSE && this.status !== IMEvent.OFFLINE) {
+      if (this.status && ![IMEvent.CLOSE, IMEvent.OFFLINE, IMEvent.HEARTBEAT].includes(this.status)) {
         // 非主动断开事件
         this.emitEvent(IMEvent.DISCONNECTED);
         this.reconnect();
@@ -180,7 +180,7 @@ export default class CreateWebSocket {
     // 通讯出错
     this.socket.onerror = (evt) => {
       this.emitEvent(IMEvent.ERROR);
-      this.reconnect();
+      // this.reconnect();
     };
 
     // 监听下线

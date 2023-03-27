@@ -14,8 +14,9 @@ const AuthWechat = (props) => {
   let normalUrl = handleRedirect();
   // 获取code
   const code = getUrlQuery('code', normalUrl);
-  // 返回的路径
-  const backPath = decodeURIComponent(getUrlQuery('current', normalUrl));
+  // 获取路径
+  const encodeBackPath = getUrlQuery('current', normalUrl)
+  const backPath = encodeBackPath && decodeURIComponent(encodeBackPath);
   // 先清除token
   myStorage.remove(WECHAT_TOKEN);
 
@@ -24,7 +25,7 @@ const AuthWechat = (props) => {
     // 通过code请求后台获取token
     const token = "后台请求";
     myStorage.set(WECHAT_TOKEN, token);
-    window.location.replace(backPath);
+    backPath && window.location.replace(backPath);
   } else {
     // message.error("微信授权失败, 请稍后再试");
   }
