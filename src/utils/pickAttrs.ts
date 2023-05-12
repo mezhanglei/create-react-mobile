@@ -55,7 +55,7 @@ export default function pickAttrs(
     mergedConfig = {
       aria: true,
     };
-  } else {
+  } else if (typeof ariaOnly === 'object') {
     mergedConfig = {
       ...ariaOnly,
     };

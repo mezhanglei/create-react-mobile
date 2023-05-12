@@ -72,7 +72,7 @@ export function getUrlQuery(name: string, url = location.href) {
 }
 
 // 获取url中的相对路径
-export function GetUrlRelativePath(url: string) {
+export function getUrlPath(url: string) {
   const arrUrl = url.split("//");
   const start = arrUrl[1].indexOf("/");
   let relUrl = arrUrl[1].substring(start);

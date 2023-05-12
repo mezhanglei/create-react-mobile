@@ -1,8 +1,13 @@
 import { fileToBase64 } from "./file";
+import { isBase64 } from "./type";
 
 // 根据图片路径转化为base64
 export function imgUrlToBase64(url: string, options?: { width: number, fileType?: string, quality?: number }): Promise<string> {
   return new Promise((resolve) => {
+    if (isBase64(url)) {
+      resolve(url);
+      return;
+    }
     const width = options?.width;
     const fileType = options?.fileType ?? 'image/png';
     const quality = options?.quality ?? 0.92;
@@ -12,7 +17,7 @@ export function imgUrlToBase64(url: string, options?: { width: number, fileType?
       const canvas = document.createElement('canvas');
       const scale = image.width / image.height;
       canvas.width = width ?? image.width;
-      canvas.height = width ? parseInt(width / scale) : image.height;
+      canvas.height = width ? Math.floor(width / scale) : image.height;
       const context = canvas.getContext('2d');
       context?.clearRect(0, 0, canvas.width, canvas.height);
       context?.drawImage(image, 0, 0, canvas.width, canvas.height);

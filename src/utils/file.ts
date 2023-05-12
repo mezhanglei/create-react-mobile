@@ -1,5 +1,6 @@
 import { formatNumber, getPower } from "./number";
 import { isBlob, isArrayBuffer } from "./type";
+import { saveAs } from 'file-saver';
 
 // === 格式转换 ===
 
@@ -125,7 +126,7 @@ export function saveAsBinary(data: any, filename: string) {
   }
 
   const blob = isBlob(data) ? data : (isArrayBuffer(data) ? new Blob([data]) : null)
-  if(!blob) return;
+  if (!blob) return;
 
   // ie浏览器兼容
   if (window.navigator.msSaveBlob) {
@@ -177,4 +178,10 @@ export const formatFileSize = (size?: number, unitStr?: string) => {
     const result = formatNumber(size / Math.pow(10, power), 2)
     return result + unit;
   }
+}
+
+// 保存文件
+export const saveAsFile = (fileContent: string | File, fileName: string) => {
+  const fileBlob = new Blob([fileContent], { type: 'text/plain;charset=utf-8' })
+  saveAs(fileBlob, fileName);
 }

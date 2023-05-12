@@ -25,4 +25,3 @@ export const isMobile = function (): boolean {
     return userAgent(new RegExp(i, 'i'));
   });
 };
-
