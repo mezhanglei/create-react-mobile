@@ -48,9 +48,9 @@ export function objectToFormData(obj: any, formData?: FormData) {
 }
 
 // 过滤对象中的属性
-export function filterObject(obj: object | undefined | null, callback: (value: any, key?: string) => boolean): any {
+export function filterObject(obj: object | undefined | null, callback: (key?: string, value?: any) => boolean): any {
   if (obj === undefined || obj === null) return obj;
-  const entries = Object.entries(obj)?.filter((item) => (callback(item[1], item[0])));
+  const entries = Object.entries(obj)?.filter((item) => (callback(item[0], item[1])));
   return Object.fromEntries(entries);
 }
 
