@@ -20,7 +20,7 @@ export default class extends React.Component<ResultProps> {
   }
   static defaultProps = {
     // 图标
-    imgUrl: require('static/images/no-data.png'),
+    imgUrl: require('src/assets/no-data.png'),
     // 加重字体
     title: "暂无数据",
     // 描述性文本

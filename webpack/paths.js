@@ -11,42 +11,37 @@ const appRoot = fs.realpathSync(process.cwd());
 const resolveApp = relativePath => path.resolve(appRoot, relativePath);
 // 打包入口
 const srcPath = resolveApp('src');
-// 静态资源所在目录
-const staticPath = resolveApp('static');
-// 全局less所在目录
-const lessPath = resolveApp('less');
 // 输出目录
 const outputPath = resolveApp('dist');
 // node_modules的目录
 const nodeModulesPath = resolveApp('node_modules');
-// 预编译文件输出目录
-const dllOutputPath = path.join(staticPath, 'dll');
 // 页面模板
 const appHtml = path.join(srcPath, 'pages/index.html');
 // 引入配置
 const configs = require('./configs.js');
 // 图标路径
 const iconsPath = path.resolve(srcPath, './icons');
+// 全局less所在目录
+const lessPath = resolveApp(srcPath, 'less');
+// 静态资源文件夹
+const assetsPath = resolveApp(srcPath, 'assets');
 const isDev = configs.isDev;
 // 合并为一个对象输出
 module.exports = {
   appRoot,
   srcPath,
-  iconsPath,
-  staticPath,
-  lessPath,
   outputPath,
   nodeModulesPath,
-  dllOutputPath,
   appHtml,
+  iconsPath,
+  lessPath,
+  assetsPath,
   // 资源访问的公共绝对路径, 并且访问路由会加上对应的路径字符串， 默认为/不能为空(格式如: /publicPath/)
   publicPath: isDev ? '/' : './',
-  manifestPathArr: glob.sync(path.join(dllOutputPath, '*.json')),
   babelrcPath: path.join(appRoot, './.babelrc'),
   eslintrcPath: path.join(appRoot, "./.eslintrc.{js,ts}"),
   stylelintrcPath: path.join(appRoot, "./.stylelintrc.js"),
-  assetsPath: '../',
   checkStylePath: ["src/**/*.{css,sass,scss,less}"],
   mockPath: path.join(srcPath, 'mock'),
-  // favicon: path.join(staticPath, '')
+  // favicon: path.join(assetsPath, '')
 };

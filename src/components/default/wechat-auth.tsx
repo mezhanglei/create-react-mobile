@@ -1,8 +1,8 @@
 // import { message } from "antd-mobile";
-import { getUrlQuery } from "@/utils/url";
-import { WECHAT_TOKEN } from "@/constants/account/index";
+import { handleRedirect } from "@/utils/wx";
 import { myStorage } from "@/utils/cache";
-import { handleRedirect } from "@/core/wx";
+import { getUrlQuery } from "@/utils/url";
+import { WECHAT_TOKEN } from "@/utils/auth";
 
 /**
  * 微信授权回调页面（中转页）

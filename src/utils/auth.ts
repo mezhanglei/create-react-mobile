@@ -3,9 +3,13 @@
  */
 
 import { myStorage } from "@/utils/cache";
-import { TOKEN, USER_INFO } from "@/constants/account/index";
-import { LOGIN_PATH } from "@/constants/account/index";
 import { UserInfo } from "@/services/account/interface";
+import history from "@/routes/history";
+
+const TOKEN = 'authorization';
+const USER_INFO = 'userInfo';
+// 微信登录的token字段
+export const WECHAT_TOKEN = "wechat-token";
 
 // 清空账户信息
 export function clearUserInfo() {
@@ -39,10 +43,16 @@ export function isLogin() {
 }
 
 // 退出登录后的本地操作
-export function loginOut() {
+export function loginOut(redirect?: string) {
   // 清除用户信息
   clearUserInfo();
-  window.location.href = LOGIN_PATH;
+  setTimeout(() => {
+    const state = redirect ? { state: { from: redirect } } : {}
+    history.replace({
+      pathname: '/login',
+      ...state
+    });
+  }, 0);
 }
 
 // 初始化用户信息

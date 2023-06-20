@@ -1,8 +1,7 @@
 import CreateRequest from './createRequest';
-import Loader from "@/components/loader/index";
-import { getToken, loginOut } from "@/core/session";
-import { CustomConfig, HTTP_CODE, HTTP_CODE_MAP, HTTP_STATUS_MAP } from './config';
+import { CustomConfig, HTTP_CODE, HTTP_CODE_MAP, HTTP_STATUS, HTTP_STATUS_MAP } from './config';
 import { Toast } from 'antd-mobile';
+import { getToken, loginOut } from '@/utils/auth';
 
 export interface ResponseData {
   code?: HTTP_CODE;
@@ -14,26 +13,29 @@ const request = CreateRequest({
   headers: {
     Authorization: getToken()
   },
+  // 开始请求
   startLoading: () => {
-    Loader.start();
   },
+  // 结束/完成请求
   endLoading: () => {
-    Loader.end();
   },
   // 处理响应码
   handleResult: (data: ResponseData) => {
     const code = data?.code;
     const msg = data?.message;
-    if (code == HTTP_CODE.LOGINFAIL) {
-      loginOut();
-    }
     if (code != HTTP_CODE.SUCCESS && code) {
-      const msgRes = HTTP_CODE_MAP[code] || msg
+      const msgRes = msg || HTTP_CODE_MAP[code]
       msgRes && Toast.show(msgRes);
     }
   },
   handleStatus: (status, msg) => {
-    const msgRes = HTTP_STATUS_MAP[status] || msg
+    if (status == HTTP_STATUS.NOLOGIN) {
+      loginOut();
+    }
+    if (status == HTTP_STATUS.AUTH) {
+      loginOut();
+    }
+    const msgRes = msg || HTTP_STATUS_MAP[status]
     msgRes && Toast.show(msgRes);
   }
 });

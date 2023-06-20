@@ -2,17 +2,17 @@ import { fileToBase64 } from "./file";
 import { isBase64 } from "./type";
 
 // 根据图片路径转化为base64
-export function imgUrlToBase64(url: string, options?: { width: number, fileType?: string, quality?: number }): Promise<string> {
+export function imgUrlToBase64(url: string, options?: { width: number, quality?: number }): Promise<string> {
   return new Promise((resolve) => {
     if (isBase64(url)) {
       resolve(url);
       return;
     }
     const width = options?.width;
-    const fileType = options?.fileType ?? 'image/png';
     const quality = options?.quality ?? 0.92;
     const image = new Image();
     image.setAttribute('crossOrigin', 'Anonymous');
+    image.src = url + '?tamp=' + (new Date()).valueOf();
     image.onload = function () {
       const canvas = document.createElement('canvas');
       const scale = image.width / image.height;
@@ -21,10 +21,10 @@ export function imgUrlToBase64(url: string, options?: { width: number, fileType?
       const context = canvas.getContext('2d');
       context?.clearRect(0, 0, canvas.width, canvas.height);
       context?.drawImage(image, 0, 0, canvas.width, canvas.height);
-      const result = canvas.toDataURL(fileType, quality);
+      const ext = image.src.substring(image.src.lastIndexOf('.') + 1).toLowerCase();
+      const result = canvas.toDataURL("image/" + ext, quality);
       resolve(result);
     };
-    image.src = url;
   });
 }
 
@@ -46,7 +46,7 @@ export function pressImg(param: PressImg): Promise<string | null> {
       // 转为base64
       const base64 = await fileToBase64(file);
       // 压缩base64
-      const pressBase64 = await imgUrlToBase64(base64, { width, fileType, quality });
+      const pressBase64 = await imgUrlToBase64(base64, { width, quality });
       resolve(pressBase64);
     } catch (error) {
       reject(error);

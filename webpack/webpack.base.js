@@ -12,8 +12,6 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 // 对webpack打包的信息进行警告,错误的明显标识提示 可以选择使用或不使用
 const FriendlyErrorsWebpackPlugin = require("friendly-errors-webpack-plugin");
-// 通过CopyWebpackPlugin将目标文件夹里的静态资源拷贝到目标文件夹
-const CopyWebpackPlugin = require("copy-webpack-plugin");
 // (构建过程优化)webpack体积分析插件(会单独打开一个端口8888的页面显示体积构造图)
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 // stylelint的样式检查
@@ -35,20 +33,11 @@ const cssModuleRegex = /\.module\.css$/;
 // node_modules正则表达式
 const nodeModulesRegex = /node_modules/;
 
-// webpack从manifest文件中读取到已预编译的文件, 然后忽略对其的编辑打包,多个dll文件则循环
-const dllList = paths.manifestPathArr.map((path) => {
-  return new webpack.DllReferencePlugin({
-    // 上下文环境路径(与dllplugin在同一目录)
-    context: paths.appRoot,
-    manifest: require(path),
-  });
-});
-
 const cssLoader = isDev ? 'style-loader' : {
   loader: MiniCssExtractPlugin.loader,
   options: {
     // 修改打包后目录中css文件中静态资源的引用的基础路径
-    publicPath: paths.assetsPath,
+    publicPath: "../",
   },
 };
 
@@ -87,8 +76,6 @@ module.exports = {
     alias: {
       "@": `${paths.srcPath}`,
       "src": `${paths.srcPath}`,
-      "static": `${paths.staticPath}`,
-      "less": `${paths.lessPath}`
     }
   },
   // 用来指定loaders的匹配规则和指定使用的loaders名称
@@ -101,7 +88,6 @@ module.exports = {
         // exclude: nodeModulesRegex,
         include: [
           paths.srcPath,
-          paths.staticPath,
           path.join(paths.nodeModulesPath, 'nanoid'),
           path.join(paths.nodeModulesPath, 'jian-pinyin'),
           path.join(paths.nodeModulesPath, 'crypto-js')
@@ -156,7 +142,7 @@ module.exports = {
                   // 引入antd 主题颜色覆盖文件
                   hack: `true; @import "${path.join(
                     paths.appRoot,
-                    "less/constants/theme.less"
+                    "src/less/constants/theme.less"
                   )}";`,
                 },
                 javascriptEnabled: true
@@ -240,15 +226,6 @@ module.exports = {
     }),
     // 统计信息提示插件(比如错误或者警告会用带颜色的字体来显示,更加友好)
     new FriendlyErrorsWebpackPlugin(),
-    // 将目标目录里的文件直接拷贝到输出dist目录
-    new CopyWebpackPlugin({
-      patterns: [{
-        from: paths.staticPath,
-        to: path.join(paths.outputPath, 'static')
-        // 忽略文件名
-        // ignore: ['.*']
-      }]
-    }),
     // htmlplugin
     new HtmlWebpackPlugin({
       // title: '生成的html文档的标题',
@@ -297,12 +274,9 @@ module.exports = {
       // showErrors: true,
       // script引入的公共js文件
       commonJs: [
-        // 'static/dll/base_dll.js'
-        // '//'
       ],
       // link引入的公共css文件
       commonCSS: [
-        // `static/fonts/iconfont.css?time=${new Date().getTime()}`
       ]
     }),
     // 热更新
@@ -327,6 +301,5 @@ module.exports = {
       }),
       ...(configs.isAnalyz ? [new BundleAnalyzerPlugin()] : [])
     ]),
-    ...dllList
   ]
 };

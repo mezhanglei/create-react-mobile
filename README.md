@@ -2,14 +2,13 @@
 
 ## 项目安装和依赖说明
 ```
-说明：基于webpack5.x + react16.x + redux + react-redux + dva-core + ant-design-mobile等的h5开发脚手架,支持typescript
+说明：基于webpack5.x + react18.x + redux + react-redux + dva-core + ant-design-mobile等的h5开发脚手架,支持typescript
 依赖管理(注意设置合适的数据源): 
 npm install ---会创建package-lock.json
 ```
 ### 项目运行说明
 ```
 npm run start 运行项目
-npm run dll 如果想对某些基础包进行预编译,在webpack.dll.js中配置相关基础包,然后启动,最后在html中script引进
 npm run build:sit 测试打包
 npm run build:prod 生产打包
 npm run eslint 检查js规范
@@ -68,7 +67,6 @@ npm run csslint 检查css规范
     |-- src
     |   |-- components // 全局要使用的组件必须要放在这里
     |   |-- constants // 项目所有的常量必须全部放在这里, 一个子文件代表一个功能模块，禁止在别处定义常量,分散不宜管理
-    |   |-- core // 项目的业务代码都放在这里(公共的业务文件,兼容处理等等放在这里)
     |   |-- http      // 请求配置文件
     |   |   |-- config.js
     |   |   |-- jsonpRequest.js
@@ -87,6 +85,5 @@ npm run csslint 检查css规范
         |-- paths.js  // 目录配置
         |-- webpack.base.js // 基础配置环境
         |-- webpack.dev.js // 开发环境
-        |-- webpack.dll.js // 预编译文件(需要预编译时使用)
         |-- webpack.prod.js // 生产环境
 ```

@@ -5,7 +5,7 @@ import { useEffect } from "react";
 // 非微信提示页面
 export default function NotWechat(props) {
   const title = "请在微信客户端打开链接";
-  const imgUrl = require('static/images/fail.png');
+  const imgUrl = require('src/assets/fail.png');
 
   useEffect(() => {
     document.title = title;

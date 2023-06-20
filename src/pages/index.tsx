@@ -1,15 +1,14 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import App from "./app";
 import store from "@/store/index";
-import objectFitImages from 'object-fit-images';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 // 引入全局样式
-import "less/index.less";
+import "../less/index.less";
 import { ConfigProvider } from 'antd-mobile';
-import antdMobileConfigs from '@/core/antd-mobile-configs';
+import antdMobileConfigs from '@/components/configs';
 // 引入图标
 import "@/icons/index.js";
 
@@ -21,15 +20,11 @@ import "@/icons/index.js";
 //     });
 // }
 
-setTimeout(() => {
-  objectFitImages();
-}, 100);
-
-ReactDOM.render(
+const rootDiv = document.getElementById("root");
+rootDiv && createRoot(rootDiv).render(
   <Provider store={store} >
     <ConfigProvider {...antdMobileConfigs}>
       <App />
     </ConfigProvider>
-  </Provider>,
-  document.getElementById("root")
+  </Provider>
 );
