@@ -4,7 +4,7 @@ import React from "react";
 export function isClassComponent(component: any) {
   return (
     typeof component === 'function' &&
-    !!component.prototype.isReactComponent
+    (component.prototype && component.prototype.isReactComponent)
   )
 }
 
@@ -12,7 +12,6 @@ export function isClassComponent(component: any) {
 export function isFunctionComponent(component: any) {
   return (
     typeof component === 'function'
-    // String(component).includes('return React.createElement')
   )
 }
 

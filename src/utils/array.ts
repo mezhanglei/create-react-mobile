@@ -372,16 +372,14 @@ export const findPath = (key: string, value: any, rootNode: any): any[] | undefi
  * @param {*} tree 树列表
  */
 export function getNode(key: string, value: any, tree = []): any {
-  let ele;
   for (let i = 0; i < tree.length; i++) {
     const node: any = tree[i];
     if (node[key] === value) {
-      ele = node;
+      return node;
     } else if (node?.children?.length) {
-      ele = getNode(key, value, node?.children);
+      return getNode(key, value, node?.children);
     }
   }
-  return ele;
 };
 
 // 根据某个过滤函数，从遍历器中寻找到复合条件的值
