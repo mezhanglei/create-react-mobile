@@ -4,14 +4,12 @@
  * @param {*} query 参数对象
  */
 export function addUrlQuery(query: object, url = location.href) {
-  if (!url) return "";
-  url = url?.lastIndexOf('&') === url?.length - 1 ? url.substring(0, url?.length - 1) : url;
+  if (typeof url !== 'string') return "";
+  url = url.lastIndexOf('&') === url.length - 1 ? url.substring(0, url.length - 1) : url;
   if (query) {
     let queryArr = [];
-    for (const key in query) {
-      if (query.hasOwnProperty(key)) {
-        queryArr.push(`${key}=${query[key]}`);
-      }
+    for (const key of Object.keys(query)) {
+      queryArr.push(`${key}=${query[key]}`);
     }
     if (url.indexOf("?") !== -1) {
       url = `${url}&${queryArr.join("&")}`;
@@ -34,8 +32,8 @@ export function delUrlQuery(name: string, url = location.href) {
     let obj = {};
     let arr = query.split("&");
     for (let i = 0; i < arr.length; i++) {
-      arr[i] = arr[i].split("=");
-      obj[arr[i][0]] = arr[i][1];
+      const part = arr[i].split("=");
+      obj[part[0]] = part[1];
     }
     delete obj[name];
     let resultUrl =
@@ -53,19 +51,21 @@ export function delUrlQuery(name: string, url = location.href) {
 
 /**
  * 根据参数名从而获取query参数的参数值
+ * @param {str} url 指定的url, 默认当前url
  * @param {*} name 目标参数的key
  */
 export function getUrlQuery(name: string, url = location.href) {
+  if (typeof url !== 'string') return;
   let urlArr = url.split("?");
-  if (urlArr.length > 1 && urlArr[1].indexOf(name) > -1) {
+  if (urlArr.length > 1) {
     let query = urlArr[1];
     let obj = {};
     let arr = query.split("&");
     for (let i = 0; i < arr.length; i++) {
-      arr[i] = arr[i].split("=");
-      obj[arr[i][0]] = arr[i][1];
+      const part = arr[i].split("=");
+      obj[part[0]] = decodeURIComponent(part[1]);
     }
-    return decodeURIComponent(obj[name]);
+    return name ? obj[name] : obj;
   } else {
     return null;
   }
@@ -73,6 +73,7 @@ export function getUrlQuery(name: string, url = location.href) {
 
 // 获取url中的相对路径
 export function getUrlPath(url: string) {
+  if (typeof url !== 'string') return;
   const arrUrl = url.split("//");
   const start = arrUrl[1].indexOf("/");
   let relUrl = arrUrl[1].substring(start);

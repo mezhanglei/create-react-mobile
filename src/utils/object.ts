@@ -47,11 +47,14 @@ export function objectToFormData(obj: any, formData?: FormData) {
   return fd;
 }
 
-// 过滤对象中的属性
-export function filterObject(obj: object | undefined | null, callback: (key?: string, value?: any) => boolean): any {
+// 提取对象中的部分属性
+export const pickObject = <T = any>(obj: T | undefined, keys: string[] | ((key?: string, value?: any) => boolean)) => {
   if (obj === undefined || obj === null) return obj;
-  const entries = Object.entries(obj)?.filter((item) => (callback(item[0], item[1])));
-  return Object.fromEntries(entries);
+  if (keys instanceof Array) {
+    return keys.reduce((iter, val) => (val in obj && (iter[val] = obj[val]), iter), {}) as T
+  } else if (typeof keys === 'function') {
+    return Object.keys(obj).reduce((iter, val) => (keys(val, obj[val]) && (iter[val] = obj[val]), iter), {}) as T
+  }
 }
 
 // 接收路径字符串或数组字符串，返回数组字符串表示路径
@@ -66,9 +69,8 @@ export function deepGet(obj: object | undefined, keys?: string | string[]): any 
   if (!keys?.length) return
   if (keys instanceof Array) {
     const result = obj instanceof Array ? [] : {}
-    for (let key in keys) {
-      const item = keys[key]
-      result[item] = pathToArr(item)?.reduce?.((o, k) => (o)?.[k], obj)
+    for (let key of keys) {
+      result[key] = pathToArr(key)?.reduce?.((o, k) => (o)?.[k], obj)
     }
     return result;
   } else {
