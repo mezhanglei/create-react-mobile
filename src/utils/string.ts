@@ -5,7 +5,7 @@ import Clipboard from 'clipboard';
 
 // 复制到剪贴板
 export function copyToClipboard(content: any, clickEvent: any, successFn?: () => void, errorFn?: () => void) {
-  if(typeof content !== 'string') return;
+  if (typeof content !== 'string') return;
   const clipboard = new Clipboard(clickEvent.target, {
     text: () => content
   })
@@ -87,8 +87,6 @@ export function hideTelephone(phone: number | string) {
 // 过滤标签，提取文本
 export function filterHtmlTag(str: string) {
   if (typeof str !== 'string') return;
-  // const cssReg = new RegExp('<style[\\s\\S]+?</style>', 'g');
-  // const scriptReg = new RegExp('<script[\\s\\S]+?</script>', 'g');
   return (str.replace(/<[^\\>]*>/g, '').replace(/&nbsp;/ig, '')).replace(/(\n|\r|\r\n|↵)/g, '');
 }
 

@@ -1,4 +1,4 @@
-import { isEmpty, isNumberStr, isObject } from "./type";
+import { isArray, isEmpty, isNumberStr, isObject } from "./type";
 import { copy } from 'copy-anything';
 import compare from 'react-fast-compare';
 
@@ -51,9 +51,21 @@ export function objectToFormData(obj: any, formData?: FormData) {
 export const pickObject = <T = any>(obj: T | undefined, keys: string[] | ((key?: string, value?: any) => boolean)) => {
   if (obj === undefined || obj === null) return obj;
   if (keys instanceof Array) {
-    return keys.reduce((iter, val) => (val in obj && (iter[val] = obj[val]), iter), {}) as T
+    return keys.reduce((iter, key) => {
+      const item = deepGet(obj as any, key);
+      if (item !== undefined) {
+        iter[key] = item;
+      }
+      return iter;
+    }, {}) as T;
   } else if (typeof keys === 'function') {
-    return Object.keys(obj).reduce((iter, val) => (keys(val, obj[val]) && (iter[val] = obj[val]), iter), {}) as T
+    return Object.keys(obj || {}).reduce((iter, key) => {
+      const item = deepGet(obj as any, key);
+      if (keys(key, item)) {
+        iter[key] = item;
+      }
+      return iter;
+    }, {}) as T;
   }
 }
 
@@ -65,7 +77,7 @@ export function pathToArr(path?: string | string[]) {
 }
 
 // 根据路径获取目标对象中的单个值或多个值
-export function deepGet(obj: object | undefined, keys?: string | string[]): any {
+export function deepGet<T = any>(obj: T | undefined, keys?: string | string[]): any {
   if (!keys?.length) return
   if (keys instanceof Array) {
     const result = obj instanceof Array ? [] : {}
@@ -79,35 +91,25 @@ export function deepGet(obj: object | undefined, keys?: string | string[]): any 
 }
 
 // 给对象目标属性添加值, path：['a', 0] 等同于 'a[0]'
-export function deepSet(obj: any, path: string | string[], value: any) {
-  let temp = deepClone(obj);
-  let root = temp;
-  const pathIsArr = Array.isArray(path);
+export function deepSet<T = any>(obj: T, path: string | string[], value: any) {
   const parts = pathToArr(path);
-  const length = parts.length;
+  if (!parts?.length) return obj;
 
-  for (let i = 0; i < length; i++) {
+  // 是否为数组序号
+  const isIndex = (str?: string) => {
+    return Array.isArray(path) ? isNumberStr(str) : path?.indexOf(`[${str}]`) > -1
+  };
+
+  let temp: any = isEmpty(obj) ? (isIndex(parts[0]) ? [] : {}) : deepClone(obj);
+  const root = temp;
+
+  for (let i = 0; i < parts?.length; i++) {
     const current = parts[i];
     const next = parts[i + 1];
-    // 当前字符是否为数组索引
-    const isIndex = pathIsArr ? isNumberStr(current) : path?.indexOf(`[${current}]`) > -1
-    // 下个字符是否为数组索引
-    const nextIsIndex = pathIsArr ? isNumberStr(next) : path?.indexOf(`[${next}]`) > -1
 
-    // 当传入的值为空赋值初始值
-    if (typeof obj !== 'object' && i === 0) {
-      if (isIndex) {
-        temp = [];
-        root = temp;
-      } else {
-        temp = {};
-        root = temp;
-      }
-    }
-
-    if (i === length - 1) {
+    const handleTarget = () => {
       if (value === undefined) {
-        if (isIndex) {
+        if (temp instanceof Array) {
           const index = +current;
           temp?.splice(index, 1);
         } else {
@@ -116,11 +118,22 @@ export function deepSet(obj: any, path: string | string[], value: any) {
       } else {
         temp[current] = value;
       }
-    } else if (typeof temp[current] !== 'object' && nextIsIndex) {
-      temp[current] = [];
-    } else if (typeof temp[current] !== 'object') {
-      temp[current] = {};
     }
+
+    if (i === parts?.length - 1) {
+      handleTarget();
+    } else {
+      const currentValue = temp[current];
+      if (isEmpty(currentValue)) {
+        // 如果目标值也是赋值undefined则提前结束查找
+        if (value == undefined) {
+          handleTarget();
+          return root;
+        }
+        temp[current] = isIndex(next) ? [] : {}
+      }
+    }
+    // 下个嵌套
     temp = temp[current];
   }
   return root;
