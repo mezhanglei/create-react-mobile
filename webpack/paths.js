@@ -19,8 +19,6 @@ const nodeModulesPath = resolveApp('node_modules');
 const appHtml = path.join(srcPath, 'pages/index.html');
 // 引入配置
 const configs = require('./configs.js');
-// 图标路径
-const iconsPath = path.resolve(srcPath, './icons');
 // 全局less所在目录
 const lessPath = resolveApp(srcPath, 'less');
 // 静态资源文件夹
@@ -33,7 +31,6 @@ module.exports = {
   outputPath,
   nodeModulesPath,
   appHtml,
-  iconsPath,
   lessPath,
   assetsPath,
   // 资源访问的公共绝对路径, 并且访问路由会加上对应的路径字符串， 默认为/不能为空(格式如: /publicPath/)

@@ -176,8 +176,8 @@ module.exports = {
         ],
       },
       {
-        test: /\.(png|svg|jpg|gif|jpeg|ico)$/i,
-        exclude: [nodeModulesRegex, paths.iconsPath],
+        test: /\.(png|jpg|gif|jpeg|ico)$/i,
+        exclude: [nodeModulesRegex],
         type: "asset",
         parser: {
           dataUrlCondition: {
@@ -190,16 +190,16 @@ module.exports = {
         }
       },
       {
+        test: /\.svg$/i,
+        exclude: [nodeModulesRegex],
+        type: 'asset',
+        resourceQuery: /url/, // *.svg?url
+      },
+      {
         test: /\.svg$/,
-        include: paths.iconsPath,
-        use: [
-          { loader: 'svg-sprite-loader' },
-          {
-            loader: 'svgo-loader', options: {
-              plugins: [{ name: "removeAttrs", params: { attrs: 'fill' } }]
-            }
-          },
-        ],
+        exclude: [nodeModulesRegex],
+        resourceQuery: { not: [/url/] }, // exclude react component if *.svg?url
+        use: ['@svgr/webpack'],
       },
       {
         test: /\.(woff|woff2|eot|ttf|otf)$/,
