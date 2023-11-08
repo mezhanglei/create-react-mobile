@@ -60,7 +60,7 @@ export const pickObject = <T = any>(obj: T | undefined, keys: string[] | ((key?:
     }, {}) as T;
   } else if (typeof keys === 'function') {
     return Object.keys(obj || {}).reduce((iter, key) => {
-      const item = deepGet(obj as any, key);
+      const item = obj[key];
       if (keys(key, item)) {
         iter[key] = item;
       }

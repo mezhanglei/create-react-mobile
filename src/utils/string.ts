@@ -84,10 +84,16 @@ export function hideTelephone(phone: number | string) {
   return phone.replace(reg, "$1****$2");
 }
 
-// 过滤标签，提取文本
-export function filterHtmlTag(str: string) {
-  if (typeof str !== 'string') return;
-  return (str.replace(/<[^\\>]*>/g, '').replace(/&nbsp;/ig, '')).replace(/(\n|\r|\r\n|↵)/g, '');
+// 仅仅过滤标签，提取文本，保留空格换行
+export function removeHTMLTag(str?: string) {
+  if (typeof str !== 'string') return '';
+  return str.replace(/<[^\\>]*>/g, '');
+}
+
+// 过滤空格和换行
+export function removeSpaceAndWrap(str?: string) {
+  if (typeof str !== 'string') return '';
+  return str.replace(/(&nbsp;|\s)/ig, '').replace(/(\n|\r|\r\n|↵)/g, '')
 }
 
 // 2~36转十进制
