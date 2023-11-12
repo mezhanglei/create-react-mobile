@@ -11,7 +11,7 @@ npm install ---会创建package-lock.json
 npm run start 运行项目
 npm run build:sit 测试打包
 npm run build:prod 生产打包
-npm run eslint 检查js规范
+npm run lint 检查js规范
 npm run csslint 检查css规范
 ```
 
@@ -50,10 +50,9 @@ npm run csslint 检查css规范
 ### 目录说明和相应规范
 ```
     |-- .babelrc //babel配置文件
-    |-- .eslintrc.js //eslint规则配置
+    |-- .eslintrc //eslint规则配置
     |-- .gitignore  // git提交忽略
-    |-- .prettier.config.js //prettier插件配置信息
-    |-- .stylelintrc.js // stylelint插件配置信息
+    |-- .stylelintrc // stylelint插件配置信息
     |-- package.json
     |-- postcss.config.js // postcss配置信息
     |-- tsconfig.json // ts配置

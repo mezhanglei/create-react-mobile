@@ -10,10 +10,10 @@
     "dll": "cross-env NODE_ENV=prod webpack --config ./webpack/webpack.dll.js",
     "start": "cross-env NODE_ENV=dev webpack serve --config ./webpack/webpack.dev.js",
     "start-mock": "cross-env NODE_ENV=dev MOCK=true webpack serve --config ./webpack/webpack.dev.js",
-    "eslint": "eslint --ext .js,.jsx,.ts,.tsx ./",
-    "eslint-fix": "eslint --fix --ext .js,.jsx,.ts,.tsx ./",
+    "lint": "eslint --ext=.js,.ts,.jsx,.tsx src/",
+    "lint:fix": "eslint --fix --ext=.js,.ts,.jsx,.tsx src/",
     "csslint": "stylelint src/**/*.{css,scss,less}",
-    "css-fix": "stylelint src/**/*.{css,scss,less} --fix"
+    "csslint:fix": "stylelint src/**/*.{css,scss,less} --fix"
   },
   "keywords": [],
   "author": "zhanglei",
@@ -42,7 +42,6 @@
     "@typescript-eslint/eslint-plugin": "^5.20.0",
     "@typescript-eslint/parser": "^5.20.0",
     "autoprefixer": "^10.4.5",
-    "babel-eslint": "^10.1.0",
     "babel-loader": "^8.2.5",
     "babel-plugin-import": "^1.13.5",
     "copy-webpack-plugin": "^10.2.4",

@@ -36,8 +36,8 @@ module.exports = {
   // 资源访问的公共绝对路径, 并且访问路由会加上对应的路径字符串， 默认为/不能为空(格式如: /publicPath/)
   publicPath: isDev ? '/' : './',
   babelrcPath: path.join(appRoot, './.babelrc'),
-  eslintrcPath: path.join(appRoot, "./.eslintrc.{js,ts}"),
-  stylelintrcPath: path.join(appRoot, "./.stylelintrc.js"),
+  eslintrcPath: path.join(appRoot, "./.eslintrc"),
+  stylelintrcPath: path.join(appRoot, "./stylelintrc"),
   checkStylePath: ["src/**/*.{css,sass,scss,less}"],
   mockPath: path.join(srcPath, 'mock'),
   // favicon: path.join(assetsPath, '')

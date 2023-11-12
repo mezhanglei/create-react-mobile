@@ -1,4 +1,4 @@
-module.exports = {
+{
   "rules": {
     // 是否不允许出现无属性的布局
     "block-no-empty": true,
@@ -33,4 +33,4 @@ module.exports = {
     // 冒号之前不能有空格
     "declaration-colon-space-before": "never",
   }
-};
+}

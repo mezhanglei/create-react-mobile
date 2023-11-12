@@ -1,8 +1,6 @@
-module.exports = {
-  // 指定eslint的babel解析器(解析jsx语法)
-  "parser": "babel-eslint",
+{
   // typescripth环境下(解析tsx语法)
-  // "parser": "@typescript-eslint/parser",
+  "parser": "@typescript-eslint/parser",
   // 使用eslint-lugin-xxxx插件，如果想使用react的一些推荐可以使用eslint-plugin-react
   "plugins": ["@typescript-eslint", "react-hooks"],
   // javascript语言类型和风格
@@ -35,12 +33,10 @@ module.exports = {
     "indent": ["error", 2, {
       "SwitchCase": 1
     }],
-    "typescript/member-ordering": 'off',
-    "typescript/member-delimiter-style": 'off',
+    "typescript/member-ordering": "off",
+    "typescript/member-delimiter-style": "off",
     // 检查 Hook 的规则
     "react-hooks/rules-of-hooks": "error",
-    // 检查 effect 的依赖
-    "react-hooks/exhaustive-deps": "warn",
     // 禁止有声明但是没有使用的变量存在规则
     "no-unused-vars": 0,
     // 除了null其余比较必须为===或！==而不是==的规则
