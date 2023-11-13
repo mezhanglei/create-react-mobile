@@ -34,10 +34,6 @@ function getNetworkIp() {
 module.exports = {
   // 是否开启体积分析插件
   isAnalyz: false,
-  // 是否使用eslint true表示使用
-  useEslint: true,
-  // 是否使用stylelint true表示使用
-  useStylelint: true,
   // 是否是生产环境
   isProd: process.env.NODE_ENV === 'prod',
   // 是否是开发环境
