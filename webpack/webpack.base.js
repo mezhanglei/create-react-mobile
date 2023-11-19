@@ -10,14 +10,10 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 // 1.为html文件中引入的外部资源如script、link动态添加每次compile后的hash，防止引用缓存的外部文件问题
 // 2.打包时创建html入口文件，比如单页面可以生成一个html文件入口，配置N个html-webpack-plugin可以生成N个页面入口
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-// 对webpack打包的信息进行警告,错误的明显标识提示 可以选择使用或不使用
-const FriendlyErrorsWebpackPlugin = require("friendly-errors-webpack-plugin");
 // (构建过程优化)webpack体积分析插件(会单独打开一个端口8888的页面显示体积构造图)
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
-// stylelint的样式检查
-const StyleLintPlugin = require("stylelint-webpack-plugin");
 // eslint格式检查
-const ESLintPlugin = require('eslint-webpack-plugin');
+const ESLintWebpackPlugin = require('eslint-webpack-plugin');
 // 引入配置
 const configs = require('./configs.js');
 // 引入路径
@@ -224,8 +220,6 @@ module.exports = {
       'process.env.MOCK': process.env.MOCK,
       'process.env.PUBLIC_PATH': JSON.stringify(paths.publicPath || '/')
     }),
-    // 统计信息提示插件(比如错误或者警告会用带颜色的字体来显示,更加友好)
-    new FriendlyErrorsWebpackPlugin(),
     // htmlplugin
     new HtmlWebpackPlugin({
       // title: '生成的html文档的标题',
@@ -281,18 +275,9 @@ module.exports = {
     }),
     // 热更新
     ...(isDev ? [
-      new ESLintPlugin({ eslintPath: paths.eslintrcPath }),
-      new StyleLintPlugin({
-        // 要检查scss的根目录
-        context: paths.appRoot,
-        // 1.扫描要检查的文件, 字符串或者数组, 将被glob接收所以支持style/**/*.scss这类语法
-        // 2.我们也可以通过在package.json中配置命令的方式(--ext表示扩展名)
-        files: paths.checkStylePath,
-        // 配置文件的路径
-        configFile: paths.stylelintrcPath,
-        // 如果为true，则在全局构建过程中发生任何stylelint错误时结束构建过程 所以一般为false
-        failOnError: false,
-      })
+      new ESLintWebpackPlugin({
+        context: paths.appRoot
+      }),
     ] : [
       // css文件指纹 使用contenthash 只要css文件不变则contenthash不变
       new MiniCssExtractPlugin({

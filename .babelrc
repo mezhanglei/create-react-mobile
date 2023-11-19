@@ -37,22 +37,33 @@
     // ],
     // 异步加载语法解析插件,解析import().then()这种语法
     "@babel/plugin-syntax-dynamic-import",
-    // 类的装饰器提案(必须在@babel/plugin-proposal-class-properties前面)
-    ["@babel/plugin-proposal-decorators", { "version": "legacy" }], // 选用遗留提案
-    // 编译静态属性和类属性
-    ["@babel/plugin-proposal-class-properties", { "loose": true }],
-    ["@babel/plugin-proposal-private-property-in-object", { "loose": true }],
-    ["@babel/plugin-proposal-private-methods",{ "loose": true }],
-    // babel-plugin-import配置类库按需加载
+    // 类的装饰器提案(顺序在前面)
     [
-      "import",
+      "@babel/plugin-proposal-decorators",
       {
-        "libraryName": "antd",
-        "libraryDirectory": "es",
-        // css 表示导入解析后的css文件
-        // true 表示在解析阶段引入less
-        "style": true
+        "version": "2023-05"
       }
-    ]
+    ],
+    // 在@babel/preset-env中
+    [
+      "@babel/plugin-transform-class-properties",
+      {
+        "loose": true
+      }
+    ],
+    [
+      "@babel/plugin-transform-private-methods",
+      {
+        "loose": true
+      }
+    ],
+    [
+      "@babel/plugin-transform-private-property-in-object",
+      {
+        "loose": true
+      }
+    ],
+    // babel-plugin-import配置类库按需加载
+    ["import", { "libraryName": "antd-mobile", "libraryDirectory": "es/components", "style": false}]
   ]
 }
