@@ -68,7 +68,7 @@ module.exports = {
   // require 引用入口配置
   resolve: {
     // 后缀，引入时可以默认不写
-    extensions: [".ts", ".tsx", ".js", "jsx", ".json", ".less"],
+    extensions: [".ts", ".tsx", ".js", ".jsx", ".json", ".less"],
     alias: {
       "@": `${paths.srcPath}`,
       "src": `${paths.srcPath}`,
