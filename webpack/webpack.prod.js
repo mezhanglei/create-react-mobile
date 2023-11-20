@@ -4,8 +4,6 @@ const { merge } = require('webpack-merge');
 const base = require('./webpack.base.js');
 // (构建过程优化)多进程/多实例压缩
 const TerserWebpackPlugin = require("terser-webpack-plugin");
-// (构建过程优化)webpack速度分析插件,在package.json中配置命令webpack --progress --config webpack.prod.js --json > stats.json,执行可以输出分析时间结果
-const SpeedMeasureWebpackPlugin = require("speed-measure-webpack-plugin");
 // 对打包后的css进行压缩
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 // --profile
@@ -79,6 +77,4 @@ const webpackConfig = merge(base, {
     ],
   }
 });
-// (构建过程优化)实例化一个速度分析对象(它的wrap方法用来包裹webpack配置)
-const smp = new SpeedMeasureWebpackPlugin();
-module.exports = smp.wrap(webpackConfig);
+module.exports = webpackConfig;
