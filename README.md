@@ -5,7 +5,7 @@
 ## 本地运行环境
 
 ### 依赖
-- [Node.js](https://nodejs.org/en/) Version >= 18.8.2
+- [Node.js](https://nodejs.org/en/) Version >= 18.0.0
 - [react](https://react.docschina.org/) Version >= 16.8.0
 
 ### 安装依赖

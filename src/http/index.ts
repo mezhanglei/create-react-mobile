@@ -3,7 +3,7 @@ import { CustomConfig, HTTP_CODE, HTTP_CODE_MAP, HTTP_STATUS, HTTP_STATUS_MAP } 
 import { getToken, loginOut } from "@/utils/auth";
 import { Toast } from 'antd-mobile';
 
-// 请求体结构
+// 响应体结构
 export interface ServiceRes<T = any> {
   code?: HTTP_CODE;
   data: T;

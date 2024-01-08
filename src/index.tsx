@@ -20,7 +20,7 @@ import { getUserInfo } from "./services/account";
 //     });
 // }
 
-// 支持传token参数时直接登录进系统
+// 支持接收token参数
 const token = getUrlQuery('token');
 const rootDiv = document.getElementById("root");
 const root = rootDiv && createRoot(rootDiv);
