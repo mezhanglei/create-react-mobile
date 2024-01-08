@@ -28,11 +28,11 @@ export default class CreateWebSocket {
     this.heartCheck = CreateHeartCheck();
   }
 
-  lockReconnect: boolean = false // true禁止重连
-  status: IMEvent = IMEvent.CONNECTED
-  handlerMap: Map<string, Set<Function>> = new Map() // 存储事件Map结构
-  dataQueue: Set<SendData> = new Set() // 消息队列
-  socket?: WebSocket = undefined // webscoket实例
+  lockReconnect: boolean = false; // true禁止重连
+  status: IMEvent = IMEvent.CONNECTED;
+  handlerMap: Map<string, Set<Function>> = new Map(); // 存储事件Map结构
+  dataQueue: Set<SendData> = new Set(); // 消息队列
+  socket?: WebSocket = undefined; // webscoket实例
   reconnectTimer?: any = undefined;
   reconnectCount: number = 0;
 
@@ -52,7 +52,7 @@ export default class CreateWebSocket {
     if (handlers?.size) {
       for (const item of handlers) {
         if (item === handler) {
-          handlers.delete(item)
+          handlers.delete(item);
           this.handlerMap?.set(type, handlers);
         }
       }
@@ -84,7 +84,7 @@ export default class CreateWebSocket {
     this.status = type;
     if (handlers?.size) {
       for (const item of handlers) {
-        item?.call(this, ...args)
+        item?.call(this, ...args);
       }
     }
   };
@@ -121,12 +121,12 @@ export default class CreateWebSocket {
     // 发送心跳事件
     const send = () => {
       this.emitEvent(IMEvent.HEARTBEAT);
-    }
+    };
     // 超时断开事件
     const timeoutEvent = () => {
       console.log('超时关闭ws');
       this.socket?.close();
-    }
+    };
     this.heartCheck.start(send, timeoutEvent);
   }
 
@@ -234,5 +234,5 @@ const CreateHeartCheck = () => {
         }, timeout);
       }, timeout);
     }
-  }
-}
+  };
+};

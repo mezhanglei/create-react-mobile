@@ -10,12 +10,10 @@ const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const isEnvProductionProfile = process.argv.includes('--profile');
 // 引入配置
 const configs = require('./configs.js');
-const isProd = configs.isProd;
+const isDev = configs.isDev;
 const webpackConfig = merge(base, {
   mode: "production",
-  // 均无源代码，当生产时选择关掉调试工具，测试环境选择开发构建平衡的方式
-  devtool: isProd ? false : "eval-cheap-module-source-map",
-  // 优化项
+  devtool: isDev ? "cheap-module-source-map" : false,
   optimization: {
     splitChunks: {
       // 内容超过了minSize的值，才会进行分割

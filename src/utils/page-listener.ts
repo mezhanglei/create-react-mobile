@@ -33,7 +33,7 @@ const actionListener = (callback: (arg?: any) => any, maxNum: number) => {
     }
     x = x1;
     y = y1;
-  }
+  };
 
   // 键盘事件
   const onKeyDown = () => {
@@ -53,7 +53,7 @@ const actionListener = (callback: (arg?: any) => any, maxNum: number) => {
         removeEvent(document, dragEventFor.keydown, onKeyDown);
       }
     }
-  }
+  };
 
   addEvent(document, dragEventFor.move, onMove);
   addEvent(document, dragEventFor.keydown, onKeyDown);

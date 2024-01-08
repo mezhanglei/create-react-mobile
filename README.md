@@ -1,24 +1,30 @@
-# react-mobile脚手架
+# `create-react-mobile`
 
-## 项目安装和依赖说明
+> mobile端开发脚手架: 基于webpack5.x + react18.x + zustand + ant-design5.x, 支持typescript.
+
+## 本地运行环境
+
+### 依赖
+- [Node.js](https://nodejs.org/en/) Version >= 18.8.2
+- [react](https://react.docschina.org/) Version >= 16.8.0
+
+### 安装依赖
 ```
-说明：基于webpack5.x + react18.x + redux + react-redux + dva-core + ant-design-mobile等的h5开发脚手架,支持typescript
-依赖管理(注意设置合适的数据源): 
-npm install ---会创建package-lock.json
+npm install
 ```
-### 项目运行说明
+### 启动
 ```
-npm run start 运行项目
+npm run start
+```
+### 打包
+```
 npm run build:sit 测试打包
 npm run build:prod 生产打包
+```
+### 规范
+```
 npm run lint 检查js规范
-npm run csslint 检查css规范
-```
-
-### 脚手架功能说明(mddir)
-```
-1. 支持单开发, 纯净友好无冗余代码脚手架,开箱修改即用, 使用时注意遵循规范,看清楚目录结构!
-2. 支持typescript开发
+npm run lint:fix 修复js规范
 ```
 
 ### css样式(两种解析方式)
@@ -45,44 +51,5 @@ npm run csslint 检查css规范
   1. 如果接口是 '/list', 则在mock文件夹下创建list.json,里面写json数据即可
   2. 如果接口是 '/home/list', 则在mock文件夹下的home文件夹下创建list.json,里面写json数据即可
   以此类推
-2. npm run dev-mock启动mock数据环境
-```
-### 目录说明和相应规范
-```
-    |-- .babelrc //babel配置文件
-    |-- .eslintrc //eslint规则配置
-    |-- .gitignore  // git提交忽略
-    |-- .stylelintrc // stylelint插件配置信息
-    |-- package.json
-    |-- postcss.config.js // postcss配置信息
-    |-- tsconfig.json // ts配置
-    |-- less         // 全局的基础css配置文件夹, 全局样式写在这里
-    |   |-- base   // 基础原子标签样式和公共基础类
-    |   |-- components // ui组件库的自定义样式(自定义组件和开源ui组件)
-    |   |-- constants // 公共的less常量
-    |   |-- fonts // 字体文件
-    |   |-- pages  // 页面业务相关的公共类
-    |       |-- index.less
-    |-- src
-    |   |-- components // 全局要使用的组件必须要放在这里
-    |   |-- constants // 项目所有的常量必须全部放在这里, 一个子文件代表一个功能模块，禁止在别处定义常量,分散不宜管理
-    |   |-- http      // 请求配置文件
-    |   |   |-- config.js
-    |   |   |-- jsonpRequest.js
-    |   |   |-- request.js
-    |   |-- mock // mock数据文件夹(看上面使用说明)
-    |   |-- pages // 单页面代码所在文件夹
-    |   |   |-- index.js // 入口js文件
-    |   |   |-- index.html // html模板
-    |   |-- routes // 路由所在文件夹
-    |   |-- services // 接口所在文件夹
-    |   |-- store    // redux仓库
-    |   |-- utils   // js工具方法
-    |-- static     // 打包时要拷贝的静态资源
-    |-- webpack   // webpack配置文件夹
-        |-- configs.js  // 自定义配置
-        |-- paths.js  // 目录配置
-        |-- webpack.base.js // 基础配置环境
-        |-- webpack.dev.js // 开发环境
-        |-- webpack.prod.js // 生产环境
+2. npm run start-mock启动mock数据环境
 ```

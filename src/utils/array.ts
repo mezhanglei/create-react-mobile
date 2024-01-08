@@ -392,7 +392,8 @@ export function findInArray(array: any, callback: (value: any, i?: number, array
 // 转化对象数组为map数据
 export const getArrMap = <T = any>(arr: T[] = [], valueKey?: string, labelKey?: string) => {
   const data: { [key: string]: T } = {};
-  arr.forEach((item, index) => valueKey && item?.[valueKey] && (data[item?.[valueKey]] = labelKey ? item[labelKey] : item));
+  // @ts-ignore
+  arr.forEach((item, index) => item && item[valueKey || ''] !== undefined && (data[item?.[valueKey || '']] = labelKey ? item[labelKey] : item));
   return data;
 };
 
@@ -422,10 +423,10 @@ export const arrayMove = <T = any>(arr: T[], preIndex: number, nextIndex: number
   const clone = deepClone(arr);
   if (preIndex > nextIndex) {
     clone.splice(nextIndex, 0, arr[preIndex]);
-    clone.splice(preIndex + 1, 1)
+    clone.splice(preIndex + 1, 1);
   } else if (preIndex < nextIndex) {
     clone.splice(nextIndex + 1, 0, arr[preIndex]);
-    clone.splice(preIndex, 1)
+    clone.splice(preIndex, 1);
   }
   return clone;
 };

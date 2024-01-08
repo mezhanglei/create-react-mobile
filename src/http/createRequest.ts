@@ -1,14 +1,14 @@
-import axios, { AxiosResponse } from "axios";
-import { HTTP_STATUS, CancelPending, CustomConfig } from "./config";
+import axios, { AxiosResponse, CreateAxiosDefaults } from "axios";
 import { trimParams } from "@/utils/object";
 import { IE11OrLess } from "@/utils/brower";
+import { HTTP_STATUS, CancelPending, CustomConfig } from "./config";
 
-interface CreateRequestParams {
+export interface CreateRequestParams extends CreateAxiosDefaults {
   startLoading?: () => void;
   endLoading?: () => void;
   handleResult?: (data: any) => void;
   handleStatus?: (status: HTTP_STATUS, msg?: string) => void;
-  headers?: CustomConfig['headers'];
+  headers?: any;
 }
 // 基础axios
 export default function CreateRequest(params: CreateRequestParams) {
@@ -18,7 +18,8 @@ export default function CreateRequest(params: CreateRequestParams) {
     endLoading,
     handleResult,
     handleStatus,
-    headers: headersConfig
+    headers: headersConfig,
+    ...optherConfigs
   } = params;
 
   // axios取消重复请求（具有副作用）
@@ -34,21 +35,21 @@ export default function CreateRequest(params: CreateRequestParams) {
         });
       },
       cancel: (config: CustomConfig) => {
-        const index = pending?.findIndex((item) => item.key === config.url + '&' + config.method)
-        const pend = pending[index]
+        const index = pending?.findIndex((item) => item.key === config.url + '&' + config.method);
+        const pend = pending[index];
         if (pend) {
           pend.cancel(); // 执行取消操作
           pending.splice(index, 1); //把这条记录从数组中移除
         }
       },
       remove: (config: CustomConfig) => {
-        const index = pending?.findIndex((item) => item.key === config.url + '&' + config.method)
-        const pend = pending[index]
+        const index = pending?.findIndex((item) => item.key === config.url + '&' + config.method);
+        const pend = pending[index];
         if (pend) {
           pending.splice(index, 1);
         }
       }
-    }
+    };
   }
 
   // 实例化取消axois的方法
@@ -61,7 +62,7 @@ export default function CreateRequest(params: CreateRequestParams) {
   const axiosInstance = axios.create({
     timeout: 1000 * 10,
     withCredentials: true,
-    baseURL: process.env.MOCK ? '/mock' : "/api"
+    ...optherConfigs
   });
 
   // 请求拦截(axios自动对请求类型进行类型转换)
@@ -73,7 +74,6 @@ export default function CreateRequest(params: CreateRequestParams) {
         data,
         trim,
         unique,
-        ...rest
       } = config || {};
 
       const newParams = trim ? trimParams(params) : params;

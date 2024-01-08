@@ -125,7 +125,7 @@ export function saveAsBinary(data: any, filename: string) {
     console.error("please set file name");
   }
 
-  const blob = isBlob(data) ? data : (isArrayBuffer(data) ? new Blob([data]) : null)
+  const blob = isBlob(data) ? data : (isArrayBuffer(data) ? new Blob([data]) : null);
   if (!blob) return;
 
   // ie浏览器兼容
@@ -166,22 +166,22 @@ export const formatFileSize = (size?: number, unitStr?: string) => {
     2: "KB",
     3: "MB",
     4: "GB"
-  }
-  const powerByUnit = Object.entries(unitByPower).reduce((acc, [k, v]) => ({ ...acc, [v]: k }), {})
+  };
+  const powerByUnit = Object.entries(unitByPower).reduce((acc, [k, v]) => ({ ...acc, [v]: k }), {});
   if (unitStr) {
     const power = powerByUnit[unitStr];
-    const result = formatNumber(size / Math.pow(10, power), 2)
+    const result = formatNumber(size / Math.pow(10, power), 2);
     return result + unitStr;
   } else {
     const power = getPower(size);
-    const unit = unitByPower[power]
-    const result = formatNumber(size / Math.pow(10, power), 2)
+    const unit = unitByPower[power];
+    const result = formatNumber(size / Math.pow(10, power), 2);
     return result + unit;
   }
-}
+};
 
 // 保存文件
 export const saveAsFile = (fileContent: string | File, fileName: string) => {
-  const fileBlob = new Blob([fileContent], { type: 'text/plain;charset=utf-8' })
+  const fileBlob = new Blob([fileContent], { type: 'text/plain;charset=utf-8' });
   saveAs(fileBlob, fileName);
-}
+};

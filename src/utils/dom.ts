@@ -37,12 +37,12 @@ export const findSource = (dom: any, attr: string) => {
     num--;
   }
   return flag;
-}
+};
 
 // 返回目标元素的兄弟节点
 export const findSiblingsElement = (target: HTMLElement, containOwner?: boolean) => {
   if (target && !isDom(target)) return;
-  const ret = [];    //保存所有兄弟节点
+  const ret = []; //保存所有兄弟节点
   const childs = target?.parentNode?.children || []; //获取父级的所有子节点
   for (let i = 0; i < childs?.length; i++) {
     // 去掉本身
@@ -51,7 +51,7 @@ export const findSiblingsElement = (target: HTMLElement, containOwner?: boolean)
     }
   }
   return ret as HTMLElement[];
-}
+};
 
 /**
  * 返回目标元素相对于定位父元素的位置
@@ -75,7 +75,7 @@ export function getAbsolute(ele: HTMLElement, parent: HTMLElement): { x: number,
     pos = {
       x: pos?.x + parentNode?.offsetLeft,
       y: pos?.y + parentNode?.offsetTop
-    }
+    };
   }
 
   return pos;
@@ -99,7 +99,7 @@ export const getOwnerDocument = (el?: Node | null) => {
  * @returns 
  */
 export function getRect(el: Element) {
-  return el.getBoundingClientRect()
+  return el.getBoundingClientRect();
 }
 
 /**
@@ -145,7 +145,7 @@ export function getChildrenIndex(el: any, excluded?: Array<string | Node | undef
     if (!excluded?.some((item) => typeof item === 'string' ? matches(node, item) : node == item)) {
       // 如果等于就结束循环
       if (el !== node) {
-        index++
+        index++;
       } else {
         break;
       }
@@ -180,7 +180,7 @@ export function getTouchIdentifier(e: TouchEvent, identifier?: number): number {
     return (e?.targetTouches && findInArray(e?.targetTouches, item => identifier === item?.identifier)) ||
       (e?.changedTouches && findInArray(e?.changedTouches, item => identifier === item?.identifier));
   } else {
-    return (e?.targetTouches && e?.targetTouches[0]?.identifier) || (e?.changedTouches && e?.changedTouches[0]?.identifier)
+    return (e?.targetTouches && e?.targetTouches[0]?.identifier) || (e?.changedTouches && e?.changedTouches[0]?.identifier);
   }
 }
 
@@ -311,7 +311,7 @@ export function getClientXY(el: MouseEvent | TouchEvent | HTMLElement): null | {
       pos = {
         x: 0,
         y: 0
-      }
+      };
     } else {
       pos = {
         x: getRect(el)?.left,
@@ -332,7 +332,7 @@ export function getClientXYInParent(el: HTMLElement, parent: HTMLElement = docum
     return {
       x: left,
       y: top
-    }
+    };
   }
 }
 
@@ -358,7 +358,7 @@ export function getInsidePosition(el: HTMLElement, parent: HTMLElement = documen
       top,
       right: left + nodeOffset?.width,
       bottom: top + nodeOffset?.height
-    }
+    };
   }
   return pos;
 }
@@ -415,7 +415,7 @@ export function getInsideRange(el: HTMLElement, parent: HTMLElement): null | {
       top,
       right: parentScrollW - (left + nodeW),
       bottom: parentScrollH - (top + nodeH)
-    }
+    };
   }
   return pos;
 }
@@ -437,10 +437,10 @@ export function findNearest(e: MouseEvent | TouchEvent, parent: HTMLElement) {
     const node = children[i] as HTMLElement;
     if (node && css(node, 'display') !== 'none') {
       if (near) {
-        const minChildRect = getRect(near)
-        const nextChildRect = getRect(node)
-        const currentDis = dotToRect(minChildRect, eventXY)
-        const nextDis = dotToRect(nextChildRect, eventXY)
+        const minChildRect = getRect(near);
+        const nextChildRect = getRect(node);
+        const currentDis = dotToRect(minChildRect, eventXY);
+        const nextDis = dotToRect(nextChildRect, eventXY);
         if (nextDis < currentDis) {
           near = node;
         }
@@ -503,7 +503,7 @@ export function getScrollParent(target: any, step?: number): HTMLElement {
 
 // 是否可以使用dom
 export function canUseDom(): boolean {
-  const win = getWindow()
+  const win = getWindow();
   return !!(
     typeof win !== 'undefined' &&
     win.document &&
@@ -515,7 +515,7 @@ export const insertBefore = (newElement: HTMLElement, targetElement: HTMLElement
   const parentElement = targetElement.parentNode;
   if (!parentElement) return;
   return parentElement.insertBefore(newElement, targetElement);
-}
+};
 
 export const insertAfter = (newElement: HTMLElement, targetElement: HTMLElement) => {
   const parentElement = targetElement.parentNode;
@@ -525,7 +525,7 @@ export const insertAfter = (newElement: HTMLElement, targetElement: HTMLElement)
   } else {
     return parentElement.insertBefore(newElement, targetElement.nextElementSibling);
   }
-}
+};
 
 // 获取或设置目标元素的style值
 export function css(el: any, prop?: string | CSSProperties) {
@@ -539,7 +539,7 @@ export function css(el: any, prop?: string | CSSProperties) {
       return ownerStyle[prop];
     } else if (typeof prop === 'object') {
       for (const key in prop) {
-        style[getPrefixStyle(key)] = prop[key]
+        style[getPrefixStyle(key)] = prop[key];
       }
     }
   }
@@ -574,7 +574,7 @@ export const nextAll = function (node: Node) {
   }
   return siblings;
 
-}
+};
 
 /**
  * 添加事件监听

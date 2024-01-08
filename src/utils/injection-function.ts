@@ -6,7 +6,7 @@
  * 3. 执行newFunc函数代替原目标函数
  */
 
-export default (function injector () {
+export default (function injector() {
   let modules = {};
 
   // 获取目标函数的依赖参数字符串列表
@@ -15,14 +15,14 @@ export default (function injector () {
     if (matches && matches.length > 1)
       return matches[1].replace(/\s+/g, '').split(',');
     return [];
-  }
+  };
 
   // 根据目标函数依赖参数字符串列表返回依赖列表
   const setFuncParams = function (deps: string[], modules: { [key: string]: any }) {
     const result: Array<unknown> = [];
     for (let i = 0; i < deps?.length; i++) {
       if (modules.hasOwnProperty(deps[i])) {
-        result.push(modules[deps[i]])
+        result.push(modules[deps[i]]);
       }
     }
     return result;
@@ -33,9 +33,9 @@ export default (function injector () {
     if (typeof key === 'string') {
       modules[key] = value;
     } else if (typeof key === 'object') {
-      Object.keys(key).map((n) => register(n, key?.[n]))
+      Object.keys(key).map((n) => register(n, key?.[n]));
     }
-  }
+  };
 
   // 注入依赖
   const resolve = (func: [...string[], Function] | Function, scope?: any) => {
@@ -52,11 +52,11 @@ export default (function injector () {
 
     return function () {
       (func as Function).apply(scope || {}, dependencies);
-    }
-  }
+    };
+  };
 
   return {
     register,
     resolve
-  }
+  };
 })();

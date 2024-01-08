@@ -18,7 +18,7 @@ export function clearUserInfo() {
 }
 
 // 本地获取用户信息
-export const getUserInfo = () => {
+export const getLocalUserInfo = () => {
   return myStorage.get(USER_INFO);
 };
 
@@ -30,12 +30,12 @@ export const getToken = () => {
 // 本地存储token信息
 export const setToken = (token: string) => {
   myStorage.set(TOKEN, token);
-}
+};
 
 // 本地存储用户信息
-export const setUserInfoStorage = (data: UserInfo) => {
+export const setLocalUserInfo = (data?: UserInfo) => {
   myStorage.set(USER_INFO, data);
-}
+};
 
 // 本地判断是否登录
 export function isLogin() {
@@ -47,18 +47,10 @@ export function loginOut(redirect?: string) {
   // 清除用户信息
   clearUserInfo();
   setTimeout(() => {
-    const state = redirect ? { state: { from: redirect } } : {}
+    const state = redirect ? { state: { from: redirect } } : {};
     history.replace({
       pathname: '/login',
       ...state
     });
   }, 0);
 }
-
-// 初始化用户信息
-export const initUserInfo = async () => {
-  const { data } = await getUserInfo();
-  setUserInfoStorage(data);
-  return data;
-}
-

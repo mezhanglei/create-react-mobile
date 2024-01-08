@@ -1,6 +1,7 @@
 import Result from "@/components/result/result";
 import { useEffect } from "react";
-// import { message } from "antd-mobile";
+import { Toast } from "antd-mobile";
+import React from "react";
 
 // 非微信提示页面
 export default function NotWechat(props) {
@@ -9,7 +10,7 @@ export default function NotWechat(props) {
 
   useEffect(() => {
     document.title = title;
-    // message.info(title);
+    Toast.show(title);
   });
   return <Result height="100vh" imgUrl={imgUrl} title={title} />;
 } 

@@ -38,32 +38,11 @@
     // 异步加载语法解析插件,解析import().then()这种语法
     "@babel/plugin-syntax-dynamic-import",
     // 类的装饰器提案(顺序在前面)
-    [
-      "@babel/plugin-proposal-decorators",
-      {
-        "version": "2023-05"
-      }
-    ],
+    ["@babel/plugin-proposal-decorators", { "version": "2023-05" }],
     // 在@babel/preset-env中
-    [
-      "@babel/plugin-transform-class-properties",
-      {
-        "loose": true
-      }
-    ],
-    [
-      "@babel/plugin-transform-private-methods",
-      {
-        "loose": true
-      }
-    ],
-    [
-      "@babel/plugin-transform-private-property-in-object",
-      {
-        "loose": true
-      }
-    ],
-    // babel-plugin-import配置类库按需加载
+    ["@babel/plugin-transform-class-properties", { "loose": true }],
+    ["@babel/plugin-transform-private-methods", { "loose": true }],
+    ["@babel/plugin-transform-private-property-in-object", { "loose": true }],
     ["import", { "libraryName": "antd-mobile", "libraryDirectory": "es/components", "style": false}]
   ]
 }

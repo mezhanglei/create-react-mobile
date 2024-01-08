@@ -1,7 +1,7 @@
 import CreateWebSocket, { IMEvent } from './createWebsocket';
 
 export const initWebsocket = (userId: string) => {
-  const protocol = document.location.protocol
+  const protocol = document.location.protocol;
   const wsHead = protocol === 'https:' ? 'wss:' : 'ws:';
   const socket = new CreateWebSocket({ url: wsHead + '//127.0.0.1:8087' });
   // 实例化完成需要主动启动链接

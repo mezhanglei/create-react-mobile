@@ -56,12 +56,12 @@ export function pressImg(param: PressImg): Promise<string | null> {
 
 export function getImageWH(url?: string) {
   return new Promise((resolve, reject) => {
-    const image = new Image()
+    const image = new Image();
     image.setAttribute('crossOrigin', 'Anonymous');
     image.src = url + '?tamp=' + (new Date()).valueOf();
     image.onload = () => {
       resolve({ width: image.width, height: image.height });
-    }
-  })
+    };
+  });
 }
 

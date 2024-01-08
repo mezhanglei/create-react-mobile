@@ -1,14 +1,34 @@
-import React from "react";
-import { HashRouter as Router, Route, Switch, Redirect, RouteProps } from "react-router-dom";
-// import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-dom";
-import { DemoRoute } from "./demo";
-import { DefaultRoutes } from "./default";
-import TransitionSwitch from '@/components/transition-switch';
 import { isLogin } from "@/utils/auth";
+import React, { useLayoutEffect, useState } from "react";
+import { Router, Routes, Route, RouteProps, Navigate } from "react-router-dom";
+import { DemoRoutes } from "./demo";
+import history from './history';
+import NotFound from "@/components/default/not-found";
 
-export interface MyRouteProps extends RouteProps {
+// 自定义Router
+const CustomRouter = ({ history, ...props }) => {
+  const [state, setState] = useState({
+    action: history.action,
+    location: history.location
+  });
+
+  useLayoutEffect(() => history.listen(setState), [history]);
+  const basename = Router.name == "BrowserRouter" ? process.env.PUBLIC_PATH : "";
+
+  return (
+    <Router
+      {...props}
+      basename={basename}
+      location={state.location}
+      navigationType={state.action}
+      navigator={history}
+    />
+  );
+};
+
+export type CustomRouteProps = RouteProps & {
   auth?: boolean; // 是否需要权限验证
-  component: any; // 组件
+  component: React.ComponentType<any>; // 组件
   animationConfig?: { // 组件切换的动画类
     enter: string;
     exit: string;
@@ -17,33 +37,25 @@ export interface MyRouteProps extends RouteProps {
 
 // 路由配置
 const routes = [
-  ...DemoRoute,
-  ...DefaultRoutes
+  ...DemoRoutes,
 ];
 
 // 路由组件
 export default function RouteComponent() {
-  // BrowserRouter时需要设置basename
-  const basename = Router.name == "BrowserRouter" ? process.env.PUBLIC_PATH : "";
 
   return (
-    <Router basename={basename}>
-      <TransitionSwitch routes={routes}>
-        {routes.map((item: MyRouteProps, index) => {
-          return <Route
-            key={index}
-            exact={item.exact}
-            path={item.path}
-            render={(props) => {
-              if (!isLogin() && item.auth) {
-                return <Redirect to={{ pathname: "/login", state: { from: props.location } }} />;
-              } else {
-                return <item.component key={item.path} {...props}></item.component>
-              }
-            }}
-          />;
-        })}
-      </TransitionSwitch>
-    </Router>
+    <CustomRouter history={history}>
+      <Routes>
+        {
+          routes.map((item: CustomRouteProps, index) => {
+            if (!isLogin() && item.auth) {
+              return <Route path="*" element={<Navigate to="/login" state={{ from: item.path }} replace />} />;
+            }
+            return <Route {...item} element={<item.component />} key={index} />;
+          })
+        }
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </CustomRouter>
   );
 }

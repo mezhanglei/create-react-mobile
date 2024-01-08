@@ -79,7 +79,7 @@ export function isEmpty(value: unknown) {
   }
 
   if (typeof value === 'number') {
-    return isNaN(value)
+    return isNaN(value);
   }
 
   return value === undefined || value === null;
@@ -123,17 +123,17 @@ export function isBase(data: any) {
 
 // 是否为数字字符串或者数字
 export const isNumberStr = (str?: string | Number) => {
-  if (typeof str === 'number' && !isNaN(str)) return true
+  if (typeof str === 'number' && !isNaN(str)) return true;
   if (typeof str === 'string') {
-    const target = Number(str)
-    if (!isNaN(target) && str) return true
+    const target = Number(str);
+    if (!isNaN(target) && str) return true;
   }
-}
+};
 
 // 是否为带data:开头的base64的字符串
 export const isBase64 = (str?: string) => {
   if (typeof str !== 'string') return;
   if (str.trim() === '') return;
-  const regx = /^(data:\S+\/\S+;base64,){1}/
+  const regx = /^(data:\S+\/\S+;base64,){1}/;
   return regx.test(str);
-}
+};

@@ -33,6 +33,6 @@ const reg = {
   code: /^\d{6}$/,
   // email
   email: /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+((.[a-zA-Z0-9_-]{2,3}){1,2})$/,
-}
+};
 
 export default reg;

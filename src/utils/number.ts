@@ -1,35 +1,35 @@
-import BigNumber from 'bignumber.js'
-import { isEmpty, isNumber, isNumberStr } from './type'
+import BigNumber from 'bignumber.js';
+import { isEmpty, isNumber, isNumberStr } from './type';
 
 // 格式化数字或字符串
 export function formatNumber(value: number | string, decimal = 2) {
-  if (!isNumberStr(value)) return ''
-  return decimal !== undefined ? new BigNumber(value).toFixed(decimal) : new BigNumber(value).toFixed()
+  if (!isNumberStr(value)) return '';
+  return decimal !== undefined ? new BigNumber(value).toFixed(decimal) : new BigNumber(value).toFixed();
 }
 
 // 加
 export function add(a?: string | number, b?: string | number) {
-  return BigNumber(a || '0').plus(b || '0').toString()
+  return BigNumber(a || '0').plus(b || '0').toString();
 }
 
 // 减
 export function subtract(a?: string | number, b?: string | number) {
-  return BigNumber(a || '0').minus(b || '0').toString()
+  return BigNumber(a || '0').minus(b || '0').toString();
 }
 
 // 乘
 export function multiply(a?: string | number, b?: string | number) {
-  return BigNumber(a || '0').multipliedBy(b || '0').toString()
+  return BigNumber(a || '0').multipliedBy(b || '0').toString();
 }
 
 // 除
 export function divide(a?: string | number, b?: string | number) {
-  return BigNumber(a || '0').dividedBy(b || '0').toString()
+  return BigNumber(a || '0').dividedBy(b || '0').toString();
 }
 
 export function strToCurrency(value?: string | number, decimal?: number) {
-  if (isEmpty(value)) return ''
-  if (!isNumberStr(value)) return '0.00'
+  if (isEmpty(value)) return '';
+  if (!isNumberStr(value)) return '0.00';
   const fmt = {
     prefix: '',
     decimalSeparator: '.', // 小数点
@@ -39,8 +39,8 @@ export function strToCurrency(value?: string | number, decimal?: number) {
     fractionGroupSeparator: ' ', //小数组分组的分隔符
     fractionGroupSize: 0, // 小数组的分割单位
     suffix: ''
-  }
-  return decimal !== undefined ? new BigNumber(value).toFormat(decimal, fmt) : new BigNumber(value).toFormat(fmt)
+  };
+  return decimal !== undefined ? new BigNumber(value).toFormat(decimal, fmt) : new BigNumber(value).toFormat(fmt);
 }
 
 /**
@@ -55,7 +55,7 @@ export function strToCurrency(value?: string | number, decimal?: number) {
  */
 export function compareTo(a?: string | number, b?: string | number) {
   if (!isNumberStr(a) || !isNumberStr(b)) return -2;
-  return BigNumber(a).comparedTo(b)
+  return BigNumber(a).comparedTo(b);
 }
 
 // 将数字或数字字符串转成百分比
@@ -106,16 +106,16 @@ export function numberAddUnit(num: number | string, unitStr = "万") {
     11: "千亿",
     12: "万亿"
   };
-  const powerByUnit = Object.entries(unitByPower).reduce((acc, [k, v]) => ({ ...acc, [v]: k }), {})
+  const powerByUnit = Object.entries(unitByPower).reduce((acc, [k, v]) => ({ ...acc, [v]: k }), {});
   if (unitStr) {
     const power = powerByUnit[unitStr];
-    const result = formatNumber(num / Math.pow(10, power), 2)
+    const result = formatNumber(num / Math.pow(10, power), 2);
     return result + unitStr;
   } else {
     const integer = Math.floor(num);
     const power = getPower(integer);
     const unit = unitByPower[power];
-    const result = formatNumber(num / Math.pow(10, power), 2)
+    const result = formatNumber(num / Math.pow(10, power), 2);
     return result + unit;
   }
 }

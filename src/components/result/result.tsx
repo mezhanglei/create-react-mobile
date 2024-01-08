@@ -29,7 +29,7 @@ export default class extends React.Component<ResultProps> {
     width: "100%",
     // 高(自适应)
     height: "100%"
-  }
+  };
 
   render() {
     const { imgUrl, title, text, width, height } = this.props;

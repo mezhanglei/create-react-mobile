@@ -1,11 +1,8 @@
-import request from '@/http/request';
-import { RequestHanler } from '../interface';
+import request from '@/http';
 import { UserInfo } from './interface';
 
 // 获取用户信息
-export const getUserInfo: RequestHanler<undefined, UserInfo> = () => {
-    return request.post({
-        url: 'user/info',
-        method: 'GET'
-    });
-}
+export const getUserInfo = async (): Promise<UserInfo> => {
+  const data = await request('user/info', { method: 'post' });
+  return data.data;
+};

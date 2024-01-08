@@ -45,6 +45,6 @@ export default class EventBus {
 
   // 清空监听事件
   clear() {
-    this._watchers = []
+    this._watchers = [];
   }
 }

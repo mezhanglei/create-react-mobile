@@ -8,13 +8,13 @@ export function mixin(...mixins: any) {
     constructor() {
       for(let mixin of mixins) {
         // 拷贝实例属性
-        copyProperties(this, new mixin())
+        copyProperties(this, new mixin());
       }
     }
   }
   for(let mixin of mixins) {
-    copyProperties(Mix, mixin) // 拷贝静态属性(静态方法。静态方法指的是通过类直接可以调用并且不被实例所继承的方法)
-    copyProperties(Mix.prototype, mixin.prototype) // 拷贝原型属性
+    copyProperties(Mix, mixin); // 拷贝静态属性(静态方法。静态方法指的是通过类直接可以调用并且不被实例所继承的方法)
+    copyProperties(Mix.prototype, mixin.prototype); // 拷贝原型属性
   }
   return Mix;
 }
@@ -28,8 +28,8 @@ export function copyProperties(target: any, source: any) {
       // Object.getOwnPropertyDescriptor 返回指定对象上一个自有属性对应的属性描述符。
       // 自有属性指的是直接赋予该对象的属性，不需要从原型链上进行查找的属性
       // 属性描述符指的是configurable、enumerable、writable、value这些
-      const desc = Object.getOwnPropertyDescriptor(source, key)
-      Object.defineProperty(target, key, desc)
+      const desc = Object.getOwnPropertyDescriptor(source, key);
+      Object.defineProperty(target, key, desc);
     }
   }
 };

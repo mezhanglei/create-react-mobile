@@ -22,7 +22,7 @@ export default function DoublyLinkedList() {
     }
     this.tail = newNode;
     this.length += 1;
-  }
+  };
   // 正向输出元素的值
   this.toString = function () {
     var current = this.head;
@@ -32,7 +32,7 @@ export default function DoublyLinkedList() {
       current = current.next;
     }
     return str;
-  }
+  };
 
   // 反向输出元素的值
   this.backwardString = function () {
@@ -44,7 +44,7 @@ export default function DoublyLinkedList() {
       current = current.prev;
     }
     return str;
-  }
+  };
 
   // 插入节点
   this.insert = function (position, data) {
@@ -86,7 +86,7 @@ export default function DoublyLinkedList() {
         this.length += 1;
       }
     }
-  }
+  };
 
   // 获取指定位置的节点（二分查找）
   this.get = function (position) {
@@ -109,7 +109,7 @@ export default function DoublyLinkedList() {
       }
       return current.data;
     }
-  }
+  };
 
   // 索引
   this.indexOf = function (data) {
@@ -123,7 +123,7 @@ export default function DoublyLinkedList() {
       index++;
     }
     return -1;
-  }
+  };
 
   // 更新某个位置的节点
   this.update = function (position, newData) {
@@ -138,7 +138,7 @@ export default function DoublyLinkedList() {
       current.data = newData;
       return true;
     }
-  }
+  };
 
   // 从列表中的某个位置移除某一项
   this.removeAt = function (position) {
@@ -149,7 +149,7 @@ export default function DoublyLinkedList() {
       if (this.length === 1) {
         //链表长度为1
         this.head = null;
-        this.tail = null
+        this.tail = null;
       } else {//链表长度不为1
         if (position === 0) {
           //删除首位
@@ -170,21 +170,21 @@ export default function DoublyLinkedList() {
       this.length -= 1;
       return current.data;
     }
-  }
+  };
 
   // 移除某个指定的元素
   this.remove = function (data) {
     var index = this.indexOf(data);
     return this.removeAt(index);
-  }
+  };
 
   // 空值判断
   this.isEmpty = function () {
     return this.length == 0;
-  }
+  };
 
   // 返回链表大小
   this.size = function () {
     return this.length;
-  }
+  };
 }

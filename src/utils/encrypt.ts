@@ -29,7 +29,7 @@ const handleCrypt = {
     // WordArray对象 —> 密码对象
     const encrypted = CryptoJS.AES.encrypt(srcs, key, ECBconfig);
     // 密码对象 -> Base64编码字符串
-    return encrypted.ciphertext.toString().toUpperCase()
+    return encrypted.ciphertext.toString().toUpperCase();
   },
   // aes + base64解密(cbc)
   decryptWithBase64(word: string) {

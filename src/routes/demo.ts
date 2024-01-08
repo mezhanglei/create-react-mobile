@@ -1,22 +1,16 @@
-import loadable from "@/components/lazy";
+import loadable from "./loadable";
 
-// 首页
-export const DemoRoute = [
+export const DemoRoutes = [
   {
     path: "/",
-    component: loadable({ loader: () => import('@/pages/demo1/index') }),
-    exact: true
+    component: loadable(() => import('@/pages/demo1/index'))
   },
   {
     path: "/demo1",
-    component: loadable({ loader: () => import('@/pages/demo1/index') }),
-    // 自定义字段，额外的组件信息
-    meta: {
-      title: "demo1",
-    }
+    component: loadable(() => import('@/pages/demo1/index'))
   },
   {
     path: "/demo2",
-    component: loadable({ loader: () => import('@/pages/demo2/index') }),
-  }
+    component: loadable(() => import('@/pages/demo2/index'))
+  },
 ];

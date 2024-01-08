@@ -1,6 +1,6 @@
 // ===AXIOS请求的配置信息=== //
 
-import { AxiosRequestConfig, Canceler } from "axios";
+import { InternalAxiosRequestConfig, Canceler } from "axios";
 
 export enum MESSAGE {
   SUCCESS = '更新成功',
@@ -28,11 +28,11 @@ export enum HTTP_STATUS {
 // status状态码
 export const HTTP_STATUS_MAP = {
   401: "请登录账号",
-  403: "无访问权限",
+  403: "账号权限已过期",
   404: "资源不存在",
   405: "请求方法错误",
   408: "请求超时",
-  502: "网络连接错误，请稍后再试",
+  502: "网关错误，请稍后再试",
   503: "服务不可用",
   504: "网关超时",
   505: "http版本不支持"
@@ -55,8 +55,8 @@ export interface CancelPending {
   cancel: Canceler
 }
 // axios config
-export interface CustomConfig extends AxiosRequestConfig {
+export interface CustomConfig extends InternalAxiosRequestConfig {
   trim?: boolean // 去除空格
   unique?: boolean // 去除重复请求
   withResponse?: boolean; // 返回值是否携带请求体
-}
+};

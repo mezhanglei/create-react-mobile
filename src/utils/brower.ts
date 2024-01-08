@@ -13,7 +13,7 @@ export const ChromeForAndroid = userAgent(/chrome/i) && userAgent(/android/i);
 export const isAndroid = userAgent(/android/i) || userAgent(/adr/i);
 
 // 是否为企业微信
-export const isCompanyChat = userAgent(/wxwork/i) && userAgent(/micromessenger/i)
+export const isCompanyChat = userAgent(/wxwork/i) && userAgent(/micromessenger/i);
 // 是否为个人微信的内置浏览器
 export const isInWeChat = isCompanyChat ? false : userAgent(/micromessenger/i);
 // 是否为QQ内置浏览器
