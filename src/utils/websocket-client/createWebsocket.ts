@@ -13,6 +13,8 @@ export enum IMEvent {
 
 export interface CreateWebSocketProps {
   url: string; // 接口地址
+  heartCheckTimeout: number; // 心跳检测的失效间隔
+  reconnectTimeout: number; // 重连间隔
 }
 
 export type SendData = string | ArrayBufferLike | Blob | ArrayBufferView;
@@ -22,10 +24,12 @@ export type SendData = string | ArrayBufferLike | Blob | ArrayBufferView;
 // Websocket 使用和 HTTP 相同的 TCP 端口，可以绕过大多数防火墙的限制。默认情况下，Websocket 协议使用 80 端口；如果运行在 TLS 之上时，默认使用 443 端口。
 export default class CreateWebSocket {
   url: string;
-  heartCheck: ReturnType<typeof CreateHeartCheck>;
+  reconnectTimeout: number;
+  heartCheckTimeout: number;
   constructor(config: CreateWebSocketProps) {
     this.url = config?.url;
-    this.heartCheck = CreateHeartCheck();
+    this.reconnectTimeout = config?.reconnectTimeout || 5000;
+    this.heartCheckTimeout = config?.heartCheckTimeout || 5000;
   }
 
   lockReconnect: boolean = false; // true禁止重连
@@ -89,14 +93,13 @@ export default class CreateWebSocket {
     }
   };
 
-  // 重新连接的方法
+  // 重连
   reconnect() {
     if (this.lockReconnect) return;
     const count = this.reconnectCount;
     console.log(`意外断开，重连websocket，次数：${count}`);
     this.reconnectTimer && clearTimeout(this.reconnectTimer);
     this.lockReconnect = true;
-    const time = 5000;
 
     this.reconnectTimer = window.setTimeout(() => {
       if (this.socket?.readyState === WebSocket.OPEN) {
@@ -107,7 +110,7 @@ export default class CreateWebSocket {
         this.reconnectCount++;
         this.connect();
       }
-    }, time);
+    }, this.reconnectTimeout);
   }
 
   // 关闭重连
@@ -116,23 +119,17 @@ export default class CreateWebSocket {
     this.reconnectTimer && clearTimeout(this.reconnectTimer);
   }
 
-  // 开启心跳检测
-  startHeartCheck() {
+  // 增加心跳检测
+  addHeartCheck() {
     // 发送心跳事件
     const send = () => {
       this.emitEvent(IMEvent.HEARTBEAT);
     };
-    // 超时断开事件
     const timeoutEvent = () => {
-      console.log('超时关闭ws');
-      this.socket?.close();
+      console.log('心跳超时');
     };
-    this.heartCheck.start(send, timeoutEvent);
-  }
 
-  // 终止心跳检测
-  stopHeartCheck() {
-    this.heartCheck.stop();
+    createHeartCheck(send, timeoutEvent, this.heartCheckTimeout);
   }
 
   // 创建websocket实例
@@ -146,7 +143,7 @@ export default class CreateWebSocket {
       this.emitEvent(IMEvent.MESSAGE, data);
       this.closeReconnect();
       // 收到消息，循环发起下一次心跳
-      this.startHeartCheck();
+      this.addHeartCheck();
     };
 
     // 打开通讯
@@ -154,8 +151,7 @@ export default class CreateWebSocket {
       //触发链接事件
       this.emitEvent(IMEvent.CONNECTED);
       this.closeReconnect();
-      // 启动心跳功能
-      this.startHeartCheck();
+      this.addHeartCheck();
       // 如果有消息队列，则连通时就开始发送
       if (this.dataQueue?.size > 0) {
         this.dataQueue?.forEach(msg => {
@@ -165,21 +161,17 @@ export default class CreateWebSocket {
       }
     };
 
-    // 意外断开通讯
     this.socket.onclose = (evt) => {
-      this.stopHeartCheck();
-      if (this.status && ![IMEvent.CLOSE, IMEvent.OFFLINE, IMEvent.HEARTBEAT].includes(this.status)) {
-        this.emitEvent(IMEvent.DISCONNECTED);
+      this.emitEvent(IMEvent.DISCONNECTED);
+      // 网络正常情况下发起重连
+      if (this.status && ![IMEvent.CLOSE, IMEvent.OFFLINE].includes(this.status)) {
         this.reconnect();
-      } else {
-        console.log(`websocket主动关闭链接`);
       }
     };
 
     // 通讯出错
     this.socket.onerror = (evt) => {
       this.emitEvent(IMEvent.ERROR);
-      this.reconnect();
     };
 
     // 监听下线
@@ -202,36 +194,26 @@ export default class CreateWebSocket {
     this.emitEvent(IMEvent.CLOSE);
     // 前端关闭
     this.socket?.close();
-    this.stopHeartCheck();
     this.closeReconnect();
     this.clearMsgQueue();
   }
 }
 
-// 创建心跳检测
-const CreateHeartCheck = () => {
-  const timeout = 5000;
+// 执行心跳发送, 超时则执行超时回调
+const createHeartCheck = (send: () => void, timeoutEvent: () => void, timeout = 5000) => {
   let heartCheckTimer: any = null;
   let serverTimer: any = null;
 
-  return {
-    stop: function () {
-      heartCheckTimer && clearTimeout(heartCheckTimer);
-      serverTimer && clearTimeout(serverTimer);
-      return this;
-    },
-    start: function (send: () => void, timeoutEvent: () => void) {
-      heartCheckTimer && clearTimeout(heartCheckTimer);
-      serverTimer && clearTimeout(serverTimer);
-      heartCheckTimer = setTimeout(() => {
-        // 执行发送命令
-        send && send();
-        console.log('ping start');
-        // 如果超过一定时间还没重置，说明后端主动断开了，执行断开操作
-        serverTimer = setTimeout(() => {
-          timeoutEvent && timeoutEvent();
-        }, timeout);
-      }, timeout);
-    }
-  };
+  heartCheckTimer && clearTimeout(heartCheckTimer);
+  serverTimer && clearTimeout(serverTimer);
+
+  heartCheckTimer = setTimeout(() => {
+    // 执行发送命令
+    send && send();
+    console.log('ping start');
+    // 超过timeout时间则执行超时回调
+    serverTimer = setTimeout(() => {
+      timeoutEvent && timeoutEvent();
+    }, timeout);
+  }, timeout);
 };
