@@ -1,4 +1,4 @@
-import request from '@/http';
+import request from '@/request';
 import { UserInfo } from './interface';
 
 // 获取用户信息

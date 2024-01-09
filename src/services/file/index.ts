@@ -1,5 +1,5 @@
 import { getToken } from "@/utils/auth";
-import request, { ServiceRes } from "@/http";
+import request, { ServiceRes } from "@/request";
 import { addUrlQuery } from "@/utils/url";
 
 

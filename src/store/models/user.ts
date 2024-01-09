@@ -2,11 +2,14 @@ import { StateCreator } from 'zustand';
 import { Store } from "../createStore";
 import { UserInfo } from '@/services/account/interface';
 import { getUserInfo } from '@/services/account';
+// import withNameSpace from '../withNamespace';
 
 export interface UserStore {
   userInfo: UserInfo | null;
+  resetUser: () => void;
   fetchUserInfo: () => Promise<UserInfo>
 }
+
 
 // 初始值
 const initialState = {
