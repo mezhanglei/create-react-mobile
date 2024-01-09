@@ -13,12 +13,10 @@ const CustomRouter = ({ history, ...props }) => {
   });
 
   useLayoutEffect(() => history.listen(setState), [history]);
-  const basename = Router.name == "BrowserRouter" ? process.env.PUBLIC_PATH : "";
 
   return (
     <Router
       {...props}
-      basename={basename}
       location={state.location}
       navigationType={state.action}
       navigator={history}

@@ -26,7 +26,7 @@ module.exports = {
   appEntry,
   appHtml,
   outputPath,
-  // 资源访问的公共绝对路径, 并且访问路由会加上对应的路径字符串， 默认为/不能为空(格式如: /publicPath/)
+  // 访问静态资源的路径：当为'./'路径时则相对于index.html，/开头时则相对于服务器根路径, 完整域名时则是以域名为前缀访问
   publicPath: isDev ? '/' : './',
   babelrcPath: path.join(appRoot, './.babelrc'),
   mockPath: path.join(srcPath, 'mock'),

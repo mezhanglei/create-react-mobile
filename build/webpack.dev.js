@@ -41,14 +41,11 @@ module.exports = merge(base, {
     hot: true,
     // 一切服务都启用gzip 压缩(也可以通过webpack-dev-server --compress启动)
     compress: true,
-    // 当使用 HTML5 History API 时，任意的 404 响应都需要重定向对应的html页面
+    // HTML5 History模式下的路由跳转会发起GET请求，我们需要把请求重定向到实际访问的hmtl文件
     historyApiFallback: {
-      // 重定向
       rewrites: [{
-        // 正则匹配路由
         from: new RegExp(".*"),
-        // 重定向的目标页面(必须/开头)
-        to: (paths.publicPath + '/').replace(/\/+/g, '/') + 'index.html'
+        to: '/index.html'
       }]
     },
     // 默认http
