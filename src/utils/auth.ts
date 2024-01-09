@@ -33,7 +33,7 @@ export const setToken = (token: string) => {
 };
 
 // 本地存储用户信息
-export const setLocalUserInfo = (data?: UserInfo) => {
+export const setLocalUserInfo = (data: UserInfo) => {
   myStorage.set(USER_INFO, data);
 };
 
