@@ -1,7 +1,7 @@
 import { getUrlQuery } from "@/utils/url";
 import { isInWeChat } from "@/utils/brower";
 import { myStorage } from "@/utils/cache";
-import { WECHAT_TOKEN } from "@/utils/auth";
+import { WECHAT_TOKEN } from "@/services/auth";
 import { isEmpty } from "@/utils/type";
 
 /**

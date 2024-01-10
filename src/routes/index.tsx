@@ -1,4 +1,4 @@
-import { isLogin } from "@/utils/auth";
+import { isLogin } from "@/services/auth";
 import React, { useLayoutEffect, useState } from "react";
 import { Router, Routes, Route, RouteProps, Navigate } from "react-router-dom";
 import { DemoRoutes } from "./demo";

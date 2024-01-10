@@ -1,6 +1,6 @@
 import CreateRequest from './createRequest';
 import { CustomConfig, HTTP_CODE, HTTP_CODE_MAP, HTTP_STATUS, HTTP_STATUS_MAP } from './config';
-import { getToken, loginOut } from "@/utils/auth";
+import { getToken, loginOut } from "@/services/auth";
 import { Toast } from 'antd-mobile';
 
 // 响应体结构

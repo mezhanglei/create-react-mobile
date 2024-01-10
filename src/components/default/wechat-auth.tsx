@@ -1,8 +1,8 @@
 import { Toast } from "antd-mobile";
 import { getUrlQuery } from "@/utils/url";
-import { WECHAT_TOKEN } from "@/utils/auth";
+import { WECHAT_TOKEN } from "@/services/auth";
 import { myStorage } from "@/utils/cache";
-import { handleRedirect } from "@/utils/wx";
+import { handleRedirect } from "@/services/wx";
 import { useEffect } from "react";
 
 /**

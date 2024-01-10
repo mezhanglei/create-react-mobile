@@ -8,7 +8,7 @@ import "./less/index.less";
 import "core-js/stable";
 import "regenerator-runtime/runtime";
 import { getUrlQuery } from "@/utils/url";
-import { clearUserInfo, setLocalUserInfo, setToken } from "@/utils/auth";
+import { clearUserInfo, setLocalUserInfo, setToken } from "@/services/auth";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { getUserInfo } from "./services/account";
 

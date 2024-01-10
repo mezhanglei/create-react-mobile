@@ -1,4 +1,4 @@
-import { getToken } from "@/utils/auth";
+import { getToken } from "@/services/auth";
 import request, { ServiceRes } from "@/request";
 import { addUrlQuery } from "@/utils/url";
 
