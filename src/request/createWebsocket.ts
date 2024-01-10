@@ -23,15 +23,7 @@ export type SendData = string | ArrayBufferLike | Blob | ArrayBufferView;
 // 这个请求和通常的 HTTP 请求不同，包含了一些附加头信息，其中附加头信息"Upgrade: WebSocket"表明这是一个申请协议升级的 HTTP请求
 // Websocket 使用和 HTTP 相同的 TCP 端口，可以绕过大多数防火墙的限制。默认情况下，Websocket 协议使用 80 端口；如果运行在 TLS 之上时，默认使用 443 端口。
 export default class CreateWebSocket {
-  url: string;
-  reconnectTimeout: number;
-  heartCheckTimeout: number;
-  constructor(config: CreateWebSocketProps) {
-    this.url = config?.url;
-    this.reconnectTimeout = config?.reconnectTimeout || 5000;
-    this.heartCheckTimeout = config?.heartCheckTimeout || 5000;
-  }
-
+  config: CreateWebSocketProps;
   lockReconnect: boolean = false; // true禁止重连
   status: IMEvent = IMEvent.CONNECTED;
   handlerMap: Map<string, Set<Function>> = new Map(); // 存储事件Map结构
@@ -39,6 +31,11 @@ export default class CreateWebSocket {
   socket?: WebSocket = undefined; // webscoket实例
   reconnectTimer?: any = undefined;
   reconnectCount: number = 0;
+
+  constructor(config: CreateWebSocketProps) {
+    this.config = Object.assign({ reconnectTimeout: 5000, heartCheckTimeout: 5000 }, config);
+    this.connect();
+  }
 
   // 监听事件
   addEventListener(type: IMEvent, handler: Function) {
@@ -110,7 +107,7 @@ export default class CreateWebSocket {
         this.reconnectCount++;
         this.connect();
       }
-    }, this.reconnectTimeout);
+    }, this.config.reconnectTimeout);
   }
 
   // 关闭重连
@@ -129,12 +126,12 @@ export default class CreateWebSocket {
       console.log('心跳超时');
     };
 
-    createHeartCheck(send, timeoutEvent, this.heartCheckTimeout);
+    createHeartCheck(send, timeoutEvent, this.config.heartCheckTimeout);
   }
 
   // 创建websocket实例
   connect() {
-    this.socket = new WebSocket(this.url);
+    this.socket = new WebSocket(this.config.url);
     // 接收消息
     this.socket.onmessage = (evt) => {
       let message = evt.data;
