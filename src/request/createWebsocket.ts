@@ -24,16 +24,23 @@ export type SendData = string | ArrayBufferLike | Blob | ArrayBufferView;
 // Websocket 使用和 HTTP 相同的 TCP 端口，可以绕过大多数防火墙的限制。默认情况下，Websocket 协议使用 80 端口；如果运行在 TLS 之上时，默认使用 443 端口。
 export default class CreateWebSocket {
   config: CreateWebSocketProps;
-  lockReconnect: boolean = false; // true禁止重连
-  status: IMEvent = IMEvent.CONNECTED;
-  handlerMap: Map<string, Set<Function>> = new Map(); // 存储事件Map结构
-  dataQueue: Set<SendData> = new Set(); // 消息队列
-  socket?: WebSocket = undefined; // webscoket实例
-  reconnectTimer?: any = undefined;
-  reconnectCount: number = 0;
+  lockReconnect: boolean; // true禁止重连
+  status: IMEvent;
+  handlerMap: Map<string, Set<Function>>; // 存储事件Map结构
+  dataQueue: Set<SendData>; // 消息队列
+  socket?: WebSocket; // webscoket实例
+  reconnectTimer?: any;
+  reconnectCount: number;
 
   constructor(config: CreateWebSocketProps) {
     this.config = Object.assign({ reconnectTimeout: 5000, heartCheckTimeout: 5000 }, config);
+    this.lockReconnect = false;
+    this.status = IMEvent.CONNECTED;
+    this.handlerMap = new Map();
+    this.dataQueue = new Set();
+    this.socket = undefined;
+    this.reconnectTimer = undefined;
+    this.reconnectCount = 0;
     this.connect();
   }
 
@@ -118,6 +125,7 @@ export default class CreateWebSocket {
 
   // 增加心跳检测
   addHeartCheck() {
+    // 发送心跳事件
     const send = () => {
       this.emitEvent(IMEvent.HEARTBEAT);
     };
@@ -133,18 +141,21 @@ export default class CreateWebSocket {
     this.socket = new WebSocket(this.config.url);
     // 接收消息
     this.socket.onmessage = (evt) => {
-      this.closeReconnect();
-      this.addHeartCheck();
-      const result = evt.data;
-      const data = result && JSON.parse(result);
+      let message = evt.data;
+      // 根据消息类型触发对应的监听事件
+      let data = message && JSON.parse(message);
       this.emitEvent(IMEvent.MESSAGE, data);
+      this.closeReconnect();
+      // 收到消息，循环发起下一次心跳
+      this.addHeartCheck();
     };
 
-    // 链接
+    // 打开通讯
     this.socket.onopen = () => {
+      //触发链接事件
+      this.emitEvent(IMEvent.CONNECTED);
       this.closeReconnect();
       this.addHeartCheck();
-      this.emitEvent(IMEvent.CONNECTED);
       // 如果有消息队列，则连通时就开始发送
       if (this.dataQueue?.size > 0) {
         this.dataQueue?.forEach(msg => {
@@ -156,17 +167,20 @@ export default class CreateWebSocket {
 
     this.socket.onclose = (evt) => {
       this.emitEvent(IMEvent.DISCONNECTED);
+      // 网络正常情况下发起重连
       if (this.status && ![IMEvent.CLOSE, IMEvent.OFFLINE].includes(this.status)) {
         this.reconnect();
       }
     };
 
+    // 通讯出错
     this.socket.onerror = (evt) => {
       this.emitEvent(IMEvent.ERROR);
     };
 
     // 监听下线
     window.addEventListener('offline', () => {
+      // 触发断开事件
       this.emitEvent(IMEvent.OFFLINE);
       this.socket?.close();
     });

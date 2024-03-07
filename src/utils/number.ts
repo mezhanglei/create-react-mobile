@@ -1,30 +1,47 @@
 import BigNumber from 'bignumber.js';
 import { isEmpty, isNumber, isNumberStr } from './type';
 
-// 格式化数字或字符串
-export function formatNumber(value: number | string, decimal = 2) {
+// 转为数字
+export function toNumber(value: any, decimal?: number) {
   if (!isNumberStr(value)) return '';
-  return decimal !== undefined ? new BigNumber(value).toFixed(decimal) : new BigNumber(value).toFixed();
+  return new BigNumber(formatNumber(value, decimal)).toNumber();
+}
+
+// 格式化数字或字符串
+export function formatNumber(value: number | string, decimal?: number, mode?: 'up' | 'down' | 'default') {
+  if (!isNumberStr(value)) return '';
+  const modeMap = {
+    up: 0, // 进1
+    down: 1, // 舍去
+    default: 4, // 四舍五入
+  };
+  const roundMode = (mode ? modeMap[mode] : modeMap.default) as BigNumber.RoundingMode;
+  BigNumber.config({ ROUNDING_MODE: roundMode });
+  return typeof decimal === 'number' ? new BigNumber(value).toFixed(decimal) : new BigNumber(value).toFixed();
 }
 
 // 加
-export function add(a?: string | number, b?: string | number) {
-  return BigNumber(a || '0').plus(b || '0').toString();
+export function add(...args: Array<string | number>) {
+  if (!(args instanceof Array)) return;
+  return args.reduce((pre, cur) => BigNumber(pre || '0').plus(cur || '0').toString());
 }
 
 // 减
-export function subtract(a?: string | number, b?: string | number) {
-  return BigNumber(a || '0').minus(b || '0').toString();
+export function subtract(...args: Array<string | number>) {
+  if (!(args instanceof Array)) return;
+  return args.reduce((pre, cur) => BigNumber(pre || '0').minus(cur || '0').toString());
 }
 
 // 乘
-export function multiply(a?: string | number, b?: string | number) {
-  return BigNumber(a || '0').multipliedBy(b || '0').toString();
+export function multiply(...args: Array<string | number>) {
+  if (!(args instanceof Array)) return;
+  return args.reduce((pre, cur) => BigNumber(pre || '0').multipliedBy(cur || '0').toString());
 }
 
 // 除
-export function divide(a?: string | number, b?: string | number) {
-  return BigNumber(a || '0').dividedBy(b || '0').toString();
+export function divide(...args: Array<string | number>) {
+  if (!(args instanceof Array)) return;
+  return args.reduce((pre, cur) => BigNumber(pre || '0').dividedBy(cur).toString());
 }
 
 export function strToCurrency(value?: string | number, decimal?: number) {
