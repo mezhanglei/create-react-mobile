@@ -18,7 +18,7 @@ export default (function injector() {
   };
 
   // 根据目标函数依赖参数字符串列表返回依赖列表
-  const setFuncParams = function (deps: string[], modules: { [key: string]: any }) {
+  const setFuncParams = function (deps: string[], modules: Record<string, unknown>) {
     const result: Array<unknown> = [];
     for (let i = 0; i < deps?.length; i++) {
       if (modules.hasOwnProperty(deps[i])) {
@@ -38,7 +38,7 @@ export default (function injector() {
   };
 
   // 注入依赖
-  const resolve = (func: [...string[], Function] | Function, scope?: any) => {
+  const resolve = (func: [...string[], Function] | Function, scope?: unknown) => {
     let deps;
     if (func instanceof Array) {
       let last = func.length - 1;

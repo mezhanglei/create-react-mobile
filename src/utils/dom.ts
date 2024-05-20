@@ -7,8 +7,9 @@ import { getPrefixStyle } from "./cssPrefix";
  * 接收类名或节点，返回节点
  * @param target 目标参数
  */
-export const findElement = (target: any, parent: any = document): null | HTMLElement => {
-  let result = null;
+export const findElement = (target?: HTMLElement, parent = document) => {
+  let result = null as (null | HTMLElement);
+  if (target === undefined) return result;
   if (typeof target === "string") {
     result = parent.querySelector(target);
   } else if (isDom(target)) {
@@ -18,12 +19,13 @@ export const findElement = (target: any, parent: any = document): null | HTMLEle
 };
 
 // 查找dom中指定属性名的值，没有返回null
-export const findSource = (dom: any, attr: string) => {
-  let flag = null;
+export const findSource = (dom?: HTMLElement, attr?: string) => {
+  if (typeof attr !== 'string' || dom === undefined || dom === null) return null;
+  let flag;
   // 标签名
   let tagName = dom.tagName.toLowerCase();
   // 触发事件的目标
-  let target = dom;
+  let target = dom as HTMLElement;
   // 递归查询的层数
   let num = 20;
   while (tagName !== 'body' && num > 0) {
@@ -32,7 +34,10 @@ export const findSource = (dom: any, attr: string) => {
       // 自定义属性只能是字符串
       return target.getAttribute(attr);
     }
-    target = target.parentNode;
+    const parentNode = target.parentNode as HTMLElement;
+    if (parentNode) {
+      target = parentNode;
+    }
     tagName = target.tagName.toLowerCase();
     num--;
   }
@@ -42,15 +47,15 @@ export const findSource = (dom: any, attr: string) => {
 // 返回目标元素的兄弟节点
 export const findSiblingsElement = (target: HTMLElement, containOwner?: boolean) => {
   if (target && !isDom(target)) return;
-  const ret = []; //保存所有兄弟节点
-  const childs = target?.parentNode?.children || []; //获取父级的所有子节点
+  const ret = [] as HTMLElement[]; //保存所有兄弟节点
+  const childs = (target?.parentNode?.children || []) as HTMLElement[]; //获取父级的所有子节点
   for (let i = 0; i < childs?.length; i++) {
     // 去掉本身
     if (isDom(childs[i]) && (containOwner || childs[i] != target)) {
       ret.push(childs[i]);
     }
   }
-  return ret as HTMLElement[];
+  return ret;
 };
 
 /**
@@ -60,6 +65,7 @@ export const findSiblingsElement = (target: HTMLElement, containOwner?: boolean)
  */
 export function getAbsolute(ele: HTMLElement, parent: HTMLElement): { x: number, y: number } | undefined {
 
+  if (ele === undefined || ele === null) return;
   if (isDom(ele) || !isContains(parent, ele)) {
     return;
   }
@@ -68,10 +74,13 @@ export function getAbsolute(ele: HTMLElement, parent: HTMLElement): { x: number,
     x: ele.offsetLeft,
     y: ele.offsetTop
   };
-  let parentNode: any = ele.offsetParent;
+  let parentNode = ele.offsetParent as HTMLElement;
 
   while (parentNode !== parent) {
-    parentNode = parentNode?.offsetParent;
+    const parent = parentNode?.offsetParent as HTMLElement;
+    if (parent) {
+      parentNode = parent;
+    }
     pos = {
       x: pos?.x + parentNode?.offsetLeft,
       y: pos?.y + parentNode?.offsetTop
@@ -113,7 +122,7 @@ export function isContains(root: Node, child: Node): boolean {
 };
 
 // 目标元素是否匹配选择器
-export function matches(el: any, selector: string) {
+export function matches(el, selector: string) {
   if (!selector) return;
 
   selector[0] === '>' && (selector = selector.substring(1));
@@ -136,7 +145,7 @@ export function matches(el: any, selector: string) {
 }
 
 // 根据选择器返回在父元素内的序号
-export function getChildrenIndex(el: any, excluded?: Array<string | Node | undefined | null>) {
+export function getChildrenIndex(el?: HTMLElement, excluded?: Array<string | Node | undefined | null>) {
   const children = el?.parentNode?.children;
   if (!children) return -1;
   let index = 0;
@@ -218,7 +227,7 @@ export function getScroll(el: HTMLElement): undefined | {
   }
   if ([document.documentElement, document.body].includes(el)) {
     const doc = el.ownerDocument; // 节点所在document对象
-    const win: any = getWindow(doc); // 包含document的window对象
+    const win = getWindow(doc); // 包含document的window对象
     const x = doc.documentElement.scrollLeft || win.pageXOffset || doc.body.scrollLeft;
     const y = doc.documentElement.scrollTop || win.pageYOffset || doc.body.scrollTop;
     return { x, y };
@@ -230,8 +239,8 @@ export function getScroll(el: HTMLElement): undefined | {
 };
 
 // 事件对象在屏幕的位置
-export function getScreenXY(e: MouseEvent | TouchEvent): null | { x: number, y: number } {
-  let pos = null;
+export function getScreenXY(e: MouseEvent | TouchEvent) {
+  let pos: undefined | { x: number; y: number };
   if ("clientX" in e) {
     pos = {
       x: e.screenX,
@@ -289,11 +298,8 @@ export function getOffsetWH(el: HTMLElement): undefined | {
 };
 
 // 返回元素或事件对象的视口位置
-export function getClientXY(el: MouseEvent | TouchEvent | HTMLElement): null | {
-  x: number;
-  y: number;
-} {
-  let pos = null;
+export function getClientXY(el: MouseEvent | TouchEvent | HTMLElement) {
+  let pos: undefined | { x: number; y: number; };
   if ("clientX" in el) {
     pos = {
       x: el.clientX,
@@ -369,11 +375,11 @@ export function getInsidePosition(el: HTMLElement, parent: HTMLElement = documen
  * @param el 事件对象
  * @param parent 父元素
  */
-export function getEventPosition(el: MouseEvent | TouchEvent, parent: HTMLElement = document.body || document.documentElement): null | {
-  x: number;
-  y: number;
-} {
-  let pos = null;
+export function getEventPosition(el: MouseEvent | TouchEvent, parent: HTMLElement = document.body || document.documentElement) {
+  let pos: {
+    x: number;
+    y: number;
+  } | undefined;
   if ("clientX" in el) {
     pos = {
       x: el?.clientX - getRect(parent).left,
@@ -392,13 +398,13 @@ export function getEventPosition(el: MouseEvent | TouchEvent, parent: HTMLElemen
 }
 
 // 目标在父元素四条内边框距离信息
-export function getInsideRange(el: HTMLElement, parent: HTMLElement): null | {
-  left: number;
-  top: number;
-  right: number;
-  bottom: number;
-} {
-  let pos = null;
+export function getInsideRange(el: HTMLElement, parent: HTMLElement) {
+  let pos: undefined | {
+    left: number;
+    top: number;
+    right: number;
+    bottom: number;
+  };
   if (isDom(el)) {
     const parentScrollW = parent?.scrollWidth || 0;
     const parentScrollH = parent?.scrollHeight || 0;
@@ -474,7 +480,7 @@ export function eleCanScroll(ele: HTMLElement): boolean {
  * @param {*} target 目标元素
  * @param {*} step 遍历层数，设置可以限制向上冒泡查找的层数
  */
-export function getScrollParent(target: any, step?: number): HTMLElement {
+export function getScrollParent(target: HTMLElement, step?: number): HTMLElement {
   const root = [document.documentElement, document.body];
   if (root.indexOf(target) > -1) {
     return document.body || document.documentElement;
@@ -528,7 +534,7 @@ export const insertAfter = (newElement: HTMLElement, targetElement: HTMLElement)
 };
 
 // 获取或设置目标元素的style值
-export function css(el: any, prop?: string | CSSProperties) {
+export function css(el, prop?: string | CSSProperties) {
   let style = el && el.style;
   const win = getWindow(el);
   if (style) {
@@ -583,7 +589,7 @@ export const nextAll = function (node: Node) {
  * @param handler 事件函数
  * @param inputOptions 配置
  */
-export function addEvent(el: any, event: string, handler: (...rest: any[]) => any, inputOptions?: {
+export function addEvent(el, event: string, handler: (...rest: unknown[]) => void, inputOptions?: {
   captrue?: boolean,
   once?: boolean,
   passive?: boolean
@@ -608,7 +614,7 @@ export function addEvent(el: any, event: string, handler: (...rest: any[]) => an
  * @param handler 事件函数
  * @param inputOptions 配置
  */
-export function removeEvent(el: any, event: string, handler: (...rest: any[]) => any, inputOptions?: {
+export function removeEvent(el, event: string, handler: (...rest: unknown[]) => void, inputOptions?: {
   captrue?: boolean,
   once?: boolean,
   passive?: boolean

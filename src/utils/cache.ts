@@ -9,13 +9,13 @@ export const getKey = (key: string) => {
  */
 const myStorage = {
   //存储
-  set(key: string, value: any) {
+  set<V>(key: string, value: V) {
     const currentkey = getKey(key);
     localStorage.setItem(currentkey, JSON.stringify(value));
     return value;
   },
   //取出数据
-  get(key: string) {
+  get<V>(key: string): V | null {
     const currentkey = getKey(key);
     try {
       const value = localStorage.getItem(currentkey);
@@ -39,13 +39,13 @@ const myStorage = {
  */
 const mySession = {
   //存储
-  set(key: string, value: any) {
+  set<V>(key: string, value: V) {
     const currentkey = getKey(key);
     sessionStorage.setItem(currentkey, JSON.stringify(value));
     return value;
   },
   //取出数据
-  get(key: string) {
+  get<V>(key: string): V | null {
     const currentkey = getKey(key);
     try {
       const value = sessionStorage.getItem(currentkey);
@@ -70,7 +70,7 @@ const mySession = {
 
 const timeStorage = {
   //存储
-  set(key: string, value: any, time?: number) {
+  set<V>(key: string, value: V, time?: number) {
     const currentkey = getKey(key);
     try {
       if (!localStorage) {
@@ -90,7 +90,7 @@ const timeStorage = {
     }
   },
   //取出数据
-  get(key: string) {
+  get<V>(key: string): V | null {
     const currentkey = getKey(key);
     try {
       const value = sessionStorage.getItem(currentkey);

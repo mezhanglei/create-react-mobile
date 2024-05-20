@@ -3,9 +3,10 @@ import { isEmpty } from './type';
 import Clipboard from 'clipboard';
 
 // 复制到剪贴板
-export function copyToClipboard(content: any, clickEvent: any, successFn?: () => void, errorFn?: () => void) {
+export function copyToClipboard(content?: unknown, clickEvent?: Event, successFn?: () => void, errorFn?: () => void) {
   if (typeof content !== 'string') return;
-  const clipboard = new Clipboard(clickEvent.target, {
+  const el = clickEvent?.target as HTMLElement;
+  const clipboard = new Clipboard(el, {
     text: () => content
   });
 
@@ -19,11 +20,11 @@ export function copyToClipboard(content: any, clickEvent: any, successFn?: () =>
     clipboard.destroy();
   });
 
-  clipboard.onClick(clickEvent);
+  (clipboard as any)?.onClick(clickEvent);
 }
 
 // 将对象转化为普通字符串(非json格式)
-export function convertToString(val: any, allowFunction: boolean = true): string | undefined {
+export function convertToString(val?: unknown, allowFunction: boolean = true): string | undefined {
   if (isEmpty(val)) return;
   if (typeof val === 'string') return val;
   if (typeof val === 'function') {
@@ -41,7 +42,7 @@ export function convertToString(val: any, allowFunction: boolean = true): string
 }
 
 // 将普通字符串转化为js(非json格式)
-export function evalString(val?: string) {
+export function evalString<V>(val: string): V | undefined {
   if (isEmpty(val) || typeof val !== 'string') return;
   try {
     return eval(`(function(){return ${val} })()`);
@@ -79,7 +80,7 @@ export function removeSpaceAndWrap(str?: string) {
 // 2~36转十进制
 export const OtherToDecimal = (num: string, base: number) => {
   const bases = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
-  const config = {};
+  const config = {} as Record<string, number>;
   for (let k = 0; k < base; k++) {
     config[bases[k]] = k;
   }

@@ -120,28 +120,22 @@ export function formExportFile(url: string, params = {}) {
  * @param {Blob} data 二进制数据 必填
  * @param {string} 文件名及后缀
  */
-export function saveAsBinary(data: any, filename: string) {
+export function saveAsBinary(data: Blob, filename: string) {
   if (!filename) {
     console.error("please set file name");
   }
 
   const blob = isBlob(data) ? data : (isArrayBuffer(data) ? new Blob([data]) : null);
   if (!blob) return;
-
-  // ie浏览器兼容
-  if (window.navigator.msSaveBlob) {
-    navigator.msSaveBlob(blob, filename);
-  } else if (window.URL) {
-    const link = document.createElement('a');
-    const href = window.URL.createObjectURL(blob);
-    link.href = href;
-    link.download = filename;
-    link.style.display = 'none';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(link.href);
-  }
+  const link = document.createElement('a');
+  const href = window.URL.createObjectURL(blob);
+  link.href = href;
+  link.download = filename;
+  link.style.display = 'none';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  window.URL.revokeObjectURL(link.href);
 }
 
 /**

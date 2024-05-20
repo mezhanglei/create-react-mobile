@@ -17,11 +17,12 @@ export function getVideoBase64(url: string, currentTime = 0.1) {
     video.setAttribute('width', "10");
     video.setAttribute('height', "10");
     video.currentTime = currentTime;
-    video.addEventListener('loadeddata', function (e: any) {
+    video.addEventListener('loadeddata', function (e) {
       setTimeout(() => {
         let canvas = document.createElement('canvas');
-        let width = e.target.videoWidth; // 视频的宽高
-        let height = e.target.videoHeight;
+        const el = e?.target as HTMLVideoElement;
+        let width = el?.videoWidth; // 视频的宽高
+        let height = el?.videoHeight;
         canvas.width = width;
         canvas.height = height;
         const context = canvas.getContext('2d');

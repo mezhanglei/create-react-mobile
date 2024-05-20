@@ -2,7 +2,7 @@ import BigNumber from 'bignumber.js';
 import { isEmpty, isNumber, isNumberStr } from './type';
 
 // 转为数字
-export function toNumber(value: any, decimal?: number) {
+export function toNumber(value: string | number, decimal?: number) {
   if (!isNumberStr(value)) return '';
   return new BigNumber(formatNumber(value, decimal)).toNumber();
 }

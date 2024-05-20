@@ -1,13 +1,15 @@
-import { isEmpty, isNumberStr, isObject } from "./type";
+import { isArray, isObject } from "./type";
 import { copy } from 'copy-anything';
 import compare from 'react-fast-compare';
+import { PathValue } from "./typings";
+import { deepGet, joinFormPath } from '@simpleform/form';
 
-export function deepClone<T = any>(value: T) {
+export function deepClone<T>(value: T) {
   return copy(value);
 }
 
 // 判断两个值是否相等
-export function isEqual(a: any, b: any) {
+export function isEqual(a?: unknown, b?: unknown) {
   return compare(a, b);
 }
 
@@ -15,25 +17,27 @@ export function isEqual(a: any, b: any) {
  * 递归去除参数的前后空格
  * @param {*} data 参数
  */
-export const trimParams = (data: any) => {
+export const trimParams = <V>(data?: V) => {
   if (typeof data === 'string') return data.trim();
-  if (isObject(data)) {
-    for (let key in data) {
+  if (data && isObject(data)) {
+    for (let key of Object.keys(data)) {
       data[key] = trimParams(data[key]);
     }
   }
   return data;
 };
 
+
 /**
  * 递归将对象/嵌套对象的数据转化为formdata格式数据
  * @param {Object} obj 传入的对象数据
  * @param {FormData} formData 是否传入已有的formData数据
  */
-export function objectToFormData(obj: any, formData?: FormData) {
+export function objectToFormData(obj?: object, formData?: FormData) {
   const fd = (formData instanceof FormData) ? formData : new FormData();
+  if (typeof obj !== 'object') return fd;
   let formKey;
-  for (let property in obj) {
+  for (let property of Object.keys(obj)) {
     if (obj.hasOwnProperty(property)) {
       formKey = property;
       // 如果传入数据的值为对象且不是二进制文件
@@ -48,122 +52,54 @@ export function objectToFormData(obj: any, formData?: FormData) {
 }
 
 // 提取对象中的部分属性
-export const pickObject = <T = any>(obj: T | undefined, keys: string[] | ((key?: string, value?: any) => boolean)) => {
+export const pickObject = <T, K = string>(obj: T | undefined, keys: Array<K> | ((key?: keyof T, value?: T[keyof T]) => boolean)) => {
   if (obj === undefined || obj === null) return obj;
+  if (!isObject(obj) && !isArray(obj)) return;
+  const initial = {} as Record<string, unknown>;
   if (keys instanceof Array) {
-    return keys.reduce((iter, key) => {
-      const item = deepGet(obj as any, key);
+    for (const k of keys) {
+      const changedKey = typeof k === 'string' || typeof k === 'number' ? k : joinFormPath(k);
+      const item = deepGet(obj, changedKey);
       if (item !== undefined) {
-        iter[key] = item;
+        initial[changedKey.toString()] = item;
       }
-      return iter;
-    }, {}) as T;
-  } else if (typeof keys === 'function') {
-    return Object.keys(obj || {}).reduce((iter, key) => {
-      const item = obj[key];
-      if (keys(key, item)) {
-        iter[key] = item;
+    }
+  } else {
+    const objKeys = Object.keys(obj) as Array<keyof T>;
+    for (const k of objKeys) {
+      const item = obj[k];
+      if (keys(k, item) && item !== undefined) {
+        initial[k as string] = item;
       }
-      return iter;
-    }, {}) as T;
+    }
   }
+  return initial as PathValue<T, K>;
 };
 
-// 接收路径字符串或数组字符串，返回数组字符串表示路径
-export function pathToArr(path?: string | string[]) {
-  if (path instanceof Array) return path;
-  const parts = typeof path === 'string' && path ? path.replace(/\]$/, '').replace(/^\[/, '').split(/\.\[|\]\[|\[|\]\.|\]|\./g) : [];
-  return parts;
-}
-
-// 根据路径获取目标对象中的单个值或多个值
-export function deepGet<T = any>(obj: T | undefined, keys?: string | string[]): any {
-  if (!keys?.length) return;
-  if (keys instanceof Array) {
-    const result = obj instanceof Array ? [] : {};
-    for (let key of keys) {
-      result[key] = pathToArr(key)?.reduce?.((o, k) => (o)?.[k], obj);
-    }
-    return result;
-  } else {
-    return pathToArr(keys)?.reduce?.((o, k) => (o)?.[k], obj);
-  }
-}
-
-// 给对象目标属性添加值, path：['a', 0] 等同于 'a[0]'
-export function deepSet<T = any>(obj: T, path: string | string[], value: any) {
-  const parts = pathToArr(path);
-  if (!parts?.length) return obj;
-
-  // 是否为数组序号
-  const isIndex = (str?: string) => {
-    return Array.isArray(path) ? isNumberStr(str) : path?.indexOf(`[${str}]`) > -1;
-  };
-
-  let temp: any = isEmpty(obj) ? (isIndex(parts[0]) ? [] : {}) : deepClone(obj);
-  const root = temp;
-
-  for (let i = 0; i < parts?.length; i++) {
-    const current = parts[i];
-    const next = parts[i + 1];
-
-    const handleTarget = () => {
-      if (value === undefined) {
-        if (temp instanceof Array) {
-          const index = +current;
-          temp?.splice(index, 1);
-        } else {
-          delete temp[current];
-        }
-      } else {
-        temp[current] = value;
-      }
-    };
-
-    if (i === parts?.length - 1) {
-      handleTarget();
-    } else {
-      const currentValue = temp[current];
-      if (isEmpty(currentValue)) {
-        // 如果目标值也是赋值undefined则提前结束查找
-        if (value == undefined) {
-          handleTarget();
-          return root;
-        }
-        temp[current] = isIndex(next) ? [] : {};
-      }
-    }
-    // 下个嵌套
-    temp = temp[current];
-  }
-  return root;
-}
-
 // 深度合并两个对象
-export const deepMergeObject = function (obj1: any, obj2: any) {
+export const deepMergeObject = <V>(obj1: V, obj2?: unknown): V => {
   const obj1Type = Object.prototype.toString.call(obj1);
   const obj2Type = Object.prototype.toString.call(obj2);
-  if (isEmpty(obj1)) return obj2;
-  if (obj1Type !== obj2Type) return obj1;
+  if (obj1Type !== obj2Type || typeof obj2 !== 'object') return obj1;
   const cloneObj = deepClone(obj1);
-  for (let key in obj2) {
+  for (let key of Object.keys(obj2 || {})) {
     if (isObject(cloneObj[key])) {
-      cloneObj[key] = deepMergeObject(cloneObj[key], obj2[key]);
+      cloneObj[key] = deepMergeObject(cloneObj[key], obj2?.[key]);
     } else {
-      cloneObj[key] = obj2[key];
+      cloneObj[key] = obj2?.[key];
     }
   }
   return cloneObj;
 };
 
 // 合并新对象，新对象浅合并, 新的覆盖旧的
-export const shallowMerge = function (oldValue: any, newValue: any) {
-  if (!isObject(oldValue) || !isObject(newValue)) {
-    return oldValue;
-  }
-  const result = deepClone(oldValue);
-  for (let key in newValue) {
-    result[key] = newValue[key];
+export const shallowMerge = <V>(obj1: V, obj2?: unknown): V => {
+  const obj1Type = Object.prototype.toString.call(obj1);
+  const obj2Type = Object.prototype.toString.call(obj2);
+  if (obj1Type !== obj2Type || typeof obj2 !== 'object' || !obj2) return obj1;
+  const result = deepClone(obj1);
+  for (let key of Object.keys(obj2)) {
+    result[key] = obj2[key];
   }
   return result;
 };

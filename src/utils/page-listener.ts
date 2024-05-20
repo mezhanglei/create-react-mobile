@@ -19,7 +19,7 @@ const dragEventFor = isMobile() ? eventsFor.touch : eventsFor.mouse;
  * @param callback 超时后执行的函数
  * @param maxNum 限制时间(秒)
  */
-const actionListener = (callback: (arg?: any) => any, maxNum: number) => {
+const actionListener = (callback: (...args: unknown[]) => boolean | undefined, maxNum: number) => {
   let count = 0;
   let x: number | undefined;
   let y: number | undefined;

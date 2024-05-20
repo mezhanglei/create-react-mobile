@@ -1,68 +1,69 @@
 /**
  * 精确类型判断
  */
-export function getType(obj: any) {
+export function getType<T>(obj: T) {
   return Object.prototype.toString.call(obj);
 }
 
-export function isBoolean(data: any) {
+export function isBoolean<T>(data: T) {
   return getType(data) == '[object Boolean]';
 }
 
-export function isNumber(data: any) {
+export function isNumber<T>(data: T) {
   return getType(data) == '[object Number]';
 }
 
-export function isString(data: any) {
+export function isString<T>(data: T) {
   return getType(data) == '[object String]';
 }
 
-export function isFunction(data: any) {
+export function isFunction<T>(data: T) {
   return getType(data) == '[object Function]';
 }
 
-export function isArray(data: any) {
+export function isArray<T>(data: T) {
   return getType(data) == '[object Array]';
 }
 
-export function isDate(data: any) {
+export function isDate<T>(data: T) {
   return data instanceof Date;
 }
 
-export function isRegExp(data: any) {
+export function isRegExp<T>(data: T) {
   return getType(data) == '[object RegExp]';
 }
 
-export function isUndefined(data: any) {
+export function isUndefined<T>(data: T) {
   return getType(data) == '[object Undefined]';
 }
 
-export function isNull(data: any) {
+export function isNull<T>(data: T) {
   return getType(data) == '[object Null]';
 }
 
-export function isObject(data: any) {
+export function isObject<T>(data: T) {
   return getType(data) == '[object Object]';
 }
 
-export function isElement(data: any) {
+export function isElement<T>(data: T) {
   return data instanceof Element;
 }
 
-export function isDom(ele: any) {
+export function isDom<T>(data: T & { nodeType?: number; nodeName?: string }) {
   if (typeof HTMLElement === 'object') {
-    return ele instanceof HTMLElement;
+    return data instanceof HTMLElement;
   } else {
-    return ele && typeof ele === 'object' && ele.nodeType === 1 && typeof ele.nodeName === 'string';
+    return data && typeof data === 'object' && data?.nodeType === 1 && typeof data.nodeName === 'string';
   }
 }
 
-export function isNodeList(data: any) {
+export function isNodeList<T>(data: T) {
   return getType(data) == '[object NodeList]';
 }
 
 // 判断值是否为空
-export function isEmpty(value: unknown) {
+export function isEmpty<T>(value: T) {
+  if (value === undefined || value === null) return true;
   if (Array.isArray(value)
     || typeof value === 'string'
     || value instanceof String
@@ -75,54 +76,52 @@ export function isEmpty(value: unknown) {
   }
 
   if (({}).toString.call(value) === '[object Object]') {
-    return Object.keys(<object>value).length === 0;
+    return Object.keys(value).length === 0;
   }
 
   if (typeof value === 'number') {
     return isNaN(value);
   }
-
-  return value === undefined || value === null;
 }
 
-export function isArrayBuffer(data: any) {
+export function isArrayBuffer<T>(data: T) {
   return getType(data) === '[object ArrayBuffer]';
 }
 
-export function isFormData(data: any) {
+export function isFormData<T>(data: T) {
   return (typeof FormData !== 'undefined') && (data instanceof FormData);
 }
 
-export function isArrayBufferView(val: any) {
+export function isArrayBufferView<T>(data: T & { buffer?: ArrayBuffer }) {
   var result;
   if ((typeof ArrayBuffer !== 'undefined') && (ArrayBuffer.isView)) {
-    result = ArrayBuffer.isView(val);
+    result = ArrayBuffer.isView(data);
   } else {
-    result = (val) && (val.buffer) && (val.buffer instanceof ArrayBuffer);
+    result = (data) && (data.buffer) && (data.buffer instanceof ArrayBuffer);
   }
   return result;
 }
 
-export function isFile(data: any) {
+export function isFile<T>(data: T) {
   return getType(data) === '[object File]';
 }
 
-export function isBlob(data: any) {
+export function isBlob<T>(data: T) {
   return getType(data) === '[object Blob]';
 }
 
-export function isStream(val: any) {
-  return isObject(val) && isFunction(val.pipe);
+export function isStream<T>(data: T & { pipe?: Function }) {
+  return typeof data === 'object' && isFunction(data.pipe);
 }
 
 // 是否为简单类型
-export function isBase(data: any) {
+export function isBase<T>(data: T) {
   const type = typeof data;
   return ['string', 'number', 'symbol', 'boolean']?.includes(type);
 }
 
 // 是否为数字字符串或者数字
-export const isNumberStr = (str?: string | Number) => {
+export const isNumberStr = <T>(str?: T) => {
   if (typeof str === 'number' && !isNaN(str)) return true;
   if (typeof str === 'string') {
     const target = Number(str);
@@ -131,7 +130,7 @@ export const isNumberStr = (str?: string | Number) => {
 };
 
 // 是否为带data:开头的base64的字符串
-export const isBase64 = (str?: string) => {
+export const isBase64 = <T>(str?: T) => {
   if (typeof str !== 'string') return;
   if (str.trim() === '') return;
   const regx = /^(data:\S+\/\S+;base64,){1}/;
