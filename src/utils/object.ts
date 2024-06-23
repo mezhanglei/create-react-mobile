@@ -2,7 +2,7 @@ import { isArray, isObject } from "./type";
 import { copy } from 'copy-anything';
 import compare from 'react-fast-compare';
 import { PathValue } from "./typings";
-import { deepGet, joinFormPath } from '@simpleform/form';
+import { deepGet, joinFormPath } from '@simpleform/render';
 
 export function deepClone<T>(value: T) {
   return copy(value);
